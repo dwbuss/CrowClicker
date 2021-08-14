@@ -1,0 +1,94 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:8458541215201041067",
+      "lastPropertyId": "17:8480593803509950156",
+      "name": "Point",
+      "properties": [
+        {
+          "id": "1:279511390712099752",
+          "name": "id"
+        },
+        {
+          "id": "2:3538675074022325163",
+          "name": "name"
+        },
+        {
+          "id": "3:7418045949357614209",
+          "name": "lon"
+        },
+        {
+          "id": "4:7044427077710383900",
+          "name": "lat"
+        },
+        {
+          "id": "5:223679340612823629",
+          "name": "timeStamp"
+        },
+        {
+          "id": "6:7458092271021135437",
+          "name": "contactType"
+        },
+        {
+          "id": "7:921530164165089086",
+          "name": "airTemp"
+        },
+        {
+          "id": "8:7974525328111156577",
+          "name": "waterTemp"
+        },
+        {
+          "id": "9:2567268529529791134",
+          "name": "bait"
+        },
+        {
+          "id": "10:329570025063539165",
+          "name": "fishSize"
+        },
+        {
+          "id": "11:8764943834062444438",
+          "name": "notes"
+        },
+        {
+          "id": "12:2229839131489034221",
+          "name": "windSpeed"
+        },
+        {
+          "id": "13:6264533601670301634",
+          "name": "windDir"
+        },
+        {
+          "id": "14:7494663636638982372",
+          "name": "cloudCover"
+        },
+        {
+          "id": "15:6231370237937180452",
+          "name": "dewPoint"
+        },
+        {
+          "id": "16:2093227704705660706",
+          "name": "pressure"
+        },
+        {
+          "id": "17:8480593803509950156",
+          "name": "humidity"
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "1:8458541215201041067",
+  "lastIndexId": "0:0",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 4,
+  "modelVersionParserMinimum": 4,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}

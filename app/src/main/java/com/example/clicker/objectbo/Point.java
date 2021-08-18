@@ -1,5 +1,11 @@
 package com.example.clicker.objectbo;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -28,7 +34,25 @@ public class Point {
     private String pressure;
     private String humidity;
 
-    public Point() {
+    public Point(JSONObject jsonObject) throws ParseException, JSONException {
+       // id =jsonObject.getLong("id");
+        name =jsonObject.optString("name");
+        lon =jsonObject.optDouble("lon");
+        lat =jsonObject.optDouble("lat");
+        DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+        timeStamp =osLocalizedDateFormat.parse(jsonObject.getString("timeStamp"));
+        contactType =jsonObject.optString("contactType");
+        airTemp =jsonObject.optString("airTemp");
+        waterTemp =jsonObject.optString("waterTemp");
+        bait =jsonObject.optString("bait");
+        fishSize =jsonObject.optString("fishSize");
+        notes =jsonObject.optString("notes");
+        windSpeed =jsonObject.optString("windSpeed");
+        windDir =jsonObject.optString("windDir");
+        cloudCover =jsonObject.optString("cloudCover");
+        dewPoint =jsonObject.optString("dewPoint");
+        pressure =jsonObject.optString("pressure");
+        humidity =jsonObject.optString("humidity");
     }
 
     public Point(long id, String name, String contactType, double lon, double lat) {
@@ -39,6 +63,8 @@ public class Point {
         this.lon = lon;
         this.contactType = contactType;
     }
+
+
 
     public long getId() {
         return id;
@@ -172,4 +198,26 @@ public class Point {
         this.humidity = humidity;
     }
 
+    @Override
+    public String toString() {
+        return "{\"Point\":{" +
+                "\"id\":\"" + id + "\""+
+                ", \"name\":\"" + name +"\""+
+                ", \"lon\":\"" + lon +"\""+
+                ", \"lat\":\"" + lat +"\""+
+                ", \"timeStamp\":\"" + timeStamp +"\""+
+                ", \"contactType\":\"" + contactType +"\""+
+                ", \"airTemp\":\"" + airTemp  +"\""+
+                ", \"waterTemp\":\"" + waterTemp  +"\""+
+                ", \"bait\":\"" + bait +"\""+
+                ", \"fishSize\":\"" + fishSize +"\""+
+                ", \"notes\":\"" + notes +"\""+
+                ", \"windSpeed\":\"'" + windSpeed +"\""+
+                ", \"windDir\":\"" + windDir +"\""+
+                ", \"cloudCover\":\"" + cloudCover +"\""+
+                ", \"dewPoint\":\"" + dewPoint +"\""+
+                ", \"pressure\":\"" + pressure +"\""+
+                ", \"humidity\":\"" + humidity +"\""+
+                "}}";
+    }
 }

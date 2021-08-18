@@ -9,15 +9,17 @@
     <FrameLayout
         android:id="@+id/settings"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="400dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="0dp"></FrameLayout>
 
     <TableLayout
-        android:stretchColumns="*"
+        android:id="@+id/tableLayout5"
         android:layout_width="match_parent"
-        android:layout_height="1024dp"
+        android:layout_height="wrap_content"
+        android:stretchColumns="*"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,15 +27,15 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:padding="10dp"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:padding="10dp">
 
             <TextView
                 android:id="@+id/blank"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_column="1" />
+                android:layout_column="1"
+                android:layout_gravity="center" />
 
             <ImageView
                 android:id="@+id/catchImage"
@@ -66,8 +68,8 @@
                 android:id="@+id/dailyLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_column="1"
+                android:layout_gravity="center"
                 android:text="Daily Count" />
 
             <TextView
@@ -101,8 +103,8 @@
                 android:id="@+id/tripLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_column="1"
+                android:layout_gravity="center"
                 android:text="Trip Count" />
 
             <TextView
@@ -136,8 +138,8 @@
                 android:id="@+id/totalLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_column="1"
+                android:layout_gravity="center"
                 android:text="Total Count" />
 
             <TextView
@@ -163,6 +165,46 @@
 
         </TableRow>
 
+    </TableLayout>
+
+    <TableLayout
+        android:stretchColumns="*"
+        android:layout_width="409dp"
+        android:layout_height="71dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        app:layout_constraintBottom_toTopOf="@+id/tableLayout5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="clearPoints"
+                android:text="Clear" />
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="importPoints"
+                android:text="Import" />
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="exportPoints"
+                android:text="Export" />
+        </TableRow>
     </TableLayout>
 
 

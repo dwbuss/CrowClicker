@@ -21,8 +21,11 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.storage.StorageManager;
+import android.provider.MediaStore;
 import android.telephony.SmsManager;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -57,13 +60,23 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -149,6 +162,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         initView();
     }
 
+    public void openCamera(View view) {
+       // Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+       // startActivity(intent);
+        PackageManager packman = getPackageManager();
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String pack = intent.resolveActivity(packman).getPackageName();
+        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(pack);
+        if (launchIntent != null) {
+            startActivity(launchIntent);
+        } else {
+            Toast.makeText(MainActivity.this, "There is no package available in android", Toast.LENGTH_LONG).show();
+        }
+    }
+
     private static class SetupTask extends AsyncTask<Void, Void, Exception> {
         WeakReference<MainActivity> activityReference;
 
@@ -185,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         unregisterReceiver(solunarReciever);
         if (recognizer != null) {
             recognizer.cancel();
-            //    recognizer.shutdown();
+            recognizer.shutdown();
         }
     }
 
@@ -324,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void addContact(View view) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int soundBite = R.raw.cc_yousuck2;
-        if (!prefs.getBoolean("Friendly", true)){
+        if (!prefs.getBoolean("Friendly", true)) {
             soundBite = R.raw.f_upped2;
         }
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
@@ -336,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void addFollow(View view) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int soundBite = R.raw.cc_follow2;
-        if (!prefs.getBoolean("Friendly", true)){
+        if (!prefs.getBoolean("Friendly", true)) {
             soundBite = R.raw.wtf_lookin;
         }
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
@@ -348,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void addCatch(View view) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int soundBite = R.raw.cc_nice2;
-        if (!prefs.getBoolean("Friendly", true)){
+        if (!prefs.getBoolean("Friendly", true)) {
             soundBite = R.raw.g_bitch;
         }
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
@@ -498,20 +525,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     return path;
                 }
             }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
     private void addCrowLayer() {
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean locationLocal = prefs.getBoolean("MapLocation", false);
         File file;

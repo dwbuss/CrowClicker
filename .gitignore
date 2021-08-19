@@ -12,3 +12,6 @@
 /captures
 .externalNativeBuild
 .cxx
+aars/build/.transforms
+models/src/main/assets/sync
+models/build

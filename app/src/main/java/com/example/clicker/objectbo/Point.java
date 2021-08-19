@@ -35,24 +35,24 @@ public class Point {
     private String humidity;
 
     public Point(JSONObject jsonObject) throws ParseException, JSONException {
-       // id =jsonObject.getLong("id");
-        name =jsonObject.optString("name");
-        lon =jsonObject.optDouble("lon");
-        lat =jsonObject.optDouble("lat");
+        // id =jsonObject.getLong("id");
+        name = jsonObject.optString("name");
+        lon = jsonObject.optDouble("lon");
+        lat = jsonObject.optDouble("lat");
         DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
-        timeStamp =osLocalizedDateFormat.parse(jsonObject.getString("timeStamp"));
-        contactType =jsonObject.optString("contactType");
-        airTemp =jsonObject.optString("airTemp");
-        waterTemp =jsonObject.optString("waterTemp");
-        bait =jsonObject.optString("bait");
-        fishSize =jsonObject.optString("fishSize");
-        notes =jsonObject.optString("notes");
-        windSpeed =jsonObject.optString("windSpeed");
-        windDir =jsonObject.optString("windDir");
-        cloudCover =jsonObject.optString("cloudCover");
-        dewPoint =jsonObject.optString("dewPoint");
-        pressure =jsonObject.optString("pressure");
-        humidity =jsonObject.optString("humidity");
+        timeStamp = osLocalizedDateFormat.parse(jsonObject.getString("timeStamp"));
+        contactType = jsonObject.optString("contactType");
+        airTemp = jsonObject.optString("airTemp");
+        waterTemp = jsonObject.optString("waterTemp");
+        bait = jsonObject.optString("bait");
+        fishSize = jsonObject.optString("fishSize");
+        notes = jsonObject.optString("notes");
+        windSpeed = jsonObject.optString("windSpeed");
+        windDir = jsonObject.optString("windDir");
+        cloudCover = jsonObject.optString("cloudCover");
+        dewPoint = jsonObject.optString("dewPoint");
+        pressure = jsonObject.optString("pressure");
+        humidity = jsonObject.optString("humidity");
     }
 
     public Point(long id, String name, String contactType, double lon, double lat) {
@@ -65,7 +65,6 @@ public class Point {
     }
 
 
-
     public long getId() {
         return id;
     }
@@ -73,6 +72,7 @@ public class Point {
     public void setId(long id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
@@ -93,7 +93,9 @@ public class Point {
         return lat;
     }
 
-    public String getContactType(){return contactType;}
+    public String getContactType() {
+        return contactType;
+    }
 
     public void setLon(double lon) {
         this.lon = lon;
@@ -142,6 +144,7 @@ public class Point {
     public void setAirTemp(String temp) {
         this.airTemp = temp;
     }
+
     public String getWaterTemp() {
         return waterTemp;
     }
@@ -201,23 +204,32 @@ public class Point {
     @Override
     public String toString() {
         return "{\"Point\":{" +
-                "\"id\":\"" + id + "\""+
-                ", \"name\":\"" + name +"\""+
-                ", \"lon\":\"" + lon +"\""+
-                ", \"lat\":\"" + lat +"\""+
-                ", \"timeStamp\":\"" + timeStamp +"\""+
-                ", \"contactType\":\"" + contactType +"\""+
-                ", \"airTemp\":\"" + airTemp  +"\""+
-                ", \"waterTemp\":\"" + waterTemp  +"\""+
-                ", \"bait\":\"" + bait +"\""+
-                ", \"fishSize\":\"" + fishSize +"\""+
-                ", \"notes\":\"" + notes +"\""+
-                ", \"windSpeed\":\"'" + windSpeed +"\""+
-                ", \"windDir\":\"" + windDir +"\""+
-                ", \"cloudCover\":\"" + cloudCover +"\""+
-                ", \"dewPoint\":\"" + dewPoint +"\""+
-                ", \"pressure\":\"" + pressure +"\""+
-                ", \"humidity\":\"" + humidity +"\""+
+                "\"id\":\"" + id + "\"" +
+                ", \"name\":\"" + name + "\"" +
+                ", \"lon\":\"" + lon + "\"" +
+                ", \"lat\":\"" + lat + "\"" +
+                ", \"timeStamp\":\"" + timeStamp + "\"" +
+                ", \"contactType\":\"" + contactType + "\"" +
+                ", \"airTemp\":\"" + airTemp + "\"" +
+                ", \"waterTemp\":\"" + waterTemp + "\"" +
+                ", \"bait\":\"" + bait + "\"" +
+                ", \"fishSize\":\"" + fishSize + "\"" +
+                ", \"notes\":\"" + notes + "\"" +
+                ", \"windSpeed\":\"'" + windSpeed + "\"" +
+                ", \"windDir\":\"" + windDir + "\"" +
+                ", \"cloudCover\":\"" + cloudCover + "\"" +
+                ", \"dewPoint\":\"" + dewPoint + "\"" +
+                ", \"pressure\":\"" + pressure + "\"" +
+                ", \"humidity\":\"" + humidity + "\"" +
                 "}}";
+    }
+
+    public String getMessage() {
+        if (contactType.equalsIgnoreCase("CATCH"))
+            return getName() + " caught a " + getFishSize() + " on a " + getBait() + "\r\nhttp://maps.google.com/maps?q=" + getLat() + "," + getLon();
+        else if (contactType.equalsIgnoreCase("FOLLOW"))
+            return getName() + " saw one on a " + getBait() + "\r\nhttp://maps.google.com/maps?q=" + getLat() + "," + getLon();
+        else
+            return getName() + " lost one on a " + getBait() + "\r\nhttp://maps.google.com/maps?q=" + getLat() + "," + getLon();
     }
 }

@@ -341,7 +341,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
         addPoint("CONTACT");
-        sendMessage("Lost One!");
     }
 
     public void addFollow(View view) {
@@ -353,7 +352,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
         addPoint("FOLLOW");
-        sendMessage("Saw One!");
     }
 
     public void addCatch(View view) {
@@ -365,16 +363,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
         addPoint("CATCH");
-        sendMessage("Caught One!");
     }
 
     public void addPoint(String contactType) {
         if (getLocation() != null) {
-            addPoint(contactType, getLocation());
+            addPoint(contactType, getLocation(), true);
         }
     }
 
-    public void addPoint(String contactType, Location loc) {
+    public void addPoint(String contactType, Location loc, boolean newPoint) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String username = prefs.getString("Username", null);
         final Point point = new Point(0, username, contactType, loc.getLongitude(), loc.getLatitude());
@@ -392,13 +389,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 pointListAdapter.addOrUpdatePoint(point);
                 pointListAdapter.updatePoints();
 
-                showDialogUpdate(point, addPointMarker(point));
+                showDialogUpdate(point, addPointMarker(point), newPoint);
                 refreshCounts();
             }
 
             @Override
             public void onFailure() {
-                showDialogUpdate(point, addPointMarker(point));
+                showDialogUpdate(point, addPointMarker(point), newPoint);
                 refreshCounts();
             }
         });
@@ -537,11 +534,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         public void onInfoWindowLongClick(final Marker marker) {
             Point point = (Point) marker.getTag();
-            showDialogUpdate(point, marker);
+            showDialogUpdate(point, marker, false);
         }
     };
 
-    private void showDialogUpdate(final Point point, final Marker marker) {
+    private void showDialogUpdate(final Point point, final Marker marker, boolean newPoint) {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.update_dialog);
         ((EditText) dialog.findViewById(R.id.name)).setText(point.getName());
@@ -634,6 +631,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Box<Point> pointBox = boxStore.boxFor(Point.class);
                     pointBox.put(point);
                     dialog.dismiss();
+                    if (newPoint){
+                        sendMessage(point.getMessage());
+                    }
                     Toast.makeText(getApplicationContext(), "Save Successful", Toast.LENGTH_SHORT).show();
                 } catch (Exception error) {
                     Log.e("Update error", error.getMessage());
@@ -743,11 +743,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             loc.setLongitude(latLng.longitude);
                             loc.setLatitude(latLng.latitude);
                             if (which == 0)
-                                addPoint("CATCH", loc);
+                                addPoint("CATCH", loc,false);
                             if (which == 1)
-                                addPoint("CONTACT", loc);
+                                addPoint("CONTACT", loc,false);
                             if (which == 2)
-                                addPoint("FOLLOW", loc);
+                                addPoint("FOLLOW", loc,false);
 
                         }
                     }).show();
@@ -808,16 +808,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void sendMessage(String message) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String username = prefs.getString("Username", "");
         String notification = prefs.getString("Notification", "");
         if (!notification.isEmpty()) {
-            Location loc = getLocation();
             String[] list = notification.split(",");
             SmsManager smgr = SmsManager.getDefault();
-
             int length = Array.getLength(list);
             for (int i = 0; i < length; i++) {
-                smgr.sendTextMessage(list[i], null, username + " " + message + " http://maps.google.com/maps?q=" + loc.getLatitude() + "," + loc.getLongitude(), null, null);
+                smgr.sendTextMessage(list[i], null, message, null, null);
             }
         }
     }

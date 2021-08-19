@@ -1,11 +1,20 @@
 package com.example.clicker;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
@@ -17,8 +26,8 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.List;
@@ -60,39 +69,74 @@ public class SettingsActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.totalFollow)).setText(pointListAdapter.getTotalFollow());
     }
 
-
     public void clearPoints(View view) {
-        BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-        Box<Point> pointBox = boxStore.boxFor(Point.class);
-        List<Point> points = pointBox.query().build().find();
-        for (Point p : points) {
-            pointBox.remove(p);
-        }
-        updateCounts();
+        AlertDialog.Builder dialogDelete = new AlertDialog.Builder(view.getContext());
+        dialogDelete.setTitle("Warning!!");
+        dialogDelete.setMessage("Are you sure to delete all points?");
+        dialogDelete.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                try {
+                    BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
+                    Box<Point> pointBox = boxStore.boxFor(Point.class);
+                    List<Point> points = pointBox.query().build().find();
+                    for (Point p : points) {
+                        pointBox.remove(p);
+                    }
+                    updateCounts();
+                    Toast.makeText(getApplicationContext(), "Delete successfully", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Log.e("error", e.getMessage());
+                }
+                dialogInterface.dismiss();
+            }
+        });
+        dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        dialogDelete.show();
     }
 
+    ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        // There are no request codes
+                        Intent data = result.getData();
+                        try {
+                            JSONObject obj = null;
+                            BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
+                            Box<Point> pointBox = boxStore.boxFor(Point.class);
+                            InputStream ifile = getContentResolver().openInputStream(data.getData());
+                            InputStreamReader is = new InputStreamReader(ifile);
+                            BufferedReader bufferedReader = new BufferedReader(is);
+                            int counter = 0;
+                            while (bufferedReader.ready()) {
+                                String line = bufferedReader.readLine();
+                                obj = new JSONObject(line);
+                                pointBox.put(new Point(obj.getJSONObject("Point")));
+                                counter++;
+                            }
+                            updateCounts();
+                            Toast.makeText(getApplicationContext(), "Imported " + counter + " points", Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            Toast.makeText(getApplicationContext(), "Write file Import " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+
     public void importPoints(View view) {
-        try {
-            JSONObject obj = null;
-            BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-            Box<Point> pointBox = boxStore.boxFor(Point.class);
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "points.txt");
-            FileInputStream ifile = new FileInputStream(file);
-            InputStreamReader is = new InputStreamReader(ifile);
-            BufferedReader bufferedReader = new BufferedReader(is);
-            int counter = 0;
-            while (bufferedReader.ready()) {
-                String line = bufferedReader.readLine();
-                obj = new JSONObject(line);
-                pointBox.put(new Point(obj.getJSONObject("Point")));
-                counter++;
-            }
-            updateCounts();
-            Toast.makeText(getApplicationContext(), "Imported " + counter + " points", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "Write file Import " + e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
+        Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+        chooseFile.setType("*/*");
+        chooseFile = Intent.createChooser(chooseFile, "Select Import File");
+        someActivityResultLauncher.launch(chooseFile);
     }
 
     public void exportPoints(View view) {
@@ -110,7 +154,7 @@ public class SettingsActivity extends AppCompatActivity {
             updateCounts();
             outputStreamWriter.flush();
             outputStreamWriter.close();
-            Toast.makeText(getApplicationContext(), "Exported " + counter + " points", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Exported " + counter + " points as " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Export file Failed " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();

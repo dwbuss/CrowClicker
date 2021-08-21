@@ -42,5 +42,6 @@ dependencies {
     annotationProcessor 'androidx.room:room-compiler:2.3.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'org.shredzone.commons:commons-suncalc:2.6'
-
+    implementation 'org.locationtech.geotrellis:geotrellis-proj4_2.12:2.3.1'
+    testImplementation 'org.json:json:20140107'
 }

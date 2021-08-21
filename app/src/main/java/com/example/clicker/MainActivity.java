@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String FOLLOW = "follow";
     private static final String CATCH = "catch";
     private static final String MENU_SEARCH = "menu";
-
+    Location s;
     /* Keyword we are looking for to activate menu */
     private static final String KEYPHRASE = "crow clicker";
     public static final String NOTIFICATION_CHANNEL_ID = "10001";
@@ -631,8 +631,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Box<Point> pointBox = boxStore.boxFor(Point.class);
                     pointBox.put(point);
                     dialog.dismiss();
-                    if (newPoint){
-                        sendMessage(point.getMessage());
+                    if (newPoint) {
+                        sendMessage(point.getMessage(), point.getContactType());
                     }
                     Toast.makeText(getApplicationContext(), "Save Successful", Toast.LENGTH_SHORT).show();
                 } catch (Exception error) {
@@ -743,11 +743,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             loc.setLongitude(latLng.longitude);
                             loc.setLatitude(latLng.latitude);
                             if (which == 0)
-                                addPoint("CATCH", loc,false);
+                                addPoint("CATCH", loc, false);
                             if (which == 1)
-                                addPoint("CONTACT", loc,false);
+                                addPoint("CONTACT", loc, false);
                             if (which == 2)
-                                addPoint("FOLLOW", loc,false);
+                                addPoint("FOLLOW", loc, false);
 
                         }
                     }).show();
@@ -788,6 +788,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onPartialResult(Hypothesis hypothesis) {
         if (hypothesis == null)
             return;
+        boolean voiceOn = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean("VoiceActivation", true);
+        if (!voiceOn)
+            return;
 
         String text = hypothesis.getHypstr();
         if (text.equals(KEYPHRASE)) {
@@ -806,9 +810,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void sendMessage(String message) {
+    private void sendMessage(String message, String action) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String notification = prefs.getString("Notification", "");
+        String notification = "";
+        if (action.equalsIgnoreCase("CATCH"))
+            notification = prefs.getString("Catch Notification", "");
+        if (action.equalsIgnoreCase("FOLLOW"))
+            notification = prefs.getString("Follow Notification", "");
+        if (action.equalsIgnoreCase("LOST"))
+            notification = prefs.getString("Lost Notification", "");
         if (!notification.isEmpty()) {
             String[] list = notification.split(",");
             SmsManager smgr = SmsManager.getDefault();

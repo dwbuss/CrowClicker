@@ -64,6 +64,16 @@ public class Point {
         this.contactType = contactType;
     }
 
+    public Point(long id, String name, String length, String datetime, double lon, double lat) {
+        this.id = id;
+        this.name = name;
+        this.contactType = "CATCH";
+        this.fishSize = length;
+        this.timeStamp =  Calendar.getInstance().getTime();
+        this.lat = lat;
+        this.lon = lon;
+    }
+
 
     public long getId() {
         return id;

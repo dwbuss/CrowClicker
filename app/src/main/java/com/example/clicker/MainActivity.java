@@ -21,11 +21,9 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.provider.MediaStore;
 import android.telephony.SmsManager;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -60,23 +58,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -85,7 +72,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 import edu.cmu.pocketsphinx.Assets;
 import edu.cmu.pocketsphinx.Hypothesis;
@@ -103,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String FOLLOW = "follow";
     private static final String CATCH = "catch";
     private static final String MENU_SEARCH = "menu";
-
+    Location s;
     /* Keyword we are looking for to activate menu */
     private static final String KEYPHRASE = "crow clicker";
     public static final String NOTIFICATION_CHANNEL_ID = "10001";
@@ -163,8 +149,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void openCamera(View view) {
-       // Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-       // startActivity(intent);
         PackageManager packman = getPackageManager();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         String pack = intent.resolveActivity(packman).getPackageName();
@@ -357,7 +341,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
         addPoint("CONTACT");
-        sendMessage("Lost One!");
     }
 
     public void addFollow(View view) {
@@ -369,7 +352,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
         addPoint("FOLLOW");
-        sendMessage("Saw One!");
     }
 
     public void addCatch(View view) {
@@ -381,16 +363,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
         addPoint("CATCH");
-        sendMessage("Caught One!");
     }
 
     public void addPoint(String contactType) {
         if (getLocation() != null) {
-            addPoint(contactType, getLocation());
+            addPoint(contactType, getLocation(), true);
         }
     }
 
-    public void addPoint(String contactType, Location loc) {
+    public void addPoint(String contactType, Location loc, boolean newPoint) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String username = prefs.getString("Username", null);
         final Point point = new Point(0, username, contactType, loc.getLongitude(), loc.getLatitude());
@@ -408,13 +389,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 pointListAdapter.addOrUpdatePoint(point);
                 pointListAdapter.updatePoints();
 
-                showDialogUpdate(point, addPointMarker(point));
+                showDialogUpdate(point, addPointMarker(point), newPoint);
                 refreshCounts();
             }
 
             @Override
             public void onFailure() {
-                showDialogUpdate(point, addPointMarker(point));
+                showDialogUpdate(point, addPointMarker(point), newPoint);
                 refreshCounts();
             }
         });
@@ -553,11 +534,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         public void onInfoWindowLongClick(final Marker marker) {
             Point point = (Point) marker.getTag();
-            showDialogUpdate(point, marker);
+            showDialogUpdate(point, marker, false);
         }
     };
 
-    private void showDialogUpdate(final Point point, final Marker marker) {
+    private void showDialogUpdate(final Point point, final Marker marker, boolean newPoint) {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.update_dialog);
         ((EditText) dialog.findViewById(R.id.name)).setText(point.getName());
@@ -650,6 +631,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Box<Point> pointBox = boxStore.boxFor(Point.class);
                     pointBox.put(point);
                     dialog.dismiss();
+                    if (newPoint) {
+                        sendMessage(point.getMessage(), point.getContactType());
+                    }
                     Toast.makeText(getApplicationContext(), "Save Successful", Toast.LENGTH_SHORT).show();
                 } catch (Exception error) {
                     Log.e("Update error", error.getMessage());
@@ -759,11 +743,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             loc.setLongitude(latLng.longitude);
                             loc.setLatitude(latLng.latitude);
                             if (which == 0)
-                                addPoint("CATCH", loc);
+                                addPoint("CATCH", loc, false);
                             if (which == 1)
-                                addPoint("CONTACT", loc);
+                                addPoint("CONTACT", loc, false);
                             if (which == 2)
-                                addPoint("FOLLOW", loc);
+                                addPoint("FOLLOW", loc, false);
 
                         }
                     }).show();
@@ -804,6 +788,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onPartialResult(Hypothesis hypothesis) {
         if (hypothesis == null)
             return;
+        boolean voiceOn = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean("VoiceActivation", true);
+        if (!voiceOn)
+            return;
 
         String text = hypothesis.getHypstr();
         if (text.equals(KEYPHRASE)) {
@@ -822,18 +810,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void sendMessage(String message) {
+    private void sendMessage(String message, String action) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String username = prefs.getString("Username", "");
-        String notification = prefs.getString("Notification", "");
+        String notification = "";
+        if (action.equalsIgnoreCase("CATCH"))
+            notification = prefs.getString("Catch Notification", "");
+        if (action.equalsIgnoreCase("FOLLOW"))
+            notification = prefs.getString("Follow Notification", "");
+        if (action.equalsIgnoreCase("LOST"))
+            notification = prefs.getString("Lost Notification", "");
         if (!notification.isEmpty()) {
-            Location loc = getLocation();
             String[] list = notification.split(",");
             SmsManager smgr = SmsManager.getDefault();
-
             int length = Array.getLength(list);
             for (int i = 0; i < length; i++) {
-                smgr.sendTextMessage(list[i], null, username + " " + message + " http://maps.google.com/maps?q=" + loc.getLatitude() + "," + loc.getLongitude(), null, null);
+                smgr.sendTextMessage(list[i], null, message, null, null);
             }
         }
     }

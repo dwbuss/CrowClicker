@@ -48,6 +48,12 @@
             app:useSimpleSummaryProvider="true"
             android:persistent="true"
             android:title="Lost Notification List"/>
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="Message Notification"
+            app:useSimpleSummaryProvider="true"
+            android:persistent="true"
+            android:title="Message Notification List"/>
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="MapLocation"

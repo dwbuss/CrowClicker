@@ -9,7 +9,7 @@
     <FrameLayout
         android:id="@+id/settings"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="300dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="0dp"></FrameLayout>
@@ -22,8 +22,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings">
+        app:layout_constraintStart_toStartOf="parent">
 
         <TableRow
             android:layout_width="match_parent"
@@ -169,8 +168,8 @@
 
     <TableLayout
         android:stretchColumns="*"
-        android:layout_width="409dp"
-        android:layout_height="71dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
         android:layout_marginStart="1dp"
         android:layout_marginTop="1dp"
         android:layout_marginEnd="1dp"
@@ -183,7 +182,6 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
             <Button
                 android:id="@+id/button4"
                 android:layout_width="wrap_content"
@@ -197,14 +195,34 @@
                 android:layout_height="wrap_content"
                 android:onClick="importPoints"
                 android:text="Import" />
-
-
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/exportBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="exportPoints"
                 android:text="Export" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Message" />
+            <EditText
+                android:id="@+id/messageTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/messageBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="sendMessage"
+                android:text="Message" />
         </TableRow>
     </TableLayout>
 

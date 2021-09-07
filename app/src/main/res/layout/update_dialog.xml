@@ -149,6 +149,21 @@
             android:layout_weight="1"
             android:gravity="bottom"
             android:text="" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/notify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Notify" />
+
     </LinearLayout>
 
     <LinearLayout

@@ -21,6 +21,7 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.provider.MediaStore;
 import android.telephony.SmsManager;
@@ -31,6 +32,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -89,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String FOLLOW = "follow";
     private static final String CATCH = "catch";
     private static final String MENU_SEARCH = "menu";
-    Location s;
     /* Keyword we are looking for to activate menu */
     private static final String KEYPHRASE = "crow clicker";
     public static final String NOTIFICATION_CHANNEL_ID = "10001";
@@ -139,7 +140,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         locationManager = ((LocationManager) this.getSystemService(Context.LOCATION_SERVICE));
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 3, locationListenerGPS);
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 3, locationListenerGPS);
+        } catch (Exception e) {
+        }
 
         solunarReciever = new MyReceiver(getLocation());
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
@@ -514,20 +518,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void addCrowLayer() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean locationLocal = prefs.getBoolean("MapLocation", false);
-        File file;
-        if (locationLocal) {
-            File sdcard = new File("/mnt/sdcard/");
-            file = new File(sdcard, "Crow.mbtiles");
-        } else {
-            File sdcard = new File(getExternalStoragePath(getApplicationContext(), true));
-            file = new File(sdcard, "Crow.mbtiles");
-        }
-        if (!file.exists())
-            Toast.makeText(this, "File not Found" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        boolean locationLocal = prefs.getBoolean("MapLocation", true);
+        try {
+            File file;
+            if (locationLocal) {
+                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Crow.mbtiles");
+                // File sdcard = new File("/mnt/sdcard/");
+                //  file = new File(sdcard, "Crow.mbtiles");
+            } else {
+                File sdcard = new File(getExternalStoragePath(getApplicationContext(), true));
+                file = new File(sdcard, "Crow.mbtiles");
+            }
+            if (!file.exists())
+                Toast.makeText(this, "File not Found" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
 
-        TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
-        mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+            TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
+            mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to load mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener = new GoogleMap.OnInfoWindowLongClickListener() {
@@ -605,6 +615,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 dialogDelete.show();
             }
         });
+
         Button btnSave = dialog.findViewById(R.id.btnSave);
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -627,11 +638,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     point.setPressure(((EditText) dialog.findViewById(R.id.pressure)).getText().toString().trim());
                     point.setHumidity(((EditText) dialog.findViewById(R.id.humidity)).getText().toString().trim());
                     point.setNotes(((EditText) dialog.findViewById(R.id.notes)).getText().toString().trim());
+                    boolean notify = ((CheckBox) dialog.findViewById(R.id.notify)).isChecked();
                     BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
                     Box<Point> pointBox = boxStore.boxFor(Point.class);
                     pointBox.put(point);
                     dialog.dismiss();
-                    if (newPoint) {
+                    if (newPoint && notify) {
                         sendMessage(point.getMessage(), point.getContactType());
                     }
                     Toast.makeText(getApplicationContext(), "Save Successful", Toast.LENGTH_SHORT).show();
@@ -817,7 +829,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             notification = prefs.getString("Catch Notification", "");
         if (action.equalsIgnoreCase("FOLLOW"))
             notification = prefs.getString("Follow Notification", "");
-        if (action.equalsIgnoreCase("LOST"))
+        if (action.equalsIgnoreCase("CONTACT"))
             notification = prefs.getString("Lost Notification", "");
         if (!notification.isEmpty()) {
             String[] list = notification.split(",");

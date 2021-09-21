@@ -125,23 +125,25 @@ public class SettingsActivity extends AppCompatActivity {
                         // There are no request codes
                         Intent data = result.getData();
                         try {
-                            JSONObject obj = null;
                             BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
                             Box<Point> pointBox = boxStore.boxFor(Point.class);
                             InputStream ifile = getContentResolver().openInputStream(data.getData());
                             InputStreamReader is = new InputStreamReader(ifile);
                             BufferedReader bufferedReader = new BufferedReader(is);
                             int counter = 0;
+                            if (bufferedReader.ready()) {
+                                //skip header
+                                bufferedReader.readLine();
+                            }
                             while (bufferedReader.ready()) {
                                 String line = bufferedReader.readLine();
-                                obj = new JSONObject(line);
-                                pointBox.put(new Point(obj.getJSONObject("Point")));
+                                pointBox.put(new Point(line));
                                 counter++;
                             }
                             updateCounts();
                             Toast.makeText(getApplicationContext(), "Imported " + counter + " points", Toast.LENGTH_SHORT).show();
                         } catch (Exception e) {
-                            Toast.makeText(getApplicationContext(), "Write file Import " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "File Import " + e.getMessage(), Toast.LENGTH_LONG).show();
                             e.printStackTrace();
                         }
                     }
@@ -266,6 +268,7 @@ public class SettingsActivity extends AppCompatActivity {
         chooseFile = Intent.createChooser(chooseFile, "Select Geo Import File");
         importGeoActivity.launch(chooseFile);
     }
+
     private Location getLastKnownLocation() {
         LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
         List<String> providers = locationManager.getProviders(true);
@@ -307,12 +310,39 @@ public class SettingsActivity extends AppCompatActivity {
             Box<Point> pointBox = boxStore.boxFor(Point.class);
 
             // File file = new File("/mnt/sdcard/", "points.txt");
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "points.txt");
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "points.csv");
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file));
             List<Point> points = pointBox.query().build().find();
             int counter = 0;
-            for (Point p : points) {
-                outputStreamWriter.write(p.toString() + "\n");
+
+            PointListAdapter pointListAdapter;
+            pointListAdapter = new PointListAdapter(this.getApplicationContext());
+
+            outputStreamWriter.write("id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\n");
+            for (Point point : points) {
+                if (point.getAirTemp().trim().isEmpty()) {
+                    Weather weather = new Weather();
+                    weather.populate(point.getLat(), point.getLon(), point.getTimeStamp(), getApplicationContext(), new VolleyCallBack() {
+                        @Override
+                        public void onSuccess() {
+                            point.setAirTemp(weather.temperature);
+                            point.setDewPoint(weather.dewPoint);
+                            point.setWindSpeed(weather.windSpeed);
+                            point.setHumidity(weather.humidity);
+                            point.setPressure(weather.pressure);
+                            point.setCloudCover(weather.cloudCover);
+                            point.setWindDir(weather.windDir);
+                            pointListAdapter.addOrUpdatePoint(point);
+                            pointListAdapter.updatePoints();
+                        }
+
+                        @Override
+                        public void onFailure() {
+                            Toast.makeText(getApplicationContext(), "Failed to locate weather", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+                outputStreamWriter.write(point.toString() + "\n");
                 counter++;
             }
             updateCounts();

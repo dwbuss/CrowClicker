@@ -274,24 +274,24 @@ public class Solunar {
         String minor2 = minor.split("    ")[1];
 
         if (minor1.contains(time + " - "))
-            return "Minor " + minor1 + " is starting - good luck!";
+            return "Minor disappointment " + minor1 + " is starting - time to drink!";
         if (minor1.contains(" - " + time))
-            return "Minor " + minor1 + " has ended - time for a nap!";
+            return "Minor " + minor1 + " has ended - all clear!";
         if (minor2.contains(time + " - "))
-            return "Minor " + minor2 + " is starting - good luck!";
+            return "Minor disappointment " + minor2 + " is starting - time to drink!";
         if (minor2.contains(" - " + time))
-            return "Minor " + minor2 + " has ended - time for a nap!";
+            return "Minor " + minor2 + " has ended - all clear!";
 
         String major1 = major.split("    ")[0];
         String major2 = major.split("    ")[1];
         if (major1.contains(time + " - "))
-            return "Major " + major1 + " is starting - good luck!";
+            return "Major disappointment " + major1 + " is starting - time to drink!";
         if (major1.contains(" - " + time))
-            return "Major " + major1 + " has ended - time for a nap!";
+            return "Major " + major1 + " has ended - all clear!";
         if (major2.contains(time + " - "))
-            return "Major " + major2 + " is starting - good luck!";
+            return "Major disappointment " + major2 + " is starting - time to drink!";
         if (major2.contains(" - " + time))
-            return "Major " + major2 + " has ended - time for a nap!";
+            return "Major " + major2 + " has ended - all clear!";
         return "";
     }
 }

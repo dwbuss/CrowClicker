@@ -55,6 +55,27 @@ public class Point {
         humidity = jsonObject.optString("humidity");
     }
 
+    public Point(String csvRecord) throws ParseException {
+        String[] parts = csvRecord.split("\t");
+        name = parts[1];
+        lon = new Double(parts[2]);
+        lat = new Double(parts[3]);
+        DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+        timeStamp = osLocalizedDateFormat.parse(parts[4]);
+        contactType = parts[5];
+        airTemp =  parts[6];
+        waterTemp =  parts[7];
+        bait =  parts[8];
+        fishSize =  parts[9];
+        notes =  parts[10];
+        windSpeed =  parts[11];
+        windDir =  parts[12];
+        cloudCover =  parts[13];
+        dewPoint =  parts[14];
+        pressure =  parts[15];
+        humidity =  parts[16];
+    }
+
     public Point(long id, String name, String contactType, double lon, double lat) {
         this.id = id;
         this.name = name;
@@ -213,25 +234,10 @@ public class Point {
 
     @Override
     public String toString() {
-        return "{\"Point\":{" +
-                "\"id\":\"" + id + "\"" +
-                ", \"name\":\"" + name + "\"" +
-                ", \"lon\":\"" + lon + "\"" +
-                ", \"lat\":\"" + lat + "\"" +
-                ", \"timeStamp\":\"" + timeStamp + "\"" +
-                ", \"contactType\":\"" + contactType + "\"" +
-                ", \"airTemp\":\"" + airTemp + "\"" +
-                ", \"waterTemp\":\"" + waterTemp + "\"" +
-                ", \"bait\":\"" + bait + "\"" +
-                ", \"fishSize\":\"" + fishSize + "\"" +
-                ", \"notes\":\"" + notes + "\"" +
-                ", \"windSpeed\":\"'" + windSpeed + "\"" +
-                ", \"windDir\":\"" + windDir + "\"" +
-                ", \"cloudCover\":\"" + cloudCover + "\"" +
-                ", \"dewPoint\":\"" + dewPoint + "\"" +
-                ", \"pressure\":\"" + pressure + "\"" +
-                ", \"humidity\":\"" + humidity + "\"" +
-                "}}";
+        return  id + "\t" + name + "\t" + lon + "\t" + lat + "\t" + timeStamp + "\t" + contactType + "\t" +
+                airTemp + "\t" + waterTemp + "\t" + bait + "\t" + fishSize + "\t" + notes + "\t" +
+                windSpeed + "\t" + windDir + "\t" + cloudCover + "\t" + dewPoint + "\t" +
+                pressure + "\t" + humidity;
     }
 
     public String getMessage() {

@@ -643,7 +643,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Box<Point> pointBox = boxStore.boxFor(Point.class);
                     pointBox.put(point);
                     dialog.dismiss();
-                    if (newPoint && notify) {
+                    if (notify) {
                         sendMessage(point.getMessage(), point.getContactType());
                     }
                     Toast.makeText(getApplicationContext(), "Save Successful", Toast.LENGTH_SHORT).show();

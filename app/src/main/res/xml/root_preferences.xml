@@ -62,12 +62,6 @@
             android:title="Map on Phone"/>
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="VoiceActivation"
-            app:useSimpleSummaryProvider="true"
-            android:persistent="true"
-            android:title="Voice Activation"/>
-        <CheckBoxPreference
-            android:defaultValue="true"
             android:key="Friendly"
             app:useSimpleSummaryProvider="true"
             android:persistent="true"

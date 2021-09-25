@@ -16,3 +16,6 @@ aars/build/.transforms
 models/src/main/assets/sync
 models/build
 /.idea
+*.mbtiles
+github.properties
+map.properties

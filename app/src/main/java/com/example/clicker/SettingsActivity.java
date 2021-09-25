@@ -1,13 +1,20 @@
 package com.example.clicker;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointListAdapter;
@@ -32,6 +40,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -116,23 +125,25 @@ public class SettingsActivity extends AppCompatActivity {
                         // There are no request codes
                         Intent data = result.getData();
                         try {
-                            JSONObject obj = null;
                             BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
                             Box<Point> pointBox = boxStore.boxFor(Point.class);
                             InputStream ifile = getContentResolver().openInputStream(data.getData());
                             InputStreamReader is = new InputStreamReader(ifile);
                             BufferedReader bufferedReader = new BufferedReader(is);
                             int counter = 0;
+                            if (bufferedReader.ready()) {
+                                //skip header
+                                bufferedReader.readLine();
+                            }
                             while (bufferedReader.ready()) {
                                 String line = bufferedReader.readLine();
-                                obj = new JSONObject(line);
-                                pointBox.put(new Point(obj.getJSONObject("Point")));
+                                pointBox.put(new Point(line));
                                 counter++;
                             }
                             updateCounts();
                             Toast.makeText(getApplicationContext(), "Imported " + counter + " points", Toast.LENGTH_SHORT).show();
                         } catch (Exception e) {
-                            Toast.makeText(getApplicationContext(), "Write file Import " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "File Import " + e.getMessage(), Toast.LENGTH_LONG).show();
                             e.printStackTrace();
                         }
                     }
@@ -165,7 +176,7 @@ public class SettingsActivity extends AppCompatActivity {
                             while ((inputStr = streamReader.readLine()) != null) {
                                 responseStrBuilder.append(inputStr);
                             }
-         String json = "{\n" +
+                            String json = "{\n" +
                                     "  \"type\": \"FeatureCollection\",\n" +
                                     "  \"features\": [\n" +
                                     "    {\n" +
@@ -258,18 +269,80 @@ public class SettingsActivity extends AppCompatActivity {
         importGeoActivity.launch(chooseFile);
     }
 
+    private Location getLastKnownLocation() {
+        LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = locationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            @SuppressLint("MissingPermission") Location l = locationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
+    }
+
+    public void sendMessage(View view) {
+        String msg = ((EditText) findViewById(R.id.messageTxt)).getText().toString();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String notification = prefs.getString("Message Notification", "");
+        if (!notification.isEmpty()) {
+
+            Location loc = getLastKnownLocation();
+            String message = msg + "\r\nhttp://maps.google.com/maps?q=" + loc.getLatitude() + "," + loc.getLongitude();
+            String[] list = notification.split(",");
+            SmsManager smgr = SmsManager.getDefault();
+            int length = Array.getLength(list);
+            for (int i = 0; i < length; i++) {
+                smgr.sendTextMessage(list[i], null, message, null, null);
+            }
+        }
+        Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT).show();
+    }
+
     public void exportPoints(View view) {
         try {
             BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
             Box<Point> pointBox = boxStore.boxFor(Point.class);
 
-            File file = new File("/mnt/sdcard/", "points.txt");
-          //ile file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "points.txt");
+            // File file = new File("/mnt/sdcard/", "points.txt");
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "points.csv");
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file));
             List<Point> points = pointBox.query().build().find();
             int counter = 0;
-            for (Point p : points) {
-                outputStreamWriter.write(p.toString() + "\n");
+
+            PointListAdapter pointListAdapter;
+            pointListAdapter = new PointListAdapter(this.getApplicationContext());
+
+            outputStreamWriter.write("id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\n");
+            for (Point point : points) {
+                if (point.getAirTemp().trim().isEmpty()) {
+                    Weather weather = new Weather();
+                    weather.populate(point.getLat(), point.getLon(), point.getTimeStamp(), getApplicationContext(), new VolleyCallBack() {
+                        @Override
+                        public void onSuccess() {
+                            point.setAirTemp(weather.temperature);
+                            point.setDewPoint(weather.dewPoint);
+                            point.setWindSpeed(weather.windSpeed);
+                            point.setHumidity(weather.humidity);
+                            point.setPressure(weather.pressure);
+                            point.setCloudCover(weather.cloudCover);
+                            point.setWindDir(weather.windDir);
+                            pointListAdapter.addOrUpdatePoint(point);
+                            pointListAdapter.updatePoints();
+                        }
+
+                        @Override
+                        public void onFailure() {
+                            Toast.makeText(getApplicationContext(), "Failed to locate weather", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+                outputStreamWriter.write(point.toString() + "\n");
                 counter++;
             }
             updateCounts();

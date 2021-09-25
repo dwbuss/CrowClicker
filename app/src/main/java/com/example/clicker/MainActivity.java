@@ -21,6 +21,7 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.provider.MediaStore;
 import android.telephony.SmsManager;
@@ -31,6 +32,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -83,13 +85,12 @@ import io.objectbox.BoxStore;
 
 import static android.widget.Toast.makeText;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, RecognitionListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String KWS_SEARCH = "wakeup";
     private static final String LOST = "lost";
     private static final String FOLLOW = "follow";
     private static final String CATCH = "catch";
     private static final String MENU_SEARCH = "menu";
-    Location s;
     /* Keyword we are looking for to activate menu */
     private static final String KEYPHRASE = "crow clicker";
     public static final String NOTIFICATION_CHANNEL_ID = "10001";
@@ -102,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Map<String, Float> colors;
     private boolean follow = false;
 
-    private SpeechRecognizer recognizer;
     private boolean northUp = false;
     SupportMapFragment mapFragment;
     private GoogleMap mMap;
@@ -128,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         permissions.add(Manifest.permission.CAMERA);
         permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         permissions.add(Manifest.permission.INTERNET);
-        permissions.add(Manifest.permission.RECORD_AUDIO);
         permissions.add(Manifest.permission.SEND_SMS);
         permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -139,11 +138,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         locationManager = ((LocationManager) this.getSystemService(Context.LOCATION_SERVICE));
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 3, locationListenerGPS);
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 3, locationListenerGPS);
+        } catch (Exception e) {
+        }
 
         solunarReciever = new MyReceiver(getLocation());
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
-        new SetupTask(this).execute();
         getLocation();
         initView();
     }
@@ -160,44 +161,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private static class SetupTask extends AsyncTask<Void, Void, Exception> {
-        WeakReference<MainActivity> activityReference;
 
-        SetupTask(MainActivity activity) {
-            this.activityReference = new WeakReference<>(activity);
-        }
-
-        @Override
-        protected Exception doInBackground(Void... params) {
-            try {
-                Assets assets = new Assets(activityReference.get());
-                File assetDir = assets.syncAssets();
-                activityReference.get().setupRecognizer(assetDir);
-            } catch (IOException e) {
-                return e;
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Exception result) {
-            if (result != null) {
-                //  ((TextView) activityReference.get().findViewById(R.id.caption_text))
-                //          .setText("Failed to init recognizer " + result);
-            } else {
-                activityReference.get().switchSearch(KWS_SEARCH);
-            }
-        }
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(solunarReciever);
-        if (recognizer != null) {
-            recognizer.cancel();
-            recognizer.shutdown();
-        }
     }
 
     LocationListener locationListenerGPS = new LocationListener() {
@@ -514,20 +483,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void addCrowLayer() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean locationLocal = prefs.getBoolean("MapLocation", false);
-        File file;
-        if (locationLocal) {
-            File sdcard = new File("/mnt/sdcard/");
-            file = new File(sdcard, "Crow.mbtiles");
-        } else {
-            File sdcard = new File(getExternalStoragePath(getApplicationContext(), true));
-            file = new File(sdcard, "Crow.mbtiles");
-        }
-        if (!file.exists())
-            Toast.makeText(this, "File not Found" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        boolean locationLocal = prefs.getBoolean("MapLocation", true);
+        try {
+            File file;
+            if (locationLocal) {
+                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Crow.mbtiles");
+                // File sdcard = new File("/mnt/sdcard/");
+                //  file = new File(sdcard, "Crow.mbtiles");
+            } else {
+                File sdcard = new File(getExternalStoragePath(getApplicationContext(), true));
+                file = new File(sdcard, "Crow.mbtiles");
+            }
+            if (!file.exists())
+                Toast.makeText(this, "File not Found" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
 
-        TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
-        mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+            TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
+            mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to load mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener = new GoogleMap.OnInfoWindowLongClickListener() {
@@ -605,6 +580,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 dialogDelete.show();
             }
         });
+
         Button btnSave = dialog.findViewById(R.id.btnSave);
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -627,11 +603,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     point.setPressure(((EditText) dialog.findViewById(R.id.pressure)).getText().toString().trim());
                     point.setHumidity(((EditText) dialog.findViewById(R.id.humidity)).getText().toString().trim());
                     point.setNotes(((EditText) dialog.findViewById(R.id.notes)).getText().toString().trim());
+                    boolean notify = ((CheckBox) dialog.findViewById(R.id.notify)).isChecked();
                     BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
                     Box<Point> pointBox = boxStore.boxFor(Point.class);
                     pointBox.put(point);
                     dialog.dismiss();
-                    if (newPoint) {
+                    if (notify) {
                         sendMessage(point.getMessage(), point.getContactType());
                     }
                     Toast.makeText(getApplicationContext(), "Save Successful", Toast.LENGTH_SHORT).show();
@@ -779,37 +756,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         dialog.show();
     }
 
-    /**
-     * In partial result we get quick updates about current hypothesis. In
-     * keyword spotting mode we can react here, in other modes we need to wait
-     * for final result in onResult.
-     */
-    @Override
-    public void onPartialResult(Hypothesis hypothesis) {
-        if (hypothesis == null)
-            return;
-        boolean voiceOn = PreferenceManager.getDefaultSharedPreferences(this)
-                .getBoolean("VoiceActivation", true);
-        if (!voiceOn)
-            return;
-
-        String text = hypothesis.getHypstr();
-        if (text.equals(KEYPHRASE)) {
-            MediaPlayer song = MediaPlayer.create(getApplicationContext(), R.raw.drop);
-            song.start();
-            switchSearch(MENU_SEARCH);
-        } else if (text.equals(FOLLOW)) {
-            addFollow(mapFragment.getView());
-            switchSearch(KWS_SEARCH);
-        } else if (text.equals(CATCH)) {
-            addCatch(mapFragment.getView());
-            switchSearch(KWS_SEARCH);
-        } else if (text.equals(LOST)) {
-            addContact(mapFragment.getView());
-            switchSearch(KWS_SEARCH);
-        }
-    }
-
     private void sendMessage(String message, String action) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String notification = "";
@@ -817,7 +763,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             notification = prefs.getString("Catch Notification", "");
         if (action.equalsIgnoreCase("FOLLOW"))
             notification = prefs.getString("Follow Notification", "");
-        if (action.equalsIgnoreCase("LOST"))
+        if (action.equalsIgnoreCase("CONTACT"))
             notification = prefs.getString("Lost Notification", "");
         if (!notification.isEmpty()) {
             String[] list = notification.split(",");
@@ -827,60 +773,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 smgr.sendTextMessage(list[i], null, message, null, null);
             }
         }
-    }
-
-    @Override
-    public void onResult(Hypothesis hypothesis) {
-        if (hypothesis != null) {
-            String text = hypothesis.getHypstr();
-            makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onError(Exception e) {
-    }
-
-    @Override
-    public void onTimeout() {
-    }
-
-    @Override
-    public void onBeginningOfSpeech() {
-    }
-
-    @Override
-    public void onEndOfSpeech() {
-        if (!recognizer.getSearchName().equals(KWS_SEARCH))
-            switchSearch(KWS_SEARCH);
-    }
-
-    private void switchSearch(String searchName) {
-        recognizer.stop();
-
-        // If we are not spotting, start listening with timeout (10000 ms or 10 seconds).
-        if (searchName.equals(KWS_SEARCH))
-            recognizer.startListening(searchName);
-        else
-            recognizer.startListening(searchName, 10000);
-    }
-
-    private void setupRecognizer(File assetsDir) throws IOException {
-        // The recognizer can be configured to perform multiple searches
-        // of different kind and switch between them
-
-        recognizer = SpeechRecognizerSetup.defaultSetup()
-                .setAcousticModel(new File(assetsDir, "en-us-ptm"))
-                .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
-                .setRawLogDir(assetsDir) // To disable logging of raw audio comment out this call (takes a lot of space on the device)
-                .getRecognizer();
-        recognizer.addListener(this);
-
-        // Create keyword-activation search.
-        recognizer.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE);
-
-        // Create grammar-based search for selection between demos
-        File menuGrammar = new File(assetsDir, "menu.gram");
-        recognizer.addGrammarSearch(MENU_SEARCH, menuGrammar);
     }
 }

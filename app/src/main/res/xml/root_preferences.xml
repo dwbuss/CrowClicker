@@ -48,18 +48,18 @@
             app:useSimpleSummaryProvider="true"
             android:persistent="true"
             android:title="Lost Notification List"/>
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="Message Notification"
+            app:useSimpleSummaryProvider="true"
+            android:persistent="true"
+            android:title="Message Notification List"/>
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="MapLocation"
             app:useSimpleSummaryProvider="true"
             android:persistent="true"
             android:title="Map on Phone"/>
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="VoiceActivation"
-            app:useSimpleSummaryProvider="true"
-            android:persistent="true"
-            android:title="Voice Activation"/>
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="Friendly"

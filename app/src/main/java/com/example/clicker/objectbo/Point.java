@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
@@ -39,7 +40,7 @@ public class Point {
         name = jsonObject.optString("name");
         lon = jsonObject.optDouble("lon");
         lat = jsonObject.optDouble("lat");
-        DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+        DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.US);
         timeStamp = osLocalizedDateFormat.parse(jsonObject.getString("timeStamp"));
         contactType = jsonObject.optString("contactType");
         airTemp = jsonObject.optString("airTemp");
@@ -60,7 +61,7 @@ public class Point {
         name = parts[1];
         lon = new Double(parts[2]);
         lat = new Double(parts[3]);
-        DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+        DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.US);
         timeStamp = osLocalizedDateFormat.parse(parts[4]);
         contactType = parts[5];
         airTemp =  parts[6];

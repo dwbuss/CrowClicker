@@ -10,71 +10,91 @@
       "properties": [
         {
           "id": "1:279511390712099752",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 1
         },
         {
           "id": "2:3538675074022325163",
-          "name": "name"
+          "name": "name",
+          "type": 9
         },
         {
           "id": "3:7418045949357614209",
-          "name": "lon"
+          "name": "lon",
+          "type": 8,
+          "flags": 4
         },
         {
           "id": "4:7044427077710383900",
-          "name": "lat"
+          "name": "lat",
+          "type": 8,
+          "flags": 4
         },
         {
           "id": "5:223679340612823629",
-          "name": "timeStamp"
+          "name": "timeStamp",
+          "type": 10
         },
         {
           "id": "6:7458092271021135437",
-          "name": "contactType"
+          "name": "contactType",
+          "type": 9
         },
         {
           "id": "7:921530164165089086",
-          "name": "airTemp"
+          "name": "airTemp",
+          "type": 9
         },
         {
           "id": "8:7974525328111156577",
-          "name": "waterTemp"
+          "name": "waterTemp",
+          "type": 9
         },
         {
           "id": "9:2567268529529791134",
-          "name": "bait"
+          "name": "bait",
+          "type": 9
         },
         {
           "id": "10:329570025063539165",
-          "name": "fishSize"
+          "name": "fishSize",
+          "type": 9
         },
         {
           "id": "11:8764943834062444438",
-          "name": "notes"
+          "name": "notes",
+          "type": 9
         },
         {
           "id": "12:2229839131489034221",
-          "name": "windSpeed"
+          "name": "windSpeed",
+          "type": 9
         },
         {
           "id": "13:6264533601670301634",
-          "name": "windDir"
+          "name": "windDir",
+          "type": 9
         },
         {
           "id": "14:7494663636638982372",
-          "name": "cloudCover"
+          "name": "cloudCover",
+          "type": 9
         },
         {
           "id": "15:6231370237937180452",
-          "name": "dewPoint"
+          "name": "dewPoint",
+          "type": 9
         },
         {
           "id": "16:2093227704705660706",
-          "name": "pressure"
+          "name": "pressure",
+          "type": 9
         },
         {
           "id": "17:8480593803509950156",
-          "name": "humidity"
+          "name": "humidity",
+          "type": 9
         }
       ],
       "relations": []
@@ -84,8 +104,8 @@
   "lastIndexId": "0:0",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
-  "modelVersion": 4,
-  "modelVersionParserMinimum": 4,
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
   "retiredEntityUids": [],
   "retiredIndexUids": [],
   "retiredPropertyUids": [],

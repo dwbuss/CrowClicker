@@ -56,7 +56,7 @@ jobs:
       with:
           java-version: 11
     
-    - run: ./gradlew test        
+    - run: ./gradlew --debug test        
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1

@@ -9,7 +9,7 @@ import java.util.GregorianCalendar;
 import static org.junit.Assert.assertEquals;
 
 public class SolunarTest {
-    @Test
+    //@Test
     public void testNotification() {
 
         Solunar solunar = new Solunar();

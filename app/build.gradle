@@ -1,7 +1,8 @@
 apply plugin: 'com.android.application'
 
 def mapProperties = new Properties()
-mapProperties.load(new FileInputStream(rootProject.file("map.properties")))
+try { mapProperties.load(new FileInputStream(rootProject.file("map.properties"))) }
+catch (FileNotFoundException fnf) { }
 
 android {
     compileSdkVersion 30

@@ -51,13 +51,13 @@ jobs:
         # Prefix the list here with "+" to use these queries and those in the config file.
         # queries: ./path/to/local/query, your-org/your-repo/queries@main
 
-    - name: Set Up JDK
-      uses: actions/setup-java@v1
-      with:
-          java-version: 11
-          
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v2          
+    #- name: Set Up JDK
+    #  uses: actions/setup-java@v1
+    #  with:
+    #      java-version: 11
+    #      
+    #- name: Setup Android SDK
+    #  uses: android-actions/setup-android@v2          
     
     - run: ./gradlew --stacktrace test
 

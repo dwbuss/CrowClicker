@@ -1,4 +1,5 @@
 name: CrowClicker
+
 on:
   push:
     branches:
@@ -8,21 +9,21 @@ on:
     - master
   workflow_dispatch:
   
-  jobs:
+jobs:
     Build:
       name: Build
       runs-on: ubuntu-latest
       
       steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
       
-    - name: Set Up JDK
-      uses: actions/setup-java@v1
-      with:
-        java-version: 11
+      - name: Set Up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
            
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v2          
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2          
     
-    - run: ./gradlew test --stacktrace
+      - run: ./gradlew test --stacktrace

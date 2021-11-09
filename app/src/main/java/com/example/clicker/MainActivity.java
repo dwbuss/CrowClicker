@@ -75,11 +75,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.cmu.pocketsphinx.Assets;
-import edu.cmu.pocketsphinx.Hypothesis;
-import edu.cmu.pocketsphinx.RecognitionListener;
-import edu.cmu.pocketsphinx.SpeechRecognizer;
-import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
 

@@ -22,8 +22,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-
-      - run: ./gradlew test --scan
+          
+      - name: Copy gradle properties file
+        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+      
+      - name: Run Test Suite
+      - run: ./gradlew test
       
       - name: Upload Reports
         uses: actions/upload-artifact@v2

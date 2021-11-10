@@ -27,7 +27,7 @@ jobs:
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
       
       - name: Run Test Suite
-      - run: ./gradlew test
+        run: ./gradlew test
       
       - name: Upload Reports
         uses: actions/upload-artifact@v2

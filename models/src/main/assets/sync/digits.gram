@@ -1,9 +1,0 @@
-#JSGF V1.0;
-
-grammar digits;
-
-<digit> = catch |
-          follow |
-          lost  ;
-
-public <digits> = <digit>+;

@@ -1,7 +1,10 @@
 apply plugin: 'com.android.application'
 
 def mapProperties = new Properties()
-mapProperties.load(new FileInputStream(rootProject.file("map.properties")))
+try { mapProperties.load(new FileInputStream(rootProject.file("map.properties"))) }
+catch (FileNotFoundException fnf) {
+    mapProperties['google_maps_api_key']='MISSING'
+}
 
 android {
     compileSdkVersion 30
@@ -12,7 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        manifestPlaceholders = [mapApiKey:mapProperties['google_maps_api_key'] ?: System.getenv("GOOGLE_MAPS_API_KEY")]
+        manifestPlaceholders = [mapApiKey:mapProperties['google_maps_api_key']]
     }
     buildTypes {
         release {
@@ -21,16 +24,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 }
 
 apply plugin: 'io.objectbox' // after applying Android plugin
 
 dependencies {
-    implementation project(':aars')
-    implementation project(':models')
     implementation 'com.android.support:support-compat:30.0.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -44,7 +45,7 @@ dependencies {
     implementation 'io.objectbox:objectbox-android:2.9.1'
     implementation 'androidx.room:room-runtime:2.3.0'
     annotationProcessor 'androidx.room:room-compiler:2.3.0'
-    implementation 'com.google.android.gms:play-services-maps:17.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.0.0'
     implementation 'org.shredzone.commons:commons-suncalc:2.6'
     implementation 'org.locationtech.geotrellis:geotrellis-proj4_2.12:2.3.1'
     testImplementation 'org.json:json:20180813'

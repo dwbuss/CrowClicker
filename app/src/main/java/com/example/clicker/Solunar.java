@@ -129,9 +129,6 @@ public class Solunar {
             moonUnderFoot = parseTime(moonUnderFootDt);
             minor = addMinor(cal, moon);
             major = addMajor(cal, moonOverHeadDt, moonUnderFootDt);
-
-            System.out.println(minor);
-            System.out.println(major);
         }
     }
 

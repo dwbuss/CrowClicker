@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -52,69 +50,6 @@ import scala.Function2;
 import scala.Tuple2;
 
 public class SettingsActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.settings_activity);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.settings, new SettingsFragment())
-                .commit();
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-        updateCounts();
-    }
-
-    private void updateCounts() {
-        PointListAdapter pointListAdapter;
-        pointListAdapter = new PointListAdapter(this.getApplicationContext());
-
-        ((TextView) findViewById(R.id.dailyCatch)).setText(pointListAdapter.getDailyCatch());
-        ((TextView) findViewById(R.id.dailyContact)).setText(pointListAdapter.getDailyContact());
-        ((TextView) findViewById(R.id.dailyFollow)).setText(pointListAdapter.getDailyFollow());
-
-        ((TextView) findViewById(R.id.tripCatch)).setText(pointListAdapter.getTripCatch());
-        ((TextView) findViewById(R.id.tripContact)).setText(pointListAdapter.getTripContact());
-        ((TextView) findViewById(R.id.tripFollow)).setText(pointListAdapter.getTripFollow());
-
-        ((TextView) findViewById(R.id.totalCatch)).setText(pointListAdapter.getTotalCatch());
-        ((TextView) findViewById(R.id.totalContact)).setText(pointListAdapter.getTotalContact());
-        ((TextView) findViewById(R.id.totalFollow)).setText(pointListAdapter.getTotalFollow());
-    }
-
-    public void clearPoints(View view) {
-        AlertDialog.Builder dialogDelete = new AlertDialog.Builder(view.getContext());
-        dialogDelete.setTitle("Warning!!");
-        dialogDelete.setMessage("Are you sure to delete all points?");
-        dialogDelete.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                try {
-                    BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-                    Box<Point> pointBox = boxStore.boxFor(Point.class);
-                    List<Point> points = pointBox.query().build().find();
-                    for (Point p : points) {
-                        pointBox.remove(p);
-                    }
-                    updateCounts();
-                    Toast.makeText(getApplicationContext(), "Delete successfully", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Log.e("error", e.getMessage());
-                }
-                dialogInterface.dismiss();
-            }
-        });
-        dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-        dialogDelete.show();
-    }
 
     ActivityResultLauncher<Intent> importActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -149,14 +84,6 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 }
             });
-
-    public void importPoints(View view) {
-        Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
-        chooseFile.setType("*/*");
-        chooseFile = Intent.createChooser(chooseFile, "Select Import File");
-        importActivity.launch(chooseFile);
-    }
-
     ActivityResultLauncher<Intent> importGeoActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -170,7 +97,7 @@ public class SettingsActivity extends AppCompatActivity {
                             Box<Point> pointBox = boxStore.boxFor(Point.class);
                             InputStream ifile = getContentResolver().openInputStream(data.getData());
                             int counter = 0;
-                            BufferedReader streamReader = new BufferedReader(new InputStreamReader(ifile, "UTF-8"));
+                            BufferedReader streamReader = new BufferedReader(new InputStreamReader(ifile, StandardCharsets.UTF_8));
                             StringBuilder responseStrBuilder = new StringBuilder();
                             String inputStr;
                             while ((inputStr = streamReader.readLine()) != null) {
@@ -261,6 +188,76 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 }
             });
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.settings_activity);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.settings, new SettingsFragment())
+                .commit();
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        updateCounts();
+    }
+
+    private void updateCounts() {
+        PointListAdapter pointListAdapter;
+        pointListAdapter = new PointListAdapter(this.getApplicationContext());
+
+        ((TextView) findViewById(R.id.dailyCatch)).setText(pointListAdapter.getDailyCatch());
+        ((TextView) findViewById(R.id.dailyContact)).setText(pointListAdapter.getDailyContact());
+        ((TextView) findViewById(R.id.dailyFollow)).setText(pointListAdapter.getDailyFollow());
+
+        ((TextView) findViewById(R.id.tripCatch)).setText(pointListAdapter.getTripCatch());
+        ((TextView) findViewById(R.id.tripContact)).setText(pointListAdapter.getTripContact());
+        ((TextView) findViewById(R.id.tripFollow)).setText(pointListAdapter.getTripFollow());
+
+        ((TextView) findViewById(R.id.totalCatch)).setText(pointListAdapter.getTotalCatch());
+        ((TextView) findViewById(R.id.totalContact)).setText(pointListAdapter.getTotalContact());
+        ((TextView) findViewById(R.id.totalFollow)).setText(pointListAdapter.getTotalFollow());
+    }
+
+    public void clearPoints(View view) {
+        AlertDialog.Builder dialogDelete = new AlertDialog.Builder(view.getContext());
+        dialogDelete.setTitle("Warning!!");
+        dialogDelete.setMessage("Are you sure to delete all points?");
+        dialogDelete.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                try {
+                    BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
+                    Box<Point> pointBox = boxStore.boxFor(Point.class);
+                    List<Point> points = pointBox.query().build().find();
+                    for (Point p : points) {
+                        pointBox.remove(p);
+                    }
+                    updateCounts();
+                    Toast.makeText(getApplicationContext(), "Delete successfully", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Log.e("error", e.getMessage());
+                }
+                dialogInterface.dismiss();
+            }
+        });
+        dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        dialogDelete.show();
+    }
+
+    public void importPoints(View view) {
+        Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+        chooseFile.setType("*/*");
+        chooseFile = Intent.createChooser(chooseFile, "Select Import File");
+        importActivity.launch(chooseFile);
+    }
 
     public void importGeoJson(View view) {
         Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);

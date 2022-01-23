@@ -1,5 +1,7 @@
 package com.example.clicker;
 
+import static com.example.clicker.MainActivity.NOTIFICATION_CHANNEL_ID;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -12,11 +14,9 @@ import androidx.core.app.NotificationCompat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import static com.example.clicker.MainActivity.NOTIFICATION_CHANNEL_ID;
-
 public class MyReceiver extends BroadcastReceiver {
     public static String NOTIFICATION_ID = "notification-id";
-    private Location loc;
+    private final Location loc;
 
 
     public MyReceiver(Location loc) {

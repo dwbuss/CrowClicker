@@ -64,12 +64,12 @@ public class ExpandedMBTilesTileProvider implements TileProvider {
             db = SQLiteDatabase.openDatabase(source.getPath(), null, SQLiteDatabase.OPEN_READONLY);
 
             cursor = db.query("tiles",
-                    new String[]{"tile_data"},
-                    "tile_column=? and tile_row=? and zoom_level=?",
-                    new String[]{"" + x, "" + y, "" + zoom},
-                    null,
-                    null,
-                    null);
+                              new String[]{"tile_data"},
+                              "tile_column=? and tile_row=? and zoom_level=?",
+                              new String[]{"" + x, "" + y, "" + zoom},
+                              null,
+                              null,
+                              null);
 
             if (cursor != null && cursor.moveToFirst()) {
                 bitmap = cursor.getBlob(0);

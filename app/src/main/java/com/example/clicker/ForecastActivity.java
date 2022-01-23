@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -111,32 +110,32 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         if (v == btnDatePicker) {
             DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                    new DatePickerDialog.OnDateSetListener() {
+                                                                     new DatePickerDialog.OnDateSetListener() {
 
-                        @Override
-                        public void onDateSet(DatePicker view, int year,
-                                              int monthOfYear, int dayOfMonth) {
+                                                                         @Override
+                                                                         public void onDateSet(DatePicker view, int year,
+                                                                                               int monthOfYear, int dayOfMonth) {
 
-                            cal.set(year, monthOfYear, dayOfMonth);
-                            setDate();
-                        }
-                    }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+                                                                             cal.set(year, monthOfYear, dayOfMonth);
+                                                                             setDate();
+                                                                         }
+                                                                     }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
             datePickerDialog.show();
         }
         if (v == btnTimePicker) {
             // Launch Time Picker Dialog
             TimePickerDialog timePickerDialog = new TimePickerDialog(this,
-                    new TimePickerDialog.OnTimeSetListener() {
+                                                                     new TimePickerDialog.OnTimeSetListener() {
 
-                        @Override
-                        public void onTimeSet(TimePicker view, int hourOfDay,
-                                              int minute) {
+                                                                         @Override
+                                                                         public void onTimeSet(TimePicker view, int hourOfDay,
+                                                                                               int minute) {
 
-                            cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                            cal.set(Calendar.MINUTE, minute);
-                            setDate();
-                        }
-                    }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true);
+                                                                             cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                                                             cal.set(Calendar.MINUTE, minute);
+                                                                             setDate();
+                                                                         }
+                                                                     }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true);
             timePickerDialog.show();
         }
     }

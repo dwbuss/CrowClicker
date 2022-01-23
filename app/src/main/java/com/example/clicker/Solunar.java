@@ -1,12 +1,17 @@
 package com.example.clicker;
 
 import android.location.Location;
+import android.service.controls.templates.TemperatureControlTemplate;
+import android.util.Log;
 
 import org.shredzone.commons.suncalc.MoonPosition;
 import org.shredzone.commons.suncalc.MoonTimes;
 import org.shredzone.commons.suncalc.SunTimes;
 
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalField;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -95,7 +100,16 @@ public class Solunar {
             moonUnderFoot = parseTime(moonUnderFootDt);
             minor = addMinor(cal, moon);
             major = addMajor(cal, moonOverHeadDt, moonUnderFootDt);
+
+            System.out.println(minor);
+            System.out.println(major);
         }
+    }
+
+    String parseTime(ZonedDateTime time) {
+        if (time != null)
+            return time.format(DateTimeFormatter.ofPattern("h:mm a"));
+        return "N/A";
     }
 
     String parseTime(Date time) {
@@ -235,8 +249,8 @@ public class Solunar {
     private String addMinor(Calendar cal, MoonTimes moon) {
         isMinor = false;
         Date curTime = cal.getTime();
-        long moonSet = (moon.getSet() == null) ? 0 : moon.getSet().getTime();
-        long moonRise = (moon.getRise() == null) ? 0 : moon.getRise().getTime();
+        long moonSet = (moon.getSet() == null) ? 0 : moon.getSet().toEpochSecond()*1000;
+        long moonRise = (moon.getRise() == null) ? 0 : moon.getRise().toEpochSecond()*1000;
         Date date1 = new Date(moonRise - 1800000);
         Date date2 = new Date(moonRise + 1800000);
         Date date3 = new Date(moonSet - 1800000);

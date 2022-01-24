@@ -59,7 +59,7 @@ jobs:
     #- name: Setup Android SDK
     #  uses: android-actions/setup-android@v2          
     
-    - run: ./gradlew --stacktrace test
+    - run: ./gradlew test -i
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1

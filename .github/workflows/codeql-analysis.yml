@@ -38,6 +38,12 @@ jobs:
         # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
 
     steps:
+    steps:
+      - name: Set TimeZone
+        uses: szenius/set-timezone@v1.0
+        with:
+           timezoneLinux: "America/Chicago"
+
     - name: Checkout repository
       uses: actions/checkout@v2
 

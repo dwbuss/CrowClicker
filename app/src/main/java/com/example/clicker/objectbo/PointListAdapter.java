@@ -31,11 +31,11 @@ public class PointListAdapter extends RecyclerView.Adapter<PointListAdapter.Poin
     public static final int MODE_EDIT = 1;
     public static final int MODE_DELETE = 2;
 
-    private Context context;
+    private final Context context;
     private List<Point> pointList;
 
-    private BoxStore boxStore;
-    private Box<Point> pointBox;
+    private final BoxStore boxStore;
+    private final Box<Point> pointBox;
 
     public PointListAdapter(Context context, List<Point> pointList) {
         this.context = context;
@@ -134,34 +134,6 @@ public class PointListAdapter extends RecyclerView.Adapter<PointListAdapter.Poin
         return Long.toString(pointBox.query().equal(Point_.contactType, "FOLLOW").build().count());
     }
 
-    public class PointListHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        protected TextView tvPointWithJersey;
-        protected ImageButton btnEdit, btnDelete;
-
-        public PointListHolder(View itemView) {
-            super(itemView);
-            tvPointWithJersey = (TextView) itemView.findViewById(R.id.tvPlayerWithJersey);
-            btnEdit = (ImageButton) itemView.findViewById(R.id.btnEdit);
-            btnDelete = (ImageButton) itemView.findViewById(R.id.btnDelete);
-            btnEdit.setOnClickListener(this);
-            btnDelete.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
-                case R.id.btnEdit:
-                    showAddEditDialog(MODE_EDIT, pointList.get(getAdapterPosition()).getId());
-                    break;
-                case R.id.btnDelete:
-                    showAddEditDialog(MODE_DELETE, pointList.get(getAdapterPosition()).getId());
-                    break;
-            }
-
-        }
-    }
-
     /**
      * Shows a simple dialog to add/edit/delete
      *
@@ -238,11 +210,11 @@ public class PointListAdapter extends RecyclerView.Adapter<PointListAdapter.Poin
         this.pointList = pointList;
         notifyDataSetChanged();
     }
-    //Database related operation here
 
     private Point getPointById(long id) {
         return pointBox.query().equal(Point_.id, id).build().findUnique();
     }
+    //Database related operation here
 
     public void addOrUpdatePoint(Point point) {
         pointBox.put(point);
@@ -262,5 +234,33 @@ public class PointListAdapter extends RecyclerView.Adapter<PointListAdapter.Poin
     public void updatePoints() {
         List<Point> points = pointBox.query().build().find();
         this.setPoints(points);
+    }
+
+    public class PointListHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        protected TextView tvPointWithJersey;
+        protected ImageButton btnEdit, btnDelete;
+
+        public PointListHolder(View itemView) {
+            super(itemView);
+            tvPointWithJersey = (TextView) itemView.findViewById(R.id.tvPlayerWithJersey);
+            btnEdit = (ImageButton) itemView.findViewById(R.id.btnEdit);
+            btnDelete = (ImageButton) itemView.findViewById(R.id.btnDelete);
+            btnEdit.setOnClickListener(this);
+            btnDelete.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.btnEdit:
+                    showAddEditDialog(MODE_EDIT, pointList.get(getAdapterPosition()).getId());
+                    break;
+                case R.id.btnDelete:
+                    showAddEditDialog(MODE_DELETE, pointList.get(getAdapterPosition()).getId());
+                    break;
+            }
+
+        }
     }
 }

@@ -7,11 +7,12 @@ catch (FileNotFoundException fnf) {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
+    buildToolsVersion '30.0.2'
     defaultConfig {
         applicationId "com.example.clicker"
         minSdkVersion 26
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -32,21 +33,21 @@ android {
 apply plugin: 'io.objectbox' // after applying Android plugin
 
 dependencies {
-    implementation 'com.android.support:support-compat:30.0.0'
-    implementation 'com.android.volley:volley:1.2.1'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation 'com.android.support:support-compat:31.0.0'
+    implementation 'com.android.volley:volley:1.2.1'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     implementation 'androidx.preference:preference:1.1.1'
-    testImplementation 'junit:junit:4.13.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+    implementation 'androidx.room:room-runtime:2.4.1'
+    annotationProcessor 'androidx.room:room-compiler:2.4.1'
+    implementation 'io.objectbox:objectbox-android:2.9.1'
+    implementation 'org.shredzone.commons:commons-suncalc:3.5'
+    implementation 'org.locationtech.geotrellis:geotrellis-proj4_2.12:2.3.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'io.objectbox:objectbox-android:2.9.1'
-    implementation 'androidx.room:room-runtime:2.3.0'
-    annotationProcessor 'androidx.room:room-compiler:2.3.0'
-    implementation 'com.google.android.gms:play-services-maps:18.0.0'
-    implementation 'org.shredzone.commons:commons-suncalc:2.6'
-    implementation 'org.locationtech.geotrellis:geotrellis-proj4_2.12:2.3.1'
-    testImplementation 'org.json:json:20180813'
+    testImplementation 'org.json:json:20211205'
+    testImplementation 'junit:junit:4.13.2'
 }

@@ -18,7 +18,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -61,8 +60,6 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
@@ -78,9 +75,8 @@ import java.util.Map;
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
-import static android.widget.Toast.makeText;
-
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+    public static final String NOTIFICATION_CHANNEL_ID = "10001";
     private static final String KWS_SEARCH = "wakeup";
     private static final String LOST = "lost";
     private static final String FOLLOW = "follow";
@@ -88,21 +84,152 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String MENU_SEARCH = "menu";
     /* Keyword we are looking for to activate menu */
     private static final String KEYPHRASE = "crow clicker";
-    public static final String NOTIFICATION_CHANNEL_ID = "10001";
     private final static String default_notification_channel_id = "default";
     private static final int pic_id = 123;
     private static final int PERMISSION_REQUEST_CODE = 100;
     private final static int ALL_PERMISSIONS_RESULT = 101;
-    private List<Point> pointList = new ArrayList<>();
+    SupportMapFragment mapFragment;
+    private final List<Point> pointList = new ArrayList<>();
     private PointListAdapter pointListAdapter;
     private Map<String, Float> colors;
     private boolean follow = false;
-
     private boolean northUp = false;
-    SupportMapFragment mapFragment;
     private GoogleMap mMap;
+    LocationListener locationListenerGPS = new LocationListener() {
+        @Override
+        public void onLocationChanged(android.location.Location location) {
+            if (follow) {
+                LatLng coordinate = new LatLng(location.getLatitude(), location.getLongitude());
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(coordinate)
+                        .bearing(location.getBearing())
+                        .zoom(mMap.getCameraPosition().zoom)
+                        .build();
+                if (northUp)
+                    cameraPosition = new CameraPosition.Builder()
+                            .target(coordinate)
+                            .zoom(mMap.getCameraPosition().zoom)
+                            .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+        }
+    };
     private LocationManager locationManager;
     private MyReceiver solunarReciever;
+    private final GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener = new GoogleMap.OnInfoWindowLongClickListener() {
+        @Override
+        public void onInfoWindowLongClick(final Marker marker) {
+            Point point = (Point) marker.getTag();
+            showDialogUpdate(point, marker, false);
+        }
+    };
+    private final GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener = new GoogleMap.OnMyLocationButtonClickListener() {
+        @Override
+        public boolean onMyLocationButtonClick() {
+            if (!follow || northUp) {
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                View mMyLocationButtonView = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
+                mMyLocationButtonView.setBackgroundColor(Color.RED);
+                northUp = false;
+                follow = true;
+            } else if (follow) {
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                View mMyLocationButtonView = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
+                mMyLocationButtonView.setBackgroundColor(Color.GREEN);
+                northUp = true;
+            }
+            return false;
+        }
+    };
+    private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
+        @Override
+        public void onMarkerDragStart(Marker marker) {
+        }
+
+        @Override
+        public void onMarkerDrag(Marker marker) {
+        }
+
+        @Override
+        public void onMarkerDragEnd(Marker marker) {
+            Point point = (Point) marker.getTag();
+            point.setLat(marker.getPosition().latitude);
+            point.setLon(marker.getPosition().longitude);
+            pointListAdapter.addOrUpdatePoint(point);
+        }
+    });
+    private final GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = (new GoogleMap.OnCameraMoveStartedListener() {
+        @Override
+        public void onCameraMoveStarted(int reason) {
+            if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+                follow = false;
+                northUp = true;
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                View mMyLocationButtonView = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
+                mMyLocationButtonView.setBackgroundColor(Color.GRAY);
+            }
+        }
+    });
+    private final GoogleMap.OnMapLongClickListener onMyMapLongClickListener = new GoogleMap.OnMapLongClickListener() {
+        @Override
+        public void onMapLongClick(final LatLng latLng) {
+            String[] contactType = {"CATCH", "CONTACT", "FOLLOW"};
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Choose an Action")
+                    .setItems(contactType, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Location loc = new Location(LocationManager.GPS_PROVIDER);
+                            loc.setLongitude(latLng.longitude);
+                            loc.setLatitude(latLng.latitude);
+                            if (which == 0)
+                                addPoint("CATCH", loc, false);
+                            if (which == 1)
+                                addPoint("CONTACT", loc, false);
+                            if (which == 2)
+                                addPoint("FOLLOW", loc, false);
+
+                        }
+                    }).show();
+        }
+    };
+
+    private static String getExternalStoragePath(Context mContext, boolean is_removable) {
+
+        StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
+        Class<?> storageVolumeClazz = null;
+        try {
+            storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
+            Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
+            Method getPath = storageVolumeClazz.getMethod("getPath");
+            Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
+            Object result = getVolumeList.invoke(mStorageManager);
+            final int length = Array.getLength(result);
+            for (int i = 0; i < length; i++) {
+                Object storageVolumeElement = Array.get(result, i);
+                String path = (String) getPath.invoke(storageVolumeElement);
+                boolean removable = (Boolean) isRemovable.invoke(storageVolumeElement);
+                if (is_removable == removable) {
+                    return path;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     @Override
     protected void onResume() {
@@ -156,45 +283,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(solunarReciever);
     }
-
-    LocationListener locationListenerGPS = new LocationListener() {
-        @Override
-        public void onLocationChanged(android.location.Location location) {
-            if (follow) {
-                LatLng coordinate = new LatLng(location.getLatitude(), location.getLongitude());
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(coordinate)
-                        .bearing(location.getBearing())
-                        .zoom(mMap.getCameraPosition().zoom)
-                        .build();
-                if (northUp)
-                    cameraPosition = new CameraPosition.Builder()
-                            .target(coordinate)
-                            .zoom(mMap.getCameraPosition().zoom)
-                            .build();
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            }
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-        }
-    };
 
     public void initView() {
         Solunar solunar = new Solunar();
@@ -284,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -368,10 +461,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(point.getLat(), point.getLon()))
-                    .title(new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp()))
-                    .draggable(true)
-                    .icon(getMarker(point.getContactType())));
+                                              .position(new LatLng(point.getLat(), point.getLon()))
+                                              .title(new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp()))
+                                              .draggable(true)
+                                              .icon(getMarker(point.getContactType())));
             m.setTag(point);
             return m;
         }
@@ -451,31 +544,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private static String getExternalStoragePath(Context mContext, boolean is_removable) {
-
-        StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
-        Class<?> storageVolumeClazz = null;
-        try {
-            storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
-            Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
-            Method getPath = storageVolumeClazz.getMethod("getPath");
-            Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
-            Object result = getVolumeList.invoke(mStorageManager);
-            final int length = Array.getLength(result);
-            for (int i = 0; i < length; i++) {
-                Object storageVolumeElement = Array.get(result, i);
-                String path = (String) getPath.invoke(storageVolumeElement);
-                boolean removable = (Boolean) isRemovable.invoke(storageVolumeElement);
-                if (is_removable == removable) {
-                    return path;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     private void addCrowLayer() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean locationLocal = prefs.getBoolean("MapLocation", true);
@@ -499,14 +567,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Toast.makeText(this, "Failed to load mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
-    private GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener = new GoogleMap.OnInfoWindowLongClickListener() {
-        @Override
-        public void onInfoWindowLongClick(final Marker marker) {
-            Point point = (Point) marker.getTag();
-            showDialogUpdate(point, marker, false);
-        }
-    };
 
     private void showDialogUpdate(final Point point, final Marker marker, boolean newPoint) {
         final Dialog dialog = new Dialog(this);
@@ -651,80 +711,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
     }
-
-    private GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener = new GoogleMap.OnMyLocationButtonClickListener() {
-        @Override
-        public boolean onMyLocationButtonClick() {
-            if ((follow && northUp) || !follow) {
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                View mMyLocationButtonView = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
-                mMyLocationButtonView.setBackgroundColor(Color.RED);
-                northUp = false;
-                follow = true;
-            } else if (follow) {
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                View mMyLocationButtonView = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
-                mMyLocationButtonView.setBackgroundColor(Color.GREEN);
-                northUp = true;
-            }
-            return false;
-        }
-    };
-
-    private GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
-        @Override
-        public void onMarkerDragStart(Marker marker) {
-        }
-
-        @Override
-        public void onMarkerDrag(Marker marker) {
-        }
-
-        @Override
-        public void onMarkerDragEnd(Marker marker) {
-            Point point = (Point) marker.getTag();
-            point.setLat(marker.getPosition().latitude);
-            point.setLon(marker.getPosition().longitude);
-            pointListAdapter.addOrUpdatePoint(point);
-        }
-    });
-
-    private GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = (new GoogleMap.OnCameraMoveStartedListener() {
-        @Override
-        public void onCameraMoveStarted(int reason) {
-            if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
-                follow = false;
-                northUp = true;
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                View mMyLocationButtonView = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
-                mMyLocationButtonView.setBackgroundColor(Color.GRAY);
-            }
-        }
-    });
-
-    private GoogleMap.OnMapLongClickListener onMyMapLongClickListener = new GoogleMap.OnMapLongClickListener() {
-        @Override
-        public void onMapLongClick(final LatLng latLng) {
-            String[] contactType = {"CATCH", "CONTACT", "FOLLOW"};
-            new AlertDialog.Builder(MainActivity.this)
-                    .setTitle("Choose an Action")
-                    .setItems(contactType, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Location loc = new Location(LocationManager.GPS_PROVIDER);
-                            loc.setLongitude(latLng.longitude);
-                            loc.setLatitude(latLng.latitude);
-                            if (which == 0)
-                                addPoint("CATCH", loc, false);
-                            if (which == 1)
-                                addPoint("CONTACT", loc, false);
-                            if (which == 2)
-                                addPoint("FOLLOW", loc, false);
-
-                        }
-                    }).show();
-        }
-    };
 
     public void openSettings(View view) {
         Intent settings = new Intent(this, SettingsActivity.class);

@@ -1,5 +1,7 @@
 package com.example.clicker;
 
+import static org.junit.Assert.assertEquals;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -15,9 +17,7 @@ import geotrellis.proj4.Transform;
 import scala.Function2;
 import scala.Tuple2;
 
-import static org.junit.Assert.*;
-
-public class ExampleUnitTest {
+public class ConversionTest {
     @Test
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
@@ -85,7 +85,7 @@ public class ExampleUnitTest {
 
         InputStream inputStreamObject = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
         try {
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStreamObject, "UTF-8"));
+            BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStreamObject, StandardCharsets.UTF_8));
             StringBuilder responseStrBuilder = new StringBuilder();
 
             String inputStr;
@@ -102,8 +102,8 @@ public class ExampleUnitTest {
                 System.err.println(point.getJSONObject("properties").getString("date"));
                 System.err.println(Double.valueOf(point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0)));
                 System.err.println(Double.valueOf(point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1)));
-                double lon =  point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0);
-                double lat =  point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1);
+                double lon = point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0);
+                double lat = point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1);
 
 
                 CRS epsg3857 = CRS.fromEpsgCode(3857);
@@ -115,7 +115,7 @@ public class ExampleUnitTest {
                 Double newLon = (Double) southWestInWgs84._1();
                 System.out.println("Point in WGS 84: " + newLat + "," + newLon);
                 //Function2<Object, Object, Tuple2<Object, Object>> fromWgs84 = Transform.apply(wgs84, epsg3857);
-               //Tuple2<Object, Object> southWestBackToEpsg27700 = fromWgs84.apply(southWestInWgs84._1(), southWestInWgs84._2());
+                //Tuple2<Object, Object> southWestBackToEpsg27700 = fromWgs84.apply(southWestInWgs84._1(), southWestInWgs84._2());
                 //System.out.println("South-West corner back to EPSG 27700: " + southWestBackToEpsg27700._1() + "," + southWestBackToEpsg27700._2());
             }
         } catch (Exception e) {

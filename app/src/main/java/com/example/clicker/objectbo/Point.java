@@ -64,17 +64,17 @@ public class Point {
         DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.US);
         timeStamp = osLocalizedDateFormat.parse(parts[4]);
         contactType = parts[5];
-        airTemp =  parts[6];
-        waterTemp =  parts[7];
-        bait =  parts[8];
-        fishSize =  parts[9];
-        notes =  parts[10];
-        windSpeed =  parts[11];
-        windDir =  parts[12];
-        cloudCover =  parts[13];
-        dewPoint =  parts[14];
-        pressure =  parts[15];
-        humidity =  parts[16];
+        airTemp = parts[6];
+        waterTemp = parts[7];
+        bait = parts[8];
+        fishSize = parts[9];
+        notes = parts[10];
+        windSpeed = parts[11];
+        windDir = parts[12];
+        cloudCover = parts[13];
+        dewPoint = parts[14];
+        pressure = parts[15];
+        humidity = parts[16];
     }
 
     public Point(long id, String name, String contactType, double lon, double lat) {
@@ -91,7 +91,7 @@ public class Point {
         this.name = name;
         this.contactType = "CATCH";
         this.fishSize = length;
-        this.timeStamp =  Calendar.getInstance().getTime();
+        this.timeStamp = Calendar.getInstance().getTime();
         this.lat = lat;
         this.lon = lon;
     }
@@ -117,28 +117,28 @@ public class Point {
         return lon;
     }
 
+    public void setLon(double lon) {
+        this.lon = lon;
+    }
+
     public Date getTimeStamp() {
         return timeStamp;
+    }
+
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public double getLat() {
         return lat;
     }
 
-    public String getContactType() {
-        return contactType;
-    }
-
-    public void setLon(double lon) {
-        this.lon = lon;
-    }
-
     public void setLat(double lat) {
         this.lat = lat;
     }
 
-    public void setTimeStamp(Date timeStamp) {
-        this.timeStamp = timeStamp;
+    public String getContactType() {
+        return contactType;
     }
 
     public void setContactType(String contactType) {
@@ -235,7 +235,7 @@ public class Point {
 
     @Override
     public String toString() {
-        return  id + "\t" + name + "\t" + lon + "\t" + lat + "\t" + timeStamp + "\t" + contactType + "\t" +
+        return id + "\t" + name + "\t" + lon + "\t" + lat + "\t" + timeStamp + "\t" + contactType + "\t" +
                 airTemp + "\t" + waterTemp + "\t" + bait + "\t" + fishSize + "\t" + notes + "\t" +
                 windSpeed + "\t" + windDir + "\t" + cloudCover + "\t" + dewPoint + "\t" +
                 pressure + "\t" + humidity;

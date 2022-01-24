@@ -1,13 +1,12 @@
 package com.example.clicker;
 
+import static org.junit.Assert.assertEquals;
+
 import com.example.clicker.objectbo.Point;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
-
-import static org.junit.Assert.assertEquals;
 
 public class PointTest {
     @Test

@@ -27,7 +27,7 @@ public class SolunarTest {
             }
         };
 
-        Calendar goodDay = Calendar.getInstance(Locale.US);
+        Calendar goodDay = Calendar.getInstance();
         goodDay.setTimeZone(TimeZone.getTimeZone("CST"));
         goodDay.set(2021, 8, 15, 9, 30, 00);
 

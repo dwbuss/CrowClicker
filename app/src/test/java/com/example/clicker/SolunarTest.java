@@ -28,8 +28,8 @@ public class SolunarTest {
         };
 
         Calendar goodDay = Calendar.getInstance(Locale.US);
-        goodDay.setTimeZone(TimeZone.getTimeZone("GMT-6"));
-        goodDay.set(2021, 8, 15, 9, 30);
+        goodDay.setTimeZone(TimeZone.getTimeZone("CST"));
+        goodDay.set(2021, 8, 15, 9, 30, 00);
 
         solunar.populate(loc, goodDay);
 

@@ -11,6 +11,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class Solunar {
@@ -64,10 +65,11 @@ public class Solunar {
     public boolean isMinor;
 
     public void populate(Location loc, Calendar cal) {
-        int offsetInMillis = TimeZone.getDefault().getOffset(cal.getTimeInMillis());
+        int offsetInMillis = cal.getTimeZone().getOffset(cal.getTimeInMillis());
         offset = String.format("%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
         offset = (offsetInMillis >= 0 ? "+" : "-") + Integer.parseInt(offset.split(":")[0]);
         Calendar startOfDay = Calendar.getInstance();
+        startOfDay.setTimeZone(cal.getTimeZone());
         startOfDay.setTime(cal.getTime());
         startOfDay.set(Calendar.HOUR_OF_DAY, 0);
         startOfDay.set(Calendar.MINUTE, 0);

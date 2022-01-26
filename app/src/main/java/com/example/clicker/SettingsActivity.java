@@ -29,8 +29,15 @@ import androidx.preference.PreferenceManager;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointListAdapter;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.locationtech.proj4j.CRSFactory;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
+import org.locationtech.proj4j.CoordinateTransform;
+import org.locationtech.proj4j.CoordinateTransformFactory;
+import org.locationtech.proj4j.ProjCoordinate;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,18 +46,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import geotrellis.proj4.CRS;
-import geotrellis.proj4.Transform;
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
-import scala.Function2;
-import scala.Tuple2;
 
 public class SettingsActivity extends AppCompatActivity {
 
+    private static final String TAG = "SettingsActivity";
     ActivityResultLauncher<Intent> importActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -90,104 +93,54 @@ public class SettingsActivity extends AppCompatActivity {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        // There are no request codes
                         Intent data = result.getData();
-                        try {
-                            BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-                            Box<Point> pointBox = boxStore.boxFor(Point.class);
-                            InputStream ifile = getContentResolver().openInputStream(data.getData());
-                            int counter = 0;
-                            BufferedReader streamReader = new BufferedReader(new InputStreamReader(ifile, StandardCharsets.UTF_8));
-                            StringBuilder responseStrBuilder = new StringBuilder();
-                            String inputStr;
-                            while ((inputStr = streamReader.readLine()) != null) {
-                                responseStrBuilder.append(inputStr);
-                            }
-                            String json = "{\n" +
-                                    "  \"type\": \"FeatureCollection\",\n" +
-                                    "  \"features\": [\n" +
-                                    "    {\n" +
-                                    "      \"type\": \"Feature\",\n" +
-                                    "      \"properties\": {\n" +
-                                    "        \"name\": \"dan\",\n" +
-                                    "        \"date\": \"07/25/2012\",\n" +
-                                    "        \"pic\": \"https://lh3.googleusercontent.com/-axnFS0HbSxM/UBVRwpYcYNI/AAAAAAAAKbY/09zXl45h84A/s400-Ic42/IMG_1381.JPG\",\n" +
-                                    "        \"size\": \"45\",\n" +
-                                    "        \"notes\": \"\"\n" +
-                                    "      },\n" +
-                                    "      \"geometry\": {\n" +
-                                    "        \"type\": \"Point\",\n" +
-                                    "        \"coordinates\": [\n" +
-                                    "          -10452505.442318,\n" +
-                                    "          6310627.924908303\n" +
-                                    "        ]\n" +
-                                    "      }\n" +
-                                    "    },\n" +
-                                    "    {\n" +
-                                    "      \"type\": \"Feature\",\n" +
-                                    "      \"properties\": {\n" +
-                                    "        \"name\": \"carey\",\n" +
-                                    "        \"date\": \"07/24/2012\",\n" +
-                                    "        \"pic\": \"https://lh3.googleusercontent.com/-dw0_d9nTRHE/UBVRqs0ajdI/AAAAAAAAKbA/aAkRAAGqNlc/s400-Ic42/DSCF0037.JPG\",\n" +
-                                    "        \"size\": \"\",\n" +
-                                    "        \"notes\": \"\"\n" +
-                                    "      },\n" +
-                                    "      \"geometry\": {\n" +
-                                    "        \"type\": \"Point\",\n" +
-                                    "        \"coordinates\": [\n" +
-                                    "          -10452663.09369,\n" +
-                                    "          6310698.390294398\n" +
-                                    "        ]\n" +
-                                    "      }\n" +
-                                    "    },\n" +
-                                    "    {\n" +
-                                    "      \"type\": \"Feature\",\n" +
-                                    "      \"properties\": {\n" +
-                                    "        \"name\": \"dan\",\n" +
-                                    "        \"date\": \"09/11/2019\",\n" +
-                                    "        \"pic\": \"\",\n" +
-                                    "        \"size\": \"37\",\n" +
-                                    "        \"notes\": \"\"\n" +
-                                    "      },\n" +
-                                    "      \"geometry\": {\n" +
-                                    "        \"type\": \"Point\",\n" +
-                                    "        \"coordinates\": [\n" +
-                                    "          -10450730.55884,\n" +
-                                    "          6314111.233392801\n" +
-                                    "        ]\n" +
-                                    "      }\n" +
-                                    "    }\n" +
-                                    "  ]\n" +
-                                    "}";
-                            CRS epsg3857 = CRS.fromEpsgCode(3857);
-                            CRS wgs84 = CRS.fromEpsgCode(4326);
-                            JSONObject jsonObject = new JSONObject(json);
+                        BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
+                        Box<Point> pointBox = boxStore.boxFor(Point.class);
+
+                        try ( InputStream input = getContentResolver().openInputStream(data.getData() )) {
+                            JSONObject jsonObject = new JSONObject(IOUtils.toString(input,"UTF-8"));
                             JSONArray points = jsonObject.getJSONArray("features");
-                            for (int i = 0, size = points.length(); i < size; i++) {
-                                JSONObject point = points.getJSONObject(i);
-                                String name = point.getJSONObject("properties").getString("name");
-                                String length = point.getJSONObject("properties").getString("size");
-                                String date = point.getJSONObject("properties").getString("date");
-                                double lon = point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0);
-                                double lat = point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1);
 
-                                Function2<Object, Object, Tuple2<Object, Object>> toWgs84 = Transform.apply(epsg3857, wgs84);
-                                Tuple2<Object, Object> southWestInWgs84 = toWgs84.apply(lon, lat);
-                                Double newLat = (Double) southWestInWgs84._2();
-                                Double newLon = (Double) southWestInWgs84._1();
-
-                                pointBox.put(new Point(0, name, length, date, newLon, newLat));
-                                counter++;
-                            }
+                            int counter = convertPoints(pointBox, points);
                             Toast.makeText(getApplicationContext(), "Imported " + counter + " points", Toast.LENGTH_SHORT).show();
 
                         } catch (Exception e) {
                             Toast.makeText(getApplicationContext(), "Geo Import failed " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            e.printStackTrace();
+                            Log.e(TAG, "GeoImport Failed", e);
                         }
                     }
                 }
             });
+
+    static int convertPoints(Box<Point> pointBox, JSONArray points) throws JSONException {
+        CRSFactory crsFactory = new CRSFactory();
+        CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("epsg:3857");
+        CoordinateReferenceSystem wgs84 = crsFactory.createFromName("epsg:4326");
+        CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
+        CoordinateTransform toWgs84 = ctFactory.createTransform(epsg3857, wgs84);
+        ProjCoordinate southWestInWgs84 = new ProjCoordinate();
+
+        int counter = 0;
+        for (int i = 0, size = points.length(); i < size; i++) {
+            JSONObject point = points.getJSONObject(i);
+            String name = point.getJSONObject("properties").getString("name");
+            String length = point.getJSONObject("properties").getString("size");
+            String date = point.getJSONObject("properties").getString("date");
+            double lon = point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0);
+            double lat = point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1);
+
+            toWgs84.transform(new ProjCoordinate(lon, lat), southWestInWgs84);
+            Double newLat = (Double) southWestInWgs84.y;
+            Double newLon = (Double) southWestInWgs84.x;
+            Point pt = new Point(0, name, length, date, newLon, newLat);
+            if ( pointBox != null )
+                pointBox.put(pt);
+            else
+                System.out.println(pt.toString());
+            counter++;
+        }
+        return counter;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -2,20 +2,14 @@ package com.example.clicker;
 
 import static org.junit.Assert.assertEquals;
 
+import com.example.clicker.objectbo.Point;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-
-import geotrellis.proj4.CRS;
-import geotrellis.proj4.Transform;
-import scala.Function2;
-import scala.Tuple2;
+import io.objectbox.Box;
 
 public class ConversionTest {
     @Test
@@ -24,7 +18,7 @@ public class ConversionTest {
     }
 
     @Test
-    public void testConversion() {
+    public void testConversion() throws JSONException {
 
         String json = "{\n" +
                 "  \"type\": \"FeatureCollection\",\n" +
@@ -83,43 +77,9 @@ public class ConversionTest {
                 "  ]\n" +
                 "}";
 
-        InputStream inputStreamObject = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
-        try {
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStreamObject, StandardCharsets.UTF_8));
-            StringBuilder responseStrBuilder = new StringBuilder();
-
-            String inputStr;
-            while ((inputStr = streamReader.readLine()) != null) {
-                responseStrBuilder.append(inputStr);
-            }
-
-            JSONObject jsonObject = new JSONObject(responseStrBuilder.toString());
-            JSONArray points = jsonObject.getJSONArray("features");
-            for (int i = 0, size = points.length(); i < size; i++) {
-                JSONObject point = points.getJSONObject(i);
-                System.err.println(point.getJSONObject("properties").getString("name"));
-                System.err.println(point.getJSONObject("properties").getString("size"));
-                System.err.println(point.getJSONObject("properties").getString("date"));
-                System.err.println(Double.valueOf(point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0)));
-                System.err.println(Double.valueOf(point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1)));
-                double lon = point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0);
-                double lat = point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1);
-
-
-                CRS epsg3857 = CRS.fromEpsgCode(3857);
-                CRS wgs84 = CRS.fromEpsgCode(4326);
-
-                Function2<Object, Object, Tuple2<Object, Object>> toWgs84 = Transform.apply(epsg3857, wgs84);
-                Tuple2<Object, Object> southWestInWgs84 = toWgs84.apply(lon, lat);
-                Double newLat = (Double) southWestInWgs84._2();
-                Double newLon = (Double) southWestInWgs84._1();
-                System.out.println("Point in WGS 84: " + newLat + "," + newLon);
-                //Function2<Object, Object, Tuple2<Object, Object>> fromWgs84 = Transform.apply(wgs84, epsg3857);
-                //Tuple2<Object, Object> southWestBackToEpsg27700 = fromWgs84.apply(southWestInWgs84._1(), southWestInWgs84._2());
-                //System.out.println("South-West corner back to EPSG 27700: " + southWestBackToEpsg27700._1() + "," + southWestBackToEpsg27700._2());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        JSONObject object = new JSONObject(json);
+        JSONArray points = object.getJSONArray("features");
+        Box<Point> pointBox = null;//BoxStoreBuilder.createDebugWithoutModel().build().boxFor(Point.class);
+        assertEquals(3, SettingsActivity.convertPoints(pointBox, points));
     }
 }

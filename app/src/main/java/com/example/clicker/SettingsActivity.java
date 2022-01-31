@@ -98,7 +98,7 @@ public class SettingsActivity extends AppCompatActivity {
                         Box<Point> pointBox = boxStore.boxFor(Point.class);
 
                         try ( InputStream input = getContentResolver().openInputStream(data.getData() )) {
-                            JSONObject jsonObject = new JSONObject(IOUtils.toString(input,"UTF-8"));
+                            JSONObject jsonObject = new JSONObject(IOUtils.toString(input, "UTF-8"));
                             JSONArray points = jsonObject.getJSONArray("features");
 
                             int counter = convertPoints(pointBox, points);

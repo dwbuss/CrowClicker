@@ -42,39 +42,43 @@ public class Weather {
     public void populate(String url, Context context, final VolleyCallBack callback) {
         RequestQueue queue = Volley.newRequestQueue(context);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                                                        new Response.Listener<String>() {
-                                                            @Override
-                                                            public void onResponse(String response) {
-                                                                try {
-                                                                    JSONObject reader = new JSONObject(response);
-                                                                    JSONObject main = reader.getJSONObject("currently");
-                                                                    temperature = main.getString("temperature") + (char) 0x00B0;
-                                                                    feelsLike = main.getString("apparentTemperature") + (char) 0x00B0;
-                                                                    dewPoint = main.getString("dewPoint") + (char) 0x00B0;
-                                                                    windSpeed = main.getString("windSpeed") + " mph ";
-                                                                    windDir = getCardinalDirection(main.getDouble("windBearing"));
-                                                                    windGust = main.getString("windGust") + " mph";
-                                                                    date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("time"))));
-                                                                    precipProbability = main.getString("precipProbability");
-                                                                    humidity = main.getString("humidity");
-                                                                    pressure = main.getString("pressure") + " mb";
-                                                                    cloudCover = main.getString("cloudCover");
+        StringRequest stringRequest = pullWeather(url, callback);
+        queue.add(stringRequest);
+    }
 
-                                                                    JSONObject main1 = reader.getJSONObject("daily");
-                                                                } catch (JSONException e) {
-                                                                    e.printStackTrace();
-                                                                }
+    public StringRequest pullWeather(String url, VolleyCallBack callback) {
+        return new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject reader = new JSONObject(response);
+                            JSONObject main = reader.getJSONObject("currently");
+                            temperature = main.getString("temperature") + (char) 0x00B0;
+                            feelsLike = main.getString("apparentTemperature") + (char) 0x00B0;
+                            dewPoint = main.getString("dewPoint") + (char) 0x00B0;
+                            windSpeed = main.getString("windSpeed") + " mph ";
+                            windDir = getCardinalDirection(main.getDouble("windBearing"));
+                            windGust = main.getString("windGust") + " mph";
+                            date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("time"))));
+                            precipProbability = main.getString("precipProbability");
+                            humidity = main.getString("humidity");
+                            pressure = main.getString("pressure") + " mb";
+                            cloudCover = main.getString("cloudCover");
 
-                                                                callback.onSuccess();
-                                                            }
-                                                        }, new Response.ErrorListener() {
+                            JSONObject main1 = reader.getJSONObject("daily");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        callback.onSuccess();
+                    }
+                }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 callback.onFailure();
             }
         });
-        queue.add(stringRequest);
     }
 
     String getCardinalDirection(double input) {

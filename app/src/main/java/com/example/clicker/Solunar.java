@@ -65,6 +65,12 @@ public class Solunar {
     public boolean isMinor;
 
     public void populate(Location loc, Calendar cal) {
+        if (loc != null) {
+            populate(loc.getLongitude(), loc.getLatitude(), cal);
+        }
+    }
+
+    public void populate(double lon, double lat, Calendar cal) {
         int offsetInMillis = cal.getTimeZone().getOffset(cal.getTimeInMillis());
         offset = String.format("%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
         offset = (offsetInMillis >= 0 ? "+" : "-") + Integer.parseInt(offset.split(":")[0]);
@@ -75,63 +81,62 @@ public class Solunar {
         startOfDay.set(Calendar.MINUTE, 0);
         startOfDay.set(Calendar.SECOND, 0);
         startOfDay.set(Calendar.MILLISECOND, 0);
-        if (loc != null) {
-            SunTimes times = SunTimes.compute()
-                    .on(startOfDay)
-                    .fullCycle()
-                    .at(loc.getLatitude(), loc.getLongitude())
-                    .execute();
-            MoonTimes moon = MoonTimes.compute()
-                    .on(startOfDay)
-                    .fullCycle()
-                    .oneDay()
-                    .at(loc.getLatitude(), loc.getLongitude())
-                    .execute();
+        SunTimes times = SunTimes.compute()
+                .on(startOfDay)
+                .fullCycle()
+                .at(lat, lon)
+                .execute();
+        MoonTimes moon = MoonTimes.compute()
+                .on(startOfDay)
+                .fullCycle()
+                .oneDay()
+                .at(lat, lon)
+                .execute();
 
-            MoonPosition moonp;
-            double prev = 0;
-            boolean increasing = false;
-            boolean decreasing = false;
-            Date moonOverHeadDt = null;
-            Date moonUnderFootDt = null;
-            Date afterAddingMins = startOfDay.getTime();
-            for (int i = 0; i < 1440; i++) {
-                long curTimeInMs = afterAddingMins.getTime();
-                afterAddingMins = new Date(curTimeInMs + 60000);
-                moonp = MoonPosition.compute()
-                        .at(loc.getLatitude(), loc.getLongitude())
-                        .on(afterAddingMins)
-                        .execute();
-                double alt = moonp.getAltitude();
-                if (increasing && alt < prev) {
-                    moonOverHeadDt = afterAddingMins;
-                    increasing = false;
-                    decreasing = true;
-                } else if (decreasing && alt > prev) {
-                    moonUnderFootDt = afterAddingMins;
-                    decreasing = false;
-                    increasing = true;
-                } else if (prev != 0) {
-                    if (alt > prev) increasing = true;
-                    else decreasing = true;
-                }
-                prev = alt;
+        MoonPosition moonp;
+        double prev = 0;
+        boolean increasing = false;
+        boolean decreasing = false;
+        Date moonOverHeadDt = null;
+        Date moonUnderFootDt = null;
+        Date afterAddingMins = startOfDay.getTime();
+        for (int i = 0; i < 1440; i++) {
+            long curTimeInMs = afterAddingMins.getTime();
+            afterAddingMins = new Date(curTimeInMs + 60000);
+            moonp = MoonPosition.compute()
+                    .at(lat, lon)
+                    .on(afterAddingMins)
+                    .execute();
+            double alt = moonp.getAltitude();
+            if (increasing && alt < prev) {
+                moonOverHeadDt = afterAddingMins;
+                increasing = false;
+                decreasing = true;
+            } else if (decreasing && alt > prev) {
+                moonUnderFootDt = afterAddingMins;
+                decreasing = false;
+                increasing = true;
+            } else if (prev != 0) {
+                if (alt > prev) increasing = true;
+                else decreasing = true;
             }
-
-            int phase = getPhase(cal);
-            moonPhase = getMoonPhaseText(phase);
-            moonPhaseIcon = IMAGE_LOOKUP[phase];
-            longitude = Double.toString(loc.getLongitude());
-            latitude = Double.toString(loc.getLatitude());
-            sunRise = parseTime(times.getRise());
-            sunSet = parseTime(times.getSet());
-            moonRise = parseTime(moon.getRise());
-            moonSet = parseTime(moon.getSet());
-            moonOverHead = parseTime(moonOverHeadDt);
-            moonUnderFoot = parseTime(moonUnderFootDt);
-            minor = addMinor(cal, moon);
-            major = addMajor(cal, moonOverHeadDt, moonUnderFootDt);
+            prev = alt;
         }
+
+        int phase = getPhase(cal);
+        moonPhase = getMoonPhaseText(phase);
+        moonPhaseIcon = IMAGE_LOOKUP[phase];
+        longitude = Double.toString(lon);
+        latitude = Double.toString(lat);
+        sunRise = parseTime(times.getRise());
+        sunSet = parseTime(times.getSet());
+        moonRise = parseTime(moon.getRise());
+        moonSet = parseTime(moon.getSet());
+        moonOverHead = parseTime(moonOverHeadDt);
+        moonUnderFoot = parseTime(moonUnderFootDt);
+        minor = addMinor(cal, moon);
+        major = addMajor(cal, moonOverHeadDt, moonUnderFootDt);
+
     }
 
     String parseTime(ZonedDateTime time) {

@@ -28,18 +28,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-    testOptions {
-        unitTests.returnDefaultValues = true
-    }
 }
 
 apply plugin: 'io.objectbox' // after applying Android plugin
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.api-client:google-api-client:1.33.0'
-    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.32.1'
-    implementation 'com.google.apis:google-api-services-sheets:v4-rev20210629-1.32.1'
     implementation 'com.android.support:support-compat:31.0.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'androidx.appcompat:appcompat:1.4.1'
@@ -48,7 +42,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation 'androidx.room:room-runtime:2.4.1'
-    implementation 'androidx.test:monitor:1.4.0'
     annotationProcessor 'androidx.room:room-compiler:2.4.1'
     implementation 'io.objectbox:objectbox-android:2.9.1'
     implementation 'org.shredzone.commons:commons-suncalc:3.5'

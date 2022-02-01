@@ -76,6 +76,7 @@ import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private static final String TAG = "MainActivity";
     public static final String NOTIFICATION_CHANNEL_ID = "10001";
     private static final String KWS_SEARCH = "wakeup";
     private static final String LOST = "lost";
@@ -226,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "failure", e);
         }
         return null;
     }
@@ -500,7 +501,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             return getLastKnownLocation();//locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         } catch (SecurityException e) {
-            e.printStackTrace();
+            Log.e(TAG, "This is bad.", e);
             return null;
         }
     }
@@ -528,7 +529,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
-        LatLng crow = new LatLng(getLocation().getLatitude(), getLocation().getLongitude());// new LatLng(49.217314, -93.863248);
+        Location location = getLocation();
+        LatLng crow = new LatLng(location.getLatitude(), location.getLongitude());// new LatLng(49.217314, -93.863248);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(crow, (float) 16.0));
         mMap.setOnMyLocationButtonClickListener(onMyLocationButtonClickListener);
         mMap.setOnMapLongClickListener(onMyMapLongClickListener);
@@ -563,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
             mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG,"Failed to load mbtiles.", e);
             Toast.makeText(this, "Failed to load mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }

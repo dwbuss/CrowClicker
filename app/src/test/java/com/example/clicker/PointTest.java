@@ -1,43 +1,28 @@
 package com.example.clicker;
 
-import android.location.Location;
-import android.util.Log;
-import android.widget.Toast;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.example.clicker.objectbo.Point;
-import com.google.android.gms.common.util.IOUtils;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.stream.Collectors;
 
 public class PointTest {
 
@@ -57,28 +42,6 @@ public class PointTest {
         System.err.println(fields[3]);
         System.err.println(fields[4]);
         System.err.println(fields[5]);
-    }
-
-    @Test
-    @Ignore
-    public void testGetData() {
-        try {
-            URL url = new URL("https://script.google.com/macros/s/AKfycbwVyG8CSTExV0tPnp8lwLhft7MyhtZD1R7jLJzcwW4-bdQqBFg/exec?action=read");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setInstanceFollowRedirects(true);
-            con.setRequestMethod("GET");
-            int responseCode = con.getResponseCode();
-            String url2 = con.getURL().toString();
-
-            String result = new String(IOUtils.toByteArray(con.getInputStream()));
-            if (responseCode != 200) {
-                System.err.println(con.getResponseMessage());
-            }
-            System.err.println(new String(IOUtils.toByteArray(con.getInputStream())));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Test
@@ -131,7 +94,11 @@ public class PointTest {
                     if (responseCode != 200) {
                         System.err.println(con.getResponseMessage());
                     }
-                    JSONObject reader = new JSONObject(new String(IOUtils.toByteArray(con.getInputStream())));
+                    String text = new BufferedReader(
+                            new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))
+                            .lines()
+                            .collect(Collectors.joining("\n"));
+                    JSONObject reader = new JSONObject(text);
                     JSONObject currently = reader.getJSONObject("currently");
                     String temperature = getDouble(currently, "temperature");
                     String feelsLike = getDouble(currently, "apparentTemperature");

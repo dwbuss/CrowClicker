@@ -97,8 +97,9 @@ public class SettingsActivity extends AppCompatActivity {
                         BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
                         Box<Point> pointBox = boxStore.boxFor(Point.class);
 
-                        try ( InputStream input = getContentResolver().openInputStream(data.getData() )) {
+                        try (InputStream input = getContentResolver().openInputStream(data.getData())) {
                             JSONObject jsonObject = new JSONObject(IOUtils.toString(input, "UTF-8"));
+
                             JSONArray points = jsonObject.getJSONArray("features");
 
                             int counter = convertPoints(pointBox, points);
@@ -133,7 +134,7 @@ public class SettingsActivity extends AppCompatActivity {
             Double newLat = (Double) southWestInWgs84.y;
             Double newLon = (Double) southWestInWgs84.x;
             Point pt = new Point(0, name, length, date, newLon, newLat);
-            if ( pointBox != null )
+            if (pointBox != null)
                 pointBox.put(pt);
             else
                 System.out.println(pt.toString());

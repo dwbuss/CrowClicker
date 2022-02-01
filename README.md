@@ -1,6 +1,9 @@
 # CrowClicker
 
-## How To Install
+## How To Build
+* Checkout repo
+* Change to project directory CrowClicker
+* ./gradelw test
 
 ## Future Ideas/ToDos:
 * Sync with Google Sheets

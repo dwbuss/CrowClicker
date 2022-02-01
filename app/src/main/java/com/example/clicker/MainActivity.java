@@ -77,6 +77,7 @@ import io.objectbox.BoxStore;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     public static final String NOTIFICATION_CHANNEL_ID = "10001";
+    private static final String TAG = "MainActivity";
     private static final String KWS_SEARCH = "wakeup";
     private static final String LOST = "lost";
     private static final String FOLLOW = "follow";
@@ -88,9 +89,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int pic_id = 123;
     private static final int PERMISSION_REQUEST_CODE = 100;
     private final static int ALL_PERMISSIONS_RESULT = 101;
-    SupportMapFragment mapFragment;
     private final List<Point> pointList = new ArrayList<>();
+    SupportMapFragment mapFragment;
     private PointListAdapter pointListAdapter;
+    private final GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener = new GoogleMap.OnInfoWindowLongClickListener() {
+        @Override
+        public void onInfoWindowLongClick(final Marker marker) {
+            Point point = (Point) marker.getTag();
+            showDialogUpdate(point, marker, false);
+        }
+    };
+    private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
+        @Override
+        public void onMarkerDragStart(Marker marker) {
+        }
+
+        @Override
+        public void onMarkerDrag(Marker marker) {
+        }
+
+        @Override
+        public void onMarkerDragEnd(Marker marker) {
+            Point point = (Point) marker.getTag();
+            point.setLat(marker.getPosition().latitude);
+            point.setLon(marker.getPosition().longitude);
+            pointListAdapter.addOrUpdatePoint(point);
+        }
+    });
     private Map<String, Float> colors;
     private boolean follow = false;
     private boolean northUp = false;
@@ -126,15 +151,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         public void onProviderDisabled(String provider) {
         }
     };
-    private LocationManager locationManager;
-    private MyReceiver solunarReciever;
-    private final GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener = new GoogleMap.OnInfoWindowLongClickListener() {
-        @Override
-        public void onInfoWindowLongClick(final Marker marker) {
-            Point point = (Point) marker.getTag();
-            showDialogUpdate(point, marker, false);
-        }
-    };
     private final GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener = new GoogleMap.OnMyLocationButtonClickListener() {
         @Override
         public boolean onMyLocationButtonClick() {
@@ -153,23 +169,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return false;
         }
     };
-    private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
-        @Override
-        public void onMarkerDragStart(Marker marker) {
-        }
-
-        @Override
-        public void onMarkerDrag(Marker marker) {
-        }
-
-        @Override
-        public void onMarkerDragEnd(Marker marker) {
-            Point point = (Point) marker.getTag();
-            point.setLat(marker.getPosition().latitude);
-            point.setLon(marker.getPosition().longitude);
-            pointListAdapter.addOrUpdatePoint(point);
-        }
-    });
     private final GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = (new GoogleMap.OnCameraMoveStartedListener() {
         @Override
         public void onCameraMoveStarted(int reason) {
@@ -205,6 +204,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }).show();
         }
     };
+    private LocationManager locationManager;
+    private MyReceiver solunarReciever;
 
     private static String getExternalStoragePath(Context mContext, boolean is_removable) {
 
@@ -226,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "failure", e);
         }
         return null;
     }
@@ -247,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         ArrayList<String> permissions = new ArrayList<>();
         permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         permissions.add(Manifest.permission.CAMERA);
         permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         permissions.add(Manifest.permission.INTERNET);
@@ -292,8 +294,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void initView() {
         Solunar solunar = new Solunar();
         solunar.populate(getLocation(), GregorianCalendar.getInstance());
-        TextView majorText = ((TextView) findViewById(R.id.majorLbl));
-        TextView minorText = ((TextView) findViewById(R.id.minorLbl));
+        TextView majorText = findViewById(R.id.majorLbl);
+        TextView minorText = findViewById(R.id.minorLbl);
         majorText.setText(solunar.major);
         minorText.setText(solunar.minor);
         if (solunar.isMajor)
@@ -500,7 +502,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             return getLastKnownLocation();//locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         } catch (SecurityException e) {
-            e.printStackTrace();
+            Log.e(TAG, "This is bad.", e);
             return null;
         }
     }
@@ -528,7 +530,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
-        LatLng crow = new LatLng(getLocation().getLatitude(), getLocation().getLongitude());// new LatLng(49.217314, -93.863248);
+        Location location = getLocation();
+        LatLng crow = new LatLng(location.getLatitude(), location.getLongitude());// new LatLng(49.217314, -93.863248);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(crow, (float) 16.0));
         mMap.setOnMyLocationButtonClickListener(onMyLocationButtonClickListener);
         mMap.setOnMapLongClickListener(onMyMapLongClickListener);
@@ -563,7 +566,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
             mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Failed to load mbtiles.", e);
             Toast.makeText(this, "Failed to load mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }

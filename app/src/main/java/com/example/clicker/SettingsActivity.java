@@ -29,6 +29,7 @@ import androidx.preference.PreferenceManager;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointListAdapter;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,7 +48,6 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -99,12 +99,8 @@ public class SettingsActivity extends AppCompatActivity {
                         Box<Point> pointBox = boxStore.boxFor(Point.class);
 
                         try (InputStream input = getContentResolver().openInputStream(data.getData())) {
+                            JSONObject jsonObject = new JSONObject(IOUtils.toString(input, StandardCharsets.UTF_8));
 
-                            String text = new BufferedReader(
-                                    new InputStreamReader(input, StandardCharsets.UTF_8))
-                                    .lines()
-                                    .collect(Collectors.joining("\n"));
-                            JSONObject jsonObject = new JSONObject(text);
                             JSONArray points = jsonObject.getJSONArray("features");
 
                             int counter = convertPoints(pointBox, points);
@@ -136,13 +132,13 @@ public class SettingsActivity extends AppCompatActivity {
             double lat = point.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1);
 
             toWgs84.transform(new ProjCoordinate(lon, lat), southWestInWgs84);
-            Double newLat = (Double) southWestInWgs84.y;
-            Double newLon = (Double) southWestInWgs84.x;
+            Double newLat = southWestInWgs84.y;
+            Double newLon = southWestInWgs84.x;
             Point pt = new Point(0, name, length, date, newLon, newLat);
             if (pointBox != null)
                 pointBox.put(pt);
             else
-                System.out.println(pt.toString());
+                System.out.println(pt);
             counter++;
         }
         return counter;
@@ -298,7 +294,7 @@ public class SettingsActivity extends AppCompatActivity {
                         }
                     });
                 }
-                outputStreamWriter.write(point.toString() + "\n");
+                outputStreamWriter.write(point + "\n");
                 counter++;
             }
             updateCounts();

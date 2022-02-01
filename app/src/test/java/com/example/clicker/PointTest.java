@@ -87,7 +87,7 @@ public class PointTest {
                     Date dateD = new SimpleDateFormat("MM/dd/yyyy h:mm a").parse(dateS + " " + time);
 
                     long date = (dateD.getTime() / 1000);
-                    URL url = new URL("https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + Double.toString(lat) + "," + Double.toString(lon) + "," + date);
+                    URL url = new URL("https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + lat + "," + lon + "," + date);
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
                     con.setRequestMethod("GET");
                     int responseCode = con.getResponseCode();

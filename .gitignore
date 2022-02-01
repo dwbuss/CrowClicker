@@ -13,5 +13,6 @@ models/build
 *.mbtiles
 github.properties
 map.properties
+credentials.json
 *.bak
 *~

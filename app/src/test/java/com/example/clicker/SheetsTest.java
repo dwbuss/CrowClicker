@@ -34,10 +34,9 @@ public class SheetsTest {
      * If modifying these scopes, delete your previously saved tokens/ folder.
      */
     private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
-    private static final String CREDENTIALS_FILE_PATH = "C:\\Users\\Buss\\AndroidStudioProjects\\CrowClicker\\credentials.json";
-    Sheets service;
-
+    private static final String CREDENTIALS_FILE_PATH = "../credentials.json";
     final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
+    Sheets service;
 
     @Before
     public void setUp() throws Exception {
@@ -99,7 +98,7 @@ public class SheetsTest {
     @Test
     @Ignore
     public void testDeleteSheets() throws IOException {
-       service.spreadsheets().values()
+        service.spreadsheets().values()
                 .clear(spreadsheetId, "test!10:11", new ClearValuesRequest())
                 .execute();
     }

@@ -32,10 +32,9 @@ public class PointListAdapter extends RecyclerView.Adapter<PointListAdapter.Poin
     public static final int MODE_DELETE = 2;
 
     private final Context context;
-    private List<Point> pointList;
-
     private final BoxStore boxStore;
     private final Box<Point> pointBox;
+    private List<Point> pointList;
 
     public PointListAdapter(Context context, List<Point> pointList) {
         this.context = context;
@@ -146,8 +145,8 @@ public class PointListAdapter extends RecyclerView.Adapter<PointListAdapter.Poin
         final View dialogView = inflater.inflate(R.layout.dialog_point_add, null);
         dialogBuilder.setView(dialogView);
 
-        final EditText etPointName = (EditText) dialogView.findViewById(R.id.etPlayerName);
-        final EditText etJerseyNumber = (EditText) dialogView.findViewById(R.id.etJerseyNumber);
+        final EditText etPointName = dialogView.findViewById(R.id.etPlayerName);
+        final EditText etJerseyNumber = dialogView.findViewById(R.id.etJerseyNumber);
 
         String title = "";
         switch (mode) {
@@ -243,9 +242,9 @@ public class PointListAdapter extends RecyclerView.Adapter<PointListAdapter.Poin
 
         public PointListHolder(View itemView) {
             super(itemView);
-            tvPointWithJersey = (TextView) itemView.findViewById(R.id.tvPlayerWithJersey);
-            btnEdit = (ImageButton) itemView.findViewById(R.id.btnEdit);
-            btnDelete = (ImageButton) itemView.findViewById(R.id.btnDelete);
+            tvPointWithJersey = itemView.findViewById(R.id.tvPlayerWithJersey);
+            btnEdit = itemView.findViewById(R.id.btnEdit);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
             btnEdit.setOnClickListener(this);
             btnDelete.setOnClickListener(this);
         }

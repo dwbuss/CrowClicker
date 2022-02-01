@@ -35,9 +35,8 @@ public class SheetsTest {
      */
     private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
     private static final String CREDENTIALS_FILE_PATH = "../credentials.json";
-    Sheets service;
-
     final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
+    Sheets service;
 
     @Before
     public void setUp() throws Exception {
@@ -99,7 +98,7 @@ public class SheetsTest {
     @Test
     @Ignore
     public void testDeleteSheets() throws IOException {
-       service.spreadsheets().values()
+        service.spreadsheets().values()
                 .clear(spreadsheetId, "test!10:11", new ClearValuesRequest())
                 .execute();
     }

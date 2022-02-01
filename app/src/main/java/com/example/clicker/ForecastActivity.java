@@ -27,7 +27,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
-        Button homeBtn = (Button) findViewById(R.id.home);
+        Button homeBtn = findViewById(R.id.home);
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -36,8 +36,8 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         });
         cal = GregorianCalendar.getInstance();
 
-        btnDatePicker = (Button) findViewById(R.id.btn_date);
-        btnTimePicker = (Button) findViewById(R.id.btn_time);
+        btnDatePicker = findViewById(R.id.btn_date);
+        btnTimePicker = findViewById(R.id.btn_time);
 
         btnDatePicker.setOnClickListener(this);
         btnTimePicker.setOnClickListener(this);

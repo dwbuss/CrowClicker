@@ -23,7 +23,6 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="${mapApiKey}" />
-
         <activity
             android:name="com.example.clicker.SettingsActivity"
             android:label="@string/title_activity_settings"/>

@@ -41,15 +41,13 @@ public class SheetsTest {
     @Before
     public void setUp() throws Exception {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        InputStream in = new FileInputStream(new File(CREDENTIALS_FILE_PATH));
-        if (in == null) {
-            throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
-        }
-        GoogleCredential credentials = GoogleCredential.fromStream(in).createScoped(SCOPES);
 
-        service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
-                .setApplicationName(APPLICATION_NAME)
-                .build();
+        try ( InputStream in = new FileInputStream(new File(CREDENTIALS_FILE_PATH)) ) {
+            GoogleCredential credentials = GoogleCredential.fromStream(in).createScoped(SCOPES);
+            service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
+                    .setApplicationName(APPLICATION_NAME)
+                    .build();
+        }
     }
 
     @Test

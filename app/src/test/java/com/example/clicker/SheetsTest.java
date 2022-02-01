@@ -34,7 +34,7 @@ public class SheetsTest {
      * If modifying these scopes, delete your previously saved tokens/ folder.
      */
     private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
-    private static final String CREDENTIALS_FILE_PATH = "C:\\Users\\Buss\\AndroidStudioProjects\\CrowClicker\\credentials.json";
+    private static final String CREDENTIALS_FILE_PATH = "../credentials.json";
     Sheets service;
 
     final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";

@@ -3,7 +3,7 @@
 ## How To Build
 * Checkout repo
 * Change to project directory CrowClicker
-* ./gradelw test
+* ./gradlew test
 
 ## Future Ideas/ToDos:
 * Sync with Google Sheets

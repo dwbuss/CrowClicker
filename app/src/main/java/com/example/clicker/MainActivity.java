@@ -265,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 3, locationListenerGPS);
         } catch (Exception e) {
+            Log.e(TAG, "Something happened with LocationManager?", e);
         }
 
         solunarReciever = new MyReceiver(getLocation());
@@ -380,6 +381,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

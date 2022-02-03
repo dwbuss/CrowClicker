@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import io.objectbox.annotation.Entity;
@@ -94,6 +95,28 @@ public class Point {
         this.timeStamp = Calendar.getInstance().getTime();
         this.lat = lat;
         this.lon = lon;
+    }
+
+    public Point(List row) throws ParseException {
+//  [Row, Verified, Angler, Length, Girth, Lake, Date, Time, Bait, Anglers, Coordinates, Latitude, Longitude, Notes, Temperature, Feels Like, Wind Speed, Wind Gust, Wind Dir, Pressure, Humidity, Dew Point, Cloud Cover, Precip %, Moon Phase, Is Major, Is Minor]
+//  [2, , Tony, 35.75, , Crow, 9/17/2021, 9:25 AM, blade blade, 4, -10447030.528943,6306926.152734499, 49.18861458, -93.84727198,   , 54, 54, 14, 27, NW, 1013, 0.64, 42, 0.11, 0, 4 - Waxing Gibbous, FALSE, FALSE]
+        name = (String) row.get(2);
+        lon = (double) row.get(12);
+        lat = (double) row.get(11);
+  //      DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.US);
+  //      timeStamp = osLocalizedDateFormat.parse((String) row.get(6));
+        contactType = "CATCH";
+        airTemp = (String) row.get(13);
+      //  waterTemp = (String) row.get(13);
+        bait = (String) row.get(8);
+        fishSize = (String) row.get(3);
+        //notes =(String) row.get(13);
+        windSpeed = (String) row.get(14);
+        windDir = (String) row.get(16);
+        cloudCover =(String) row.get(20);
+        dewPoint =(String) row.get(19);
+        pressure = (String) row.get(17);
+        humidity =(String) row.get(18);
     }
 
 

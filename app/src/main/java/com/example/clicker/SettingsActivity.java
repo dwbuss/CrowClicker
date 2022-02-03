@@ -28,6 +28,14 @@ import androidx.preference.PreferenceManager;
 
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointListAdapter;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.SheetsScopes;
+import com.google.api.services.sheets.v4.model.ValueRange;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -41,12 +49,14 @@ import org.locationtech.proj4j.ProjCoordinate;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 
 import io.objectbox.Box;
@@ -208,10 +218,37 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void importPoints(View view) {
-        Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
-        chooseFile.setType("*/*");
-        chooseFile = Intent.createChooser(chooseFile, "Select Import File");
-        importActivity.launch(chooseFile);
+        String CREDENTIALS_FILE_PATH = "../credentials.json";
+        JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+        try (InputStream in = new FileInputStream(new File(CREDENTIALS_FILE_PATH))) {
+            NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+
+            List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
+            final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
+
+            BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
+            Box<Point> pointBox = boxStore.boxFor(Point.class);
+            GoogleCredential credentials = GoogleCredential.fromStream(in).createScoped(SCOPES);
+            Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
+                    .setApplicationName("Crow Clicker")
+                    .build();
+            String range = "test!A:AA";
+            ValueRange response = service.spreadsheets().values()
+                    .get(spreadsheetId, range)
+                    .execute();
+            List<List<Object>> values = response.getValues();
+            if (values == null || values.isEmpty()) {
+                System.out.println("No data found.");
+            } else {
+                for (List row : values) {
+                    pointBox.put(new Point(row));
+                }
+            }
+            updateCounts();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void importGeoJson(View view) {

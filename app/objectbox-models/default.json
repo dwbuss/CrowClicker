@@ -95,12 +95,6 @@
           "id": "17:8480593803509950156",
           "name": "humidity",
           "type": 9
-        },
-        {
-          "id": "18:393172915906386172",
-          "name": "sheetId",
-          "type": 6,
-          "flags": 4
         }
       ],
       "relations": []

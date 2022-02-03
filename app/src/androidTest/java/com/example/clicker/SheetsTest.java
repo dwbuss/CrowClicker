@@ -1,5 +1,12 @@
 package com.example.clicker;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -11,19 +18,24 @@ import com.google.api.services.sheets.v4.model.ClearValuesRequest;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@RunWith(AndroidJUnit4.class)
 public class SheetsTest {
     private static final String APPLICATION_NAME = "crowapp-257113";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
@@ -33,24 +45,21 @@ public class SheetsTest {
      * If modifying these scopes, delete your previously saved tokens/ folder.
      */
     private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
-    private static final String CREDENTIALS_FILE_PATH = "../credentials.json";
     final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
     Sheets service;
 
     @Before
     public void setUp() throws Exception {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-
-        try (InputStream in = new FileInputStream(new File(CREDENTIALS_FILE_PATH))) {
-            GoogleCredential credentials = GoogleCredential.fromStream(in).createScoped(SCOPES);
-            service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
-                    .setApplicationName(APPLICATION_NAME)
-                    .build();
-        }
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Bundle metaData = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA).metaData;
+        GoogleCredential credentials = GoogleCredential.fromStream(IOUtils.toInputStream(metaData.getString("com.google.api.credentials"), StandardCharsets.UTF_8)).createScoped(SCOPES);
+        service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
+                .setApplicationName(APPLICATION_NAME)
+                .build();
     }
 
     @Test
-    @Ignore
     public void testReadSheets() throws IOException, GeneralSecurityException {
         String range = "test";
         ValueRange response = service.spreadsheets().values()
@@ -67,7 +76,6 @@ public class SheetsTest {
     }
 
     @Test
-    @Ignore
     public void testWriteSheets() throws IOException {
         ValueRange body = new ValueRange()
                 .setValues(Arrays.asList(
@@ -80,7 +88,6 @@ public class SheetsTest {
     }
 
     @Test
-    @Ignore
     public void testUpdateSheets() throws IOException {
         ValueRange body = new ValueRange()
                 .setValues(Arrays.asList(
@@ -93,7 +100,6 @@ public class SheetsTest {
     }
 
     @Test
-    @Ignore
     public void testDeleteSheets() throws IOException {
         service.spreadsheets().values()
                 .clear(spreadsheetId, "test!10:11", new ClearValuesRequest())

@@ -105,8 +105,13 @@ public class Point {
         name = get(row, 2);
         lat = Double.parseDouble(get(row, 11));
         lon = Double.parseDouble(get(row, 12));
-        DateFormat osLocalizedDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.US);
-        timeStamp = osLocalizedDateFormat.parse(((String) row.get(6)).trim() + " " + ((String) row.get(7)).trim());
+        if (((String) row.get(7)).trim().isEmpty()) {
+            DateFormat osLocalizedDateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+            timeStamp = osLocalizedDateFormat.parse(((String) row.get(6)).trim());
+        } else {
+            DateFormat osLocalizedDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.US);
+            timeStamp = osLocalizedDateFormat.parse(((String) row.get(6)).trim() + " " + ((String) row.get(7)).trim());
+        }
         contactType = "CATCH";
         airTemp = get(row, 13);
         bait = get(row, 8);

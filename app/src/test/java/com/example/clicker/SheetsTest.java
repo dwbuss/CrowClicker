@@ -1,5 +1,6 @@
 package com.example.clicker;
 
+import com.example.clicker.objectbo.Point;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -50,9 +51,8 @@ public class SheetsTest {
     }
 
     @Test
-    @Ignore
     public void testReadSheets() throws IOException, GeneralSecurityException {
-        String range = "test";
+        String range = "Data";
         ValueRange response = service.spreadsheets().values()
                 .get(spreadsheetId, range)
                 .execute();
@@ -60,9 +60,19 @@ public class SheetsTest {
         if (values == null || values.isEmpty()) {
             System.out.println("No data found.");
         } else {
+            int added = 0;
             for (List row : values) {
-                System.err.println("ROW: " + row);
+
+                try {
+                    new Point(row);
+                    added++;
+                } catch (NumberFormatException x) {
+                } catch (Exception e) {
+                    System.err.println("ROW " + row.get(0) + " " + row);
+                    e.printStackTrace();
+                }
             }
+            System.err.println("ROWS: " + added);
         }
     }
 

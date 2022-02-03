@@ -12,7 +12,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Looper;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
@@ -103,31 +102,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 }
             });
-    ActivityResultLauncher<Intent> importGeoActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        Intent data = result.getData();
-                        BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-                        Box<Point> pointBox = boxStore.boxFor(Point.class);
 
-                        try (InputStream input = getContentResolver().openInputStream(data.getData())) {
-                            JSONObject jsonObject = new JSONObject(IOUtils.toString(input, StandardCharsets.UTF_8));
-
-                            JSONArray points = jsonObject.getJSONArray("features");
-
-                            int counter = convertPoints(pointBox, points);
-                            Toast.makeText(getApplicationContext(), "Imported " + counter + " points", Toast.LENGTH_SHORT).show();
-
-                        } catch (Exception e) {
-                            Toast.makeText(getApplicationContext(), "Geo Import failed " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            Log.e(TAG, "GeoImport Failed", e);
-                        }
-                    }
-                }
-            });
 
     static int convertPoints(Box<Point> pointBox, JSONArray points) throws JSONException {
         CRSFactory crsFactory = new CRSFactory();
@@ -269,13 +244,6 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         Toast.makeText(this, "Background import started.", Toast.LENGTH_LONG).show();
-    }
-
-    public void importGeoJson(View view) {
-        Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
-        chooseFile.setType("*/*");
-        chooseFile = Intent.createChooser(chooseFile, "Select Geo Import File");
-        importGeoActivity.launch(chooseFile);
     }
 
     private Location getLastKnownLocation() {

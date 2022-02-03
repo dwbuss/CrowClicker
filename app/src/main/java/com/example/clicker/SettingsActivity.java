@@ -12,6 +12,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
@@ -59,6 +60,8 @@ import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -150,7 +153,7 @@ public class SettingsActivity extends AppCompatActivity {
             if (pointBox != null)
                 pointBox.put(pt);
             else
-                System.out.println(pt);
+                Log.d(TAG, pt.toString());
             counter++;
         }
         return counter;
@@ -220,7 +223,8 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void importPoints(View view) throws PackageManager.NameNotFoundException {
-        Thread thread = new Thread(new Runnable() {
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -246,26 +250,25 @@ public class SettingsActivity extends AppCompatActivity {
                             .execute();
                     List<List<Object>> values = response.getValues();
                     if (values == null || values.isEmpty()) {
-                        System.out.println("No data found.");
+                        Log.d(TAG, "No data found.");
                     } else {
+                        int counter = 0;
                         for (List row : values) {
                             try {
                                 pointBox.put(new Point(row));
-                                System.out.println("Point added " + row.get(0));
+                                Log.d(TAG, String.format("Point added %s", row.get(0)));
+                                counter++;
                             } catch (Exception e) {
-                                System.out.println("Invalid Point " + row.get(0));
+                                Log.d(TAG, String.format("Invalid Point %s", row.get(0)));
                             }
                         }
-                        Toast.makeText(getApplicationContext(), "Finished Import", Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "Failure!", e);
+                    Log.e(TAG, "Failure during import.", e);
                 }
             }
         });
-
-        thread.start();
-
+        Toast.makeText(this, "Background import started.", Toast.LENGTH_LONG).show();
     }
 
     public void importGeoJson(View view) {

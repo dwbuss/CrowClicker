@@ -3,6 +3,7 @@ package com.example.clicker.objectbo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InvalidObjectException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -98,11 +99,19 @@ public class Point {
         this.lon = lon;
     }
 
-    public Point(List row) throws ParseException {
+    public Point(List row) throws ParseException, InvalidObjectException {
 //  [Row, Verified, Angler, Length, Girth, Lake, Date, Time, Bait, Anglers, Coordinates, Latitude, Longitude, Notes, Temperature, Feels Like, Wind Speed, Wind Gust, Wind Dir, Pressure, Humidity, Dew Point, Cloud Cover, Precip %, Moon Phase, Is Major, Is Minor]
 //  [2, , Tony, 35.75, , Crow, 9/17/2021, 9:25 AM, blade blade, 4, -10447030.528943,6306926.152734499, 49.18861458, -93.84727198,   , 54, 54, 14, 27, NW, 1013, 0.64, 42, 0.11, 0, 4 - Waxing Gibbous, FALSE, FALSE]
         sheetId = Long.parseLong(get(row, 0));
-        name = get(row, 2);
+        name = get(row, 2).trim();
+        if (name.equalsIgnoreCase("label") ||
+                name.equalsIgnoreCase("scenery") ||
+                name.equalsIgnoreCase("NoFish") ||
+                name.equalsIgnoreCase("ftony") ||
+                name.equalsIgnoreCase("fdan") ||
+                name.equalsIgnoreCase("fblair") ||
+                name.equalsIgnoreCase("fchris"))
+            throw new InvalidObjectException("Invalid point " + name);
         lat = Double.parseDouble(get(row, 11));
         lon = Double.parseDouble(get(row, 12));
         if (((String) row.get(7)).trim().isEmpty()) {

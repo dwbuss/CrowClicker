@@ -41,7 +41,7 @@ public class SheetsTest {
     public void setUp() throws Exception {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
-        try ( InputStream in = new FileInputStream(new File(CREDENTIALS_FILE_PATH)) ) {
+        try (InputStream in = new FileInputStream(new File(CREDENTIALS_FILE_PATH))) {
             GoogleCredential credentials = GoogleCredential.fromStream(in).createScoped(SCOPES);
             service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
                     .setApplicationName(APPLICATION_NAME)

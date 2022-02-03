@@ -101,7 +101,7 @@ public class Point {
     public Point(List row) throws ParseException {
 //  [Row, Verified, Angler, Length, Girth, Lake, Date, Time, Bait, Anglers, Coordinates, Latitude, Longitude, Notes, Temperature, Feels Like, Wind Speed, Wind Gust, Wind Dir, Pressure, Humidity, Dew Point, Cloud Cover, Precip %, Moon Phase, Is Major, Is Minor]
 //  [2, , Tony, 35.75, , Crow, 9/17/2021, 9:25 AM, blade blade, 4, -10447030.528943,6306926.152734499, 49.18861458, -93.84727198,   , 54, 54, 14, 27, NW, 1013, 0.64, 42, 0.11, 0, 4 - Waxing Gibbous, FALSE, FALSE]
-        sheetId = Long.parseLong(get(row, 1));
+        sheetId = Long.parseLong(get(row, 0));
         name = get(row, 2);
         lat = Double.parseDouble(get(row, 11));
         lon = Double.parseDouble(get(row, 12));

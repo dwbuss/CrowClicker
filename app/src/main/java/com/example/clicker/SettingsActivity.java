@@ -3,9 +3,11 @@ package com.example.clicker;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -48,6 +50,7 @@ import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -76,6 +79,7 @@ public class SettingsActivity extends AppCompatActivity {
                         try {
                             BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
                             Box<Point> pointBox = boxStore.boxFor(Point.class);
+
                             InputStream ifile = getContentResolver().openInputStream(data.getData());
                             InputStreamReader is = new InputStreamReader(ifile);
                             BufferedReader bufferedReader = new BufferedReader(is);
@@ -217,37 +221,57 @@ public class SettingsActivity extends AppCompatActivity {
         dialogDelete.show();
     }
 
-    public void importPoints(View view) {
-        String CREDENTIALS_FILE_PATH = "../credentials.json";
-        JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-        try (InputStream in = new FileInputStream(new File(CREDENTIALS_FILE_PATH))) {
-            NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+    public void importPoints(View view) throws PackageManager.NameNotFoundException {
+        Thread thread = new Thread(new Runnable() {
 
-            List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
-            final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
+            @Override
+            public void run() {
+                try {
+                    JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
-            BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-            Box<Point> pointBox = boxStore.boxFor(Point.class);
-            GoogleCredential credentials = GoogleCredential.fromStream(in).createScoped(SCOPES);
-            Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
-                    .setApplicationName("Crow Clicker")
-                    .build();
-            String range = "test!A:AA";
-            ValueRange response = service.spreadsheets().values()
-                    .get(spreadsheetId, range)
-                    .execute();
-            List<List<Object>> values = response.getValues();
-            if (values == null || values.isEmpty()) {
-                System.out.println("No data found.");
-            } else {
-                for (List row : values) {
-                    pointBox.put(new Point(row));
+                    Context appContext = getApplicationContext();
+                    Bundle metaData = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA).metaData;
+                    try (InputStream in = new ByteArrayInputStream(metaData.getByteArray("com.google.api.credentials"))) {
+                        //try (InputStream in = new ByteArrayInputStream(creds.getBytes(StandardCharsets.UTF_8))) {
+                        NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+
+                        List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
+                        final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
+
+                        BoxStore boxStore = ((ObjectBoxApp) appContext).getBoxStore();
+                        Box<Point> pointBox = boxStore.boxFor(Point.class);
+                        GoogleCredential credentials = GoogleCredential.fromStream(in).createScoped(SCOPES);
+                        Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
+                                .setApplicationName("Crow Clicker")
+                                .build();
+                        String range = "Data";
+                        ValueRange response = service.spreadsheets().values()
+                                .get(spreadsheetId, range)
+                                .execute();
+                        List<List<Object>> values = response.getValues();
+                        if (values == null || values.isEmpty()) {
+                            System.out.println("No data found.");
+                        } else {
+                            for (List row : values) {
+                                try {
+                                    pointBox.put(new Point(row));
+                                    System.out.println("Point added " + row.get(0));
+                                } catch (Exception e) {
+                                    System.out.println("Invalid Point " + row.get(0));
+                                }
+                            }
+                            Toast.makeText(getApplicationContext(), "Finished Import", Toast.LENGTH_LONG).show();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-            updateCounts();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
+
+        thread.start();
 
     }
 

@@ -1,6 +1,7 @@
 package com.example.clicker;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import com.example.clicker.objectbo.Point;
 
@@ -19,9 +20,11 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class PointTest {
@@ -42,6 +45,23 @@ public class PointTest {
         System.err.println(fields[3]);
         System.err.println(fields[4]);
         System.err.println(fields[5]);
+    }
+
+    @Test
+    public void importRow() throws ParseException {
+        //  [Row, Verified, Angler, Length, Girth, Lake, Date, Time, Bait, Anglers, Coordinates, Latitude, Longitude, Notes, Temperature, Feels Like, Wind Speed, Wind Gust, Wind Dir, Pressure, Humidity, Dew Point, Cloud Cover, Precip %, Moon Phase, Is Major, Is Minor]
+        List row = Arrays.asList("2, ,Tony,35.75, , Crow, 9/17/2021, 9:25 AM, blade blade, 4, -10447030.528943 6306926.152734499, 49.18861458, -93.84727198,   , 54, 54, 14, 27, NW, 1013, 0.64, 42, 0.11, 0, 4 - Waxing Gibbous, FALSE, FALSE".split(","));
+        Point point = new Point(row);
+        assertEquals("49.18861458", Double.toString(point.getLat()));
+        assertEquals("-93.84727198", Double.toString(point.getLon()));
+        assertEquals("Tony", point.getName());
+        assertEquals("35.75", point.getFishSize());
+        assertNotNull(point.getTimeStamp());
+        //row = Arrays.asList("Row, Verified, Angler, Length, Girth, Lake, Date, Time, Bait, Anglers, Coordinates, Latitude, Longitude, Notes, Temperature, Feels Like, Wind Speed, Wind Gust, Wind Dir, Pressure, Humidity, Dew Point, Cloud Cover, Precip %, Moon Phase, Is Major, Is Minor".split(","));
+        //point = new Point(row);
+        //row = Arrays.asList("2, , Tony, 35.75, , Crow, 9/17/2021, 9:25 AM, blade blade, 4, -10447030.528943,6306926.152734499, , ,   , 54, 54, 14, 27, NW, 1013, 0.64, 42, 0.11, 0, 4 - Waxing Gibbous, FALSE, FALSE".split(","));
+        //point = new Point(row);
+
     }
 
     @Test

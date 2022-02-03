@@ -1,9 +1,18 @@
 apply plugin: 'com.android.application'
 
 def mapProperties = new Properties()
-try { mapProperties.load(new FileInputStream(rootProject.file("map.properties"))) }
+try {
+    mapProperties.load(new FileInputStream(rootProject.file("map.properties")))
+}
 catch (FileNotFoundException fnf) {
-    mapProperties['google_maps_api_key']='MISSING'
+    mapProperties['google_maps_api_key'] = 'MISSING'
+}
+
+try {
+    mapProperties['google_creds'] = new File('credentials.json').text
+}
+catch (FileNotFoundException fnf) {
+    mapProperties['google_creds'] = 'MISSING'
 }
 
 android {
@@ -15,7 +24,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        manifestPlaceholders = [mapApiKey:mapProperties['google_maps_api_key']]
+        manifestPlaceholders = [mapApiKey: mapProperties['google_maps_api_key'], googleCreds: mapProperties['google_creds']]
     }
     buildTypes {
         release {
@@ -26,6 +35,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
+    }
+    packagingOptions {
+        exclude "META-INF/DEPENDENCIES"
     }
 }
 
@@ -46,9 +58,9 @@ dependencies {
     implementation 'io.objectbox:objectbox-android:2.9.1'
     implementation 'org.shredzone.commons:commons-suncalc:3.5'
     implementation 'org.locationtech.proj4j:proj4j:1.1.4'
-    testImplementation 'com.google.api-client:google-api-client:1.33.0'
-    testImplementation 'com.google.oauth-client:google-oauth-client-jetty:1.32.1'
-    testImplementation 'com.google.apis:google-api-services-sheets:v4-rev20210629-1.32.1'
+    implementation 'com.google.api-client:google-api-client:1.33.0'
+    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.32.1'
+    implementation 'com.google.apis:google-api-services-sheets:v4-rev20210629-1.32.1'
     testImplementation 'org.json:json:20211205'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

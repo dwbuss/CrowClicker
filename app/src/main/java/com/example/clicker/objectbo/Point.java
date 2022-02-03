@@ -19,6 +19,7 @@ public class Point {
 
     @Id
     private long id;
+    private long sheetId;
     private String name;
     private double lon;
     private double lat;
@@ -60,8 +61,8 @@ public class Point {
     public Point(String csvRecord) throws ParseException {
         String[] parts = csvRecord.split("\t");
         name = parts[1];
-        lon = new Double(parts[2]);
-        lat = new Double(parts[3]);
+        lon = Double.valueOf(parts[2]);
+        lat = Double.valueOf(parts[3]);
         DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.US);
         timeStamp = osLocalizedDateFormat.parse(parts[4]);
         contactType = parts[5];
@@ -100,25 +101,33 @@ public class Point {
     public Point(List row) throws ParseException {
 //  [Row, Verified, Angler, Length, Girth, Lake, Date, Time, Bait, Anglers, Coordinates, Latitude, Longitude, Notes, Temperature, Feels Like, Wind Speed, Wind Gust, Wind Dir, Pressure, Humidity, Dew Point, Cloud Cover, Precip %, Moon Phase, Is Major, Is Minor]
 //  [2, , Tony, 35.75, , Crow, 9/17/2021, 9:25 AM, blade blade, 4, -10447030.528943,6306926.152734499, 49.18861458, -93.84727198,   , 54, 54, 14, 27, NW, 1013, 0.64, 42, 0.11, 0, 4 - Waxing Gibbous, FALSE, FALSE]
-        name = (String) row.get(2);
-        lon = (double) row.get(12);
-        lat = (double) row.get(11);
-  //      DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.US);
-  //      timeStamp = osLocalizedDateFormat.parse((String) row.get(6));
+        sheetId = Long.parseLong(get(row, 1));
+        name = get(row, 2);
+        lat = Double.parseDouble(get(row, 11));
+        lon = Double.parseDouble(get(row, 12));
+        DateFormat osLocalizedDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.US);
+        timeStamp = osLocalizedDateFormat.parse(((String) row.get(6)).trim() + " " + ((String) row.get(7)).trim());
         contactType = "CATCH";
-        airTemp = (String) row.get(13);
-      //  waterTemp = (String) row.get(13);
-        bait = (String) row.get(8);
-        fishSize = (String) row.get(3);
-        //notes =(String) row.get(13);
-        windSpeed = (String) row.get(14);
-        windDir = (String) row.get(16);
-        cloudCover =(String) row.get(20);
-        dewPoint =(String) row.get(19);
-        pressure = (String) row.get(17);
-        humidity =(String) row.get(18);
+        airTemp = get(row, 13);
+        bait = get(row, 8);
+        fishSize = get(row, 3);
+        // notes = get(row, 13);
+        windSpeed = get(row, 14);
+        windDir = get(row, 16);
+        cloudCover = get(row, 20);
+        dewPoint = get(row, 19);
+        pressure = get(row, 17);
+        humidity = get(row, 18);
     }
 
+    String get(List row, int id) {
+        try {
+            return (String) row.get(id);
+        } catch (Exception e) {
+            return "";
+        }
+
+    }
 
     public long getId() {
         return id;
@@ -254,6 +263,14 @@ public class Point {
 
     public void setHumidity(String humidity) {
         this.humidity = humidity;
+    }
+
+    public long getSheetId() {
+        return sheetId;
+    }
+
+    public void setSheetId(long sheetId) {
+        this.sheetId = sheetId;
     }
 
     @Override

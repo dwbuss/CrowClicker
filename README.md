@@ -14,3 +14,5 @@
   * Individual Sheets or main sheet?
   * How to sync unique ids?
   * How to pull/merge new changes?
+  * Only want Crow points going to spreadsheet (need to select which points to push)
+  * add check box to catch to push?

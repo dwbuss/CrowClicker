@@ -465,20 +465,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                                              .position(new LatLng(point.getLat(), point.getLon()))
-                                              .title(new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp()))
-                                              .draggable(true)
-                                              .icon(getMarker(point.getContactType())));
+                    .position(new LatLng(point.getLat(), point.getLon()))
+                    .title(new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp()))
+                    .draggable(true)
+                    .icon(getMarker(point.getContactType(), point.getName())));
             m.setTag(point);
             return m;
         }
         return null;
     }
 
-    private BitmapDescriptor getMarker(String contactType) {
-        if (contactType.equals("CATCH"))
-            return BitmapDescriptorFactory.fromResource(R.drawable.gm_catch);
-        else if (contactType.equals("CONTACT"))
+    private BitmapDescriptor getMarker(String contactType, String angler) {
+        if (contactType.equals("CATCH")) {
+            if (angler.equalsIgnoreCase("tony"))
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_tony);
+            else if (angler.equalsIgnoreCase("dan"))
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_dan);
+            else if (angler.equalsIgnoreCase("chris"))
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_chris);
+            else if (angler.equalsIgnoreCase("jeff"))
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_jeff);
+            else
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_other);
+        } else if (contactType.equals("CONTACT"))
             return BitmapDescriptorFactory.fromResource(R.drawable.gm_contact);
         return BitmapDescriptorFactory.fromResource(R.drawable.gm_follow);
     }

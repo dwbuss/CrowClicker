@@ -52,7 +52,7 @@ public class SheetsTest {
     @Test
     @Ignore
     public void testReadSheets() throws IOException, GeneralSecurityException {
-        String range = "test!A:AA";
+        String range = "test";
         ValueRange response = service.spreadsheets().values()
                 .get(spreadsheetId, range)
                 .execute();

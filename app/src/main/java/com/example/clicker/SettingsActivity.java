@@ -50,9 +50,7 @@ import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -223,50 +221,45 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void importPoints(View view) throws PackageManager.NameNotFoundException {
         Thread thread = new Thread(new Runnable() {
-
             @Override
             public void run() {
                 try {
                     JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
+                    NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+
+                    List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
+                    final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
+
                     Context appContext = getApplicationContext();
+                    BoxStore boxStore = ((ObjectBoxApp) appContext).getBoxStore();
+                    Box<Point> pointBox = boxStore.boxFor(Point.class);
                     Bundle metaData = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA).metaData;
-                    try (InputStream in = new ByteArrayInputStream(metaData.getByteArray("com.google.api.credentials"))) {
-                        //try (InputStream in = new ByteArrayInputStream(creds.getBytes(StandardCharsets.UTF_8))) {
-                        NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
-                        List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
-                        final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
-
-                        BoxStore boxStore = ((ObjectBoxApp) appContext).getBoxStore();
-                        Box<Point> pointBox = boxStore.boxFor(Point.class);
-                        GoogleCredential credentials = GoogleCredential.fromStream(in).createScoped(SCOPES);
-                        Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
-                                .setApplicationName("Crow Clicker")
-                                .build();
-                        String range = "Data";
-                        ValueRange response = service.spreadsheets().values()
-                                .get(spreadsheetId, range)
-                                .execute();
-                        List<List<Object>> values = response.getValues();
-                        if (values == null || values.isEmpty()) {
-                            System.out.println("No data found.");
-                        } else {
-                            for (List row : values) {
-                                try {
-                                    pointBox.put(new Point(row));
-                                    System.out.println("Point added " + row.get(0));
-                                } catch (Exception e) {
-                                    System.out.println("Invalid Point " + row.get(0));
-                                }
+                    GoogleCredential credentials = GoogleCredential.fromStream(IOUtils.toInputStream(metaData.getString("com.google.api.credentials"), StandardCharsets.UTF_8)).createScoped(SCOPES);
+                    Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
+                            .setApplicationName("Crow Clicker")
+                            .build();
+                    String range = "Data";
+                    ValueRange response = service.spreadsheets().values()
+                            .get(spreadsheetId, range)
+                            .execute();
+                    List<List<Object>> values = response.getValues();
+                    if (values == null || values.isEmpty()) {
+                        System.out.println("No data found.");
+                    } else {
+                        for (List row : values) {
+                            try {
+                                pointBox.put(new Point(row));
+                                System.out.println("Point added " + row.get(0));
+                            } catch (Exception e) {
+                                System.out.println("Invalid Point " + row.get(0));
                             }
-                            Toast.makeText(getApplicationContext(), "Finished Import", Toast.LENGTH_LONG).show();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "Finished Import", Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "Failure!", e);
                 }
             }
         });

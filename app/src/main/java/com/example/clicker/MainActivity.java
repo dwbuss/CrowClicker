@@ -374,9 +374,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean checkPermission() {
         int result1 = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
         int result2 = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
-        int result3 = ContextCompat.checkSelfPermission(this, android.Manifest.permission.INTERNET);
-        int result4 = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-        return (result1 == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED && result3 == PackageManager.PERMISSION_GRANTED && result4 == PackageManager.PERMISSION_GRANTED);
+        int result3 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+        int result4 = ContextCompat.checkSelfPermission(this, android.Manifest.permission.INTERNET);
+        int result5 = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        return (result1 == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED && result3 == PackageManager.PERMISSION_GRANTED && result4 == PackageManager.PERMISSION_GRANTED && result5 == PackageManager.PERMISSION_GRANTED);
     }
 
     @Override

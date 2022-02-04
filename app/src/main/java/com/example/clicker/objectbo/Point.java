@@ -7,8 +7,10 @@ import java.io.InvalidObjectException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -302,5 +304,14 @@ public class Point {
             return getName() + " saw one on a " + getBait() + "\r\nhttp://maps.google.com/maps?q=" + getLat() + "," + getLon();
         else
             return getName() + " lost one on a " + getBait() + "\r\nhttp://maps.google.com/maps?q=" + getLat() + "," + getLon();
+    }
+
+    public List<List<Object>> getSheetBody() {
+        DateFormat dayFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm a", Locale.US);
+        String day = dayFormat.format(getTimeStamp());
+        String time = timeFormat.format(getTimeStamp());
+        return Arrays.asList(
+                Arrays.asList(sheetId, "", name, fishSize, "", "CROW", day, time, bait, "", "", lat, lon, "", airTemp, "", windSpeed, "", windDir, pressure, humidity, dewPoint, cloudCover, "", "", "", ""));
     }
 }

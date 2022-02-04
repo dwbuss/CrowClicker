@@ -1,5 +1,7 @@
 package com.example.clicker;
 
+import static org.junit.Assert.assertEquals;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -26,9 +28,11 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RunWith(AndroidJUnit4.class)
 public class SheetsTest {
@@ -56,7 +60,7 @@ public class SheetsTest {
 
     @Test
     public void testReadSheets() throws IOException {
-        String range = "Data";
+        String range = "test";
         ValueRange response = service.spreadsheets().values()
                 .get(spreadsheetId, range)
                 .execute();
@@ -93,21 +97,91 @@ public class SheetsTest {
     }
 
     @Test
-    public void testUpdateSheets() throws IOException {
-        ValueRange body = new ValueRange()
-                .setValues(Arrays.asList(
-                        Arrays.asList("10", "", "Dan", "54.00", "", "LOTW", "9/13/2021", "2:04 PM", "blades", "4", "-10431566.362659,6310076.194329302", "49.20710543", "-93.70835501"),
-                        Arrays.asList("11", "", "Tony", "24.00", "", "Crow", "9/13/2021", "2:04 PM", "blades", "4", "-10431566.362659,6310076.194329302", "49.20710543", "-93.70835501")));
-        UpdateValuesResponse result = service.spreadsheets().values()
-                .update(spreadsheetId, "test!A10", body)
-                .setValueInputOption("RAW")
-                .execute();
+    public void testUpdateSheets() throws IOException, ParseException {
+        Point point = getPoint("5");
+        assertEquals("5", Long.toString(point.getSheetId()));
+        assertEquals("44.50", point.getFishSize());
+        point.setFishSize("50.50");
+        Point storedPoint = storePoint(point);
+        assertEquals("50.50", storedPoint.getFishSize());
+        point.setFishSize("44.50");
+        storedPoint = storePoint(point);
+        assertEquals("44.50", storedPoint.getFishSize());
     }
 
     @Test
-    public void testDeleteSheets() throws IOException {
+    public void testCreateAndDeleteSheets() throws IOException, ParseException {
+        Point point = getPoint("5");
+        assertEquals("5", Long.toString(point.getSheetId()));
+        point.setSheetId(1234);
+        point.setFishSize("50.50");
+        Point storedPoint = storePoint(point);
+        assertEquals("50.50", storedPoint.getFishSize());
+        deletePoint(point);
+    }
+
+    private void deletePoint(Point point) throws IOException {
+        String row = findRow(point);
+        String range = "test!" + row + ":" + row;
         service.spreadsheets().values()
-                .clear(spreadsheetId, "test!10:11", new ClearValuesRequest())
+                .clear(spreadsheetId, range, new ClearValuesRequest())
                 .execute();
     }
+
+    private String findRow(Point point) throws IOException {
+        String row = "";
+        String range = "test";
+        ValueRange response = service.spreadsheets().values()
+                .get(spreadsheetId, range)
+                .execute();
+        List<List<Object>> values = response.getValues();
+        if (values == null || values.isEmpty()) {
+            System.out.println("No data found.");
+            return null;
+        } else {
+            int index = 1;
+            for (int i = 0; i < values.size(); i++) {
+                if (((String) values.get(i).get(0)).equalsIgnoreCase(Long.toString(point.getSheetId()))) {
+                    row = Integer.toString(index);
+                }
+                index++;
+            }
+        }
+        return row;
+    }
+
+    private Point storePoint(Point point) throws IOException, ParseException {
+        String row = findRow(point);
+        ValueRange body = new ValueRange()
+                .setValues(point.getSheetBody());
+        if (row.isEmpty())
+            service.spreadsheets().values()
+                    .append(spreadsheetId, "test", body)
+                    .setValueInputOption("RAW")
+                    .execute();
+        else
+            service.spreadsheets().values()
+                    .update(spreadsheetId, "test!A" + row, body)
+                    .setValueInputOption("RAW")
+                    .execute();
+        return getPoint(Long.toString(point.getSheetId()));
+    }
+
+    private Point getPoint(String rowId) throws IOException, ParseException {
+        String range = "test";
+        ValueRange response = service.spreadsheets().values()
+                .get(spreadsheetId, range)
+                .execute();
+        List<List<Object>> values = response.getValues();
+        if (values == null || values.isEmpty()) {
+            System.out.println("No data found.");
+            return null;
+        } else {
+            Optional<List<Object>> matched = values.stream().filter(row -> {
+                return ((String) row.get(0)).equalsIgnoreCase(rowId);
+            }).findFirst();
+            return new Point(matched.get());
+        }
+    }
+
 }

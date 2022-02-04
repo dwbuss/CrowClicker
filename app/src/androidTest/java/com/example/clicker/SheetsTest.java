@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -44,6 +45,7 @@ public class SheetsTest {
      * If modifying these scopes, delete your previously saved tokens/ folder.
      */
     private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
+    private static final String TAG = "SheetsTest";
     final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
     Sheets service;
 
@@ -66,7 +68,7 @@ public class SheetsTest {
                 .execute();
         List<List<Object>> values = response.getValues();
         if (values == null || values.isEmpty()) {
-            System.out.println("No data found.");
+            Log.d(TAG, "No data found.");
         } else {
             int added = 0;
             for (List row : values) {
@@ -76,11 +78,10 @@ public class SheetsTest {
                     added++;
                 } catch (NumberFormatException x) {
                 } catch (Exception e) {
-                    System.err.println("ROW " + row.get(0) + " " + row);
-                    e.printStackTrace();
+                    Log.e(TAG, String.format("ROW %s %s", row.get(0), row));
                 }
             }
-            System.err.println("ROWS: " + added);
+            Log.i(TAG, String.format("ROWS: %d",added));
         }
     }
 
@@ -136,7 +137,7 @@ public class SheetsTest {
                 .execute();
         List<List<Object>> values = response.getValues();
         if (values == null || values.isEmpty()) {
-            System.out.println("No data found.");
+            Log.d(TAG, "No data found.");
             return null;
         } else {
             int index = 1;
@@ -174,7 +175,7 @@ public class SheetsTest {
                 .execute();
         List<List<Object>> values = response.getValues();
         if (values == null || values.isEmpty()) {
-            System.out.println("No data found.");
+            Log.d(TAG, "No data found.");
             return null;
         } else {
             Optional<List<Object>> matched = values.stream().filter(row -> {

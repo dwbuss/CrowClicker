@@ -13,13 +13,21 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
+import com.google.api.services.sheets.v4.model.BatchClearValuesRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
+import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ClearValuesRequest;
+import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
+import com.google.api.services.sheets.v4.model.DimensionRange;
+import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -42,6 +50,7 @@ public class SheetAccess {
     final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
     Sheets service;
     String sheetName = "test";
+    int sheetId = 1890696516;
     Context context;
 
     public SheetAccess(Context appContext) {
@@ -80,7 +89,7 @@ public class SheetAccess {
                                 pointBox.put(new Point(row));
                                 counter++;
                             } catch (Exception e) {
-                                Log.d(TAG, String.format("Invalid Point at row %s", row.get(0)));
+                                Log.d(TAG, "Invalid Point Row:" + row);
                             }
                             Log.d(TAG, String.format("Imported %s points", Integer.toString(counter)));
                         }
@@ -100,10 +109,24 @@ public class SheetAccess {
                 String row = "";
                 try {
                     row = findRow(point);
-                    String range = sheetName + "!" + row + ":" + row;
-                    service.spreadsheets().values()
-                            .clear(spreadsheetId, range, new ClearValuesRequest())
-                            .execute();
+                    if (row.isEmpty())
+                        throw new RuntimeException("No row found for ID " + point.getSheetId());
+
+                    Request request = new Request()
+                            .setDeleteDimension(new DeleteDimensionRequest()
+                                    .setRange(new DimensionRange()
+                                            .setSheetId(sheetId)
+                                            .setDimension("ROWS")
+                                            .setStartIndex(Integer.parseInt(row) - 1)
+                                            .setEndIndex(Integer.parseInt(row))
+                                    )
+                            );
+                    List<Request> requests = new ArrayList<Request>();
+                    requests.add(request);
+                    BatchUpdateSpreadsheetRequest content = new BatchUpdateSpreadsheetRequest();
+                    content.setRequests(requests);
+                    Sheets.Spreadsheets.BatchUpdate update = service.spreadsheets().batchUpdate(spreadsheetId, content);
+                    update.execute();
                     Log.d(TAG, "Deleted point from row " + row);
                 } catch (IOException e) {
                     Log.e(TAG, "Failure during deleting row " + row, e);
@@ -124,18 +147,18 @@ public class SheetAccess {
                     if (row.isEmpty()) {
                         service.spreadsheets().values()
                                 .append(spreadsheetId, sheetName, body)
-                                .setValueInputOption("RAW")
+                                .setValueInputOption("USER_ENTERED")
                                 .execute();
-                        Log.d(TAG, "Created new row");
+                        Log.d(TAG, "Created new row " + point.getSheetBody());
                     } else {
                         service.spreadsheets().values()
                                 .update(spreadsheetId, sheetName + "!A" + row, body)
-                                .setValueInputOption("RAW")
+                                .setValueInputOption("USER_ENTERED")
                                 .execute();
                         Log.d(TAG, "Updated row " + row);
                     }
                 } catch (IOException e) {
-                    Log.e(TAG, "Failure during store.", e);
+                    Log.e(TAG, "Failure during store " + point.getSheetBody(), e);
                 }
             }
         });
@@ -153,7 +176,7 @@ public class SheetAccess {
         } else {
             int index = 1;
             for (int i = 0; i < values.size(); i++) {
-                if (values.size() > 0 && ((String) values.get(i).get(0)).equalsIgnoreCase(Long.toString(point.getSheetId()))) {
+                if (values.size() > 0 && values.get(i).size() > 0 && ((String) values.get(i).get(0)).equalsIgnoreCase(Long.toString(point.getSheetId()))) {
                     row = Integer.toString(index);
                 }
                 index++;

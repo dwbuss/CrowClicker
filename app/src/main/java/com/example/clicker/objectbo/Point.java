@@ -315,6 +315,8 @@ public class Point {
         DateFormat timeFormat = new SimpleDateFormat("HH:mm a", Locale.US);
         String day = dayFormat.format(getTimeStamp());
         String time = timeFormat.format(getTimeStamp());
+        if (sheetId <= 0)
+            sheetId = getId();
         return Arrays.asList(
                 Arrays.asList(sheetId, "", name, fishSize, "", "CROW", day, time, bait, "", "", lat, lon, "", airTemp, "", windSpeed, "", windDir, pressure, humidity, dewPoint, cloudCover, "", "", "", ""));
     }

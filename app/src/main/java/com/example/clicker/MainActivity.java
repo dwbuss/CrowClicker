@@ -494,7 +494,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(point.getLat(), point.getLon()))
-                    .title("Tab to Edit")
+                    .title("Hold to Edit")
                     .draggable(true)
                     .visible(false)
                     .icon(getMarker(point)));
@@ -511,6 +511,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (point.getContactType().equals("CATCH") || point.getName().equalsIgnoreCase("label")) {
             String text = point.getName();
+            if (point.getName()==null){
+                point.setName("No Name");
+            }
             if (point.getName().equalsIgnoreCase("label"))
                 text = point.getNotes();
             if (text == null)

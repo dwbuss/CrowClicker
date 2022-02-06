@@ -153,7 +153,7 @@ public class SheetAccess {
         } else {
             int index = 1;
             for (int i = 0; i < values.size(); i++) {
-                if (((String) values.get(i).get(0)).equalsIgnoreCase(Long.toString(point.getSheetId()))) {
+                if (values.size() > 0 && ((String) values.get(i).get(0)).equalsIgnoreCase(Long.toString(point.getSheetId()))) {
                     row = Integer.toString(index);
                 }
                 index++;

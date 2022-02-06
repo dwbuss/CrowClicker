@@ -13,7 +13,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -69,6 +73,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -96,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         public void onInfoWindowLongClick(final Marker marker) {
             Point point = (Point) marker.getTag();
-            showDialogUpdate(point, marker, false);
+            showDialogUpdate(point, marker);
         }
     };
     private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
@@ -181,6 +186,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     });
+    private boolean visible = false;
+    private float zoomLevel = 11;
+    private final GoogleMap.OnCameraMoveListener onCameraMoverListener = new GoogleMap.OnCameraMoveListener() {
+        @Override
+        public void onCameraMove() {
+            var zoom = mMap.getCameraPosition().zoom;
+            System.err.println("ZOOM " + zoom);
+            if (zoom > zoomLevel && !visible) {
+                markers.forEach(m -> m.setVisible(true));
+                visible = true;
+            }
+            if (zoom < zoomLevel && visible) {
+                markers.forEach(m -> m.setVisible(false));
+                visible = false;
+            }
+        }
+    };
+
     private final GoogleMap.OnMapLongClickListener onMyMapLongClickListener = new GoogleMap.OnMapLongClickListener() {
         @Override
         public void onMapLongClick(final LatLng latLng) {
@@ -194,18 +217,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             loc.setLongitude(latLng.longitude);
                             loc.setLatitude(latLng.latitude);
                             if (which == 0)
-                                addPoint("CATCH", loc, false);
+                                addPoint("CATCH", loc);
                             if (which == 1)
-                                addPoint("CONTACT", loc, false);
+                                addPoint("CONTACT", loc);
                             if (which == 2)
-                                addPoint("FOLLOW", loc, false);
-
+                                addPoint("FOLLOW", loc);
                         }
                     }).show();
         }
     };
     private LocationManager locationManager;
     private MyReceiver solunarReciever;
+    private List<Marker> markers;
+    private SheetAccess sheets;
 
     private static String getExternalStoragePath(Context mContext, boolean is_removable) {
 
@@ -269,6 +293,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         solunarReciever = new MyReceiver(getLocation());
+
+        sheets = new SheetAccess(getApplicationContext());
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
         getLocation();
         initView();
@@ -319,6 +345,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Box<Point> pointBox = boxStore.boxFor(Point.class);
         if (mMap != null) {
             mMap.clear();
+            markers.clear();
             List<Point> points = pointBox.query().greater(Point_.timeStamp, today.getTime()).build().find();
             for (Point p : points) {
                 addPointMarker(p);
@@ -429,11 +456,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void addPoint(String contactType) {
         if (getLocation() != null) {
-            addPoint(contactType, getLocation(), true);
+            addPoint(contactType, getLocation());
         }
     }
 
-    public void addPoint(String contactType, Location loc, boolean newPoint) {
+    public void addPoint(String contactType, Location loc) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String username = prefs.getString("Username", null);
         final Point point = new Point(0, username, contactType, loc.getLongitude(), loc.getLatitude());
@@ -451,13 +478,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 pointListAdapter.addOrUpdatePoint(point);
                 pointListAdapter.updatePoints();
 
-                showDialogUpdate(point, addPointMarker(point), newPoint);
+                showDialogUpdate(point, addPointMarker(point));
                 refreshCounts();
             }
 
             @Override
             public void onFailure() {
-                showDialogUpdate(point, addPointMarker(point), newPoint);
+                showDialogUpdate(point, addPointMarker(point));
                 refreshCounts();
             }
         });
@@ -467,28 +494,54 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(point.getLat(), point.getLon()))
-                    .title(new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp()))
+                    .title("Tab to Edit")
                     .draggable(true)
-                    .icon(getMarker(point.getContactType(), point.getName())));
+                    .visible(false)
+                    .icon(getMarker(point)));
             m.setTag(point);
+            if (mMap.getCameraPosition().zoom > zoomLevel)
+                m.setVisible(true);
+            markers.add(m);
             return m;
         }
         return null;
     }
 
-    private BitmapDescriptor getMarker(String contactType, String angler) {
-        if (contactType.equals("CATCH")) {
-            if (angler.equalsIgnoreCase("tony"))
-                return BitmapDescriptorFactory.fromResource(R.drawable.gm_tony);
-            else if (angler.equalsIgnoreCase("dan"))
-                return BitmapDescriptorFactory.fromResource(R.drawable.gm_dan);
-            else if (angler.equalsIgnoreCase("chris"))
-                return BitmapDescriptorFactory.fromResource(R.drawable.gm_chris);
-            else if (angler.equalsIgnoreCase("jeff"))
-                return BitmapDescriptorFactory.fromResource(R.drawable.gm_jeff);
-            else
-                return BitmapDescriptorFactory.fromResource(R.drawable.gm_other);
-        } else if (contactType.equals("CONTACT"))
+    private BitmapDescriptor getMarker(Point point) {
+
+        if (point.getContactType().equals("CATCH") || point.getName().equalsIgnoreCase("label")) {
+            String text = point.getName();
+            if (point.getName().equalsIgnoreCase("label"))
+                text = point.getNotes();
+            if (text == null)
+                text = " ";
+            Paint strokePaint = new Paint();
+            strokePaint.setTextAlign(Paint.Align.LEFT);
+            strokePaint.setARGB(255, 255, 255, 255);
+            strokePaint.setTextSize(40.0f);
+            strokePaint.setTypeface(Typeface.DEFAULT_BOLD);
+            strokePaint.setStyle(Paint.Style.STROKE);
+            strokePaint.setStrokeWidth(10);
+
+            Paint textPaint = new Paint();
+            textPaint.setARGB(255, 0, 0, 0);
+            textPaint.setTextAlign(Paint.Align.LEFT);
+            textPaint.setTextSize(40.0f);
+            textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+
+            float baseline = -textPaint.ascent(); // ascent() is negative
+            int width = (int) (textPaint.measureText(text) + 5.0f); // round
+            int height = (int) (baseline + textPaint.descent() + 0.0f);
+
+            int trueWidth = width;
+            if (width > height) height = width;
+            else width = height;
+            Bitmap image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(image);
+            canvas.drawText(text, width / 2 - trueWidth / 2, baseline, strokePaint);
+            canvas.drawText(text, width / 2 - trueWidth / 2, baseline, textPaint);
+            return BitmapDescriptorFactory.fromBitmap(image);
+        } else if (point.getContactType().equals("CONTACT"))
             return BitmapDescriptorFactory.fromResource(R.drawable.gm_contact);
         return BitmapDescriptorFactory.fromResource(R.drawable.gm_follow);
     }
@@ -522,6 +575,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        markers = new LinkedList();
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -550,6 +604,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraMoveStartedListener(onCameraMoveStartedListener);
         mMap.setOnMarkerDragListener(onMarkerDragListener);
         mMap.setOnInfoWindowLongClickListener(onInfoWindowLongClickListener);
+        mMap.setOnCameraMoveListener(onCameraMoverListener);
+
         addCrowLayer();
         BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
         Box<Point> pointBox = boxStore.boxFor(Point.class);
@@ -578,12 +634,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
             mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
         } catch (Exception e) {
-            Log.e(TAG, "Failed to load mbtiles.", e);
             Toast.makeText(this, "Failed to load mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
-    private void showDialogUpdate(final Point point, final Marker marker, boolean newPoint) {
+    private void showDialogUpdate(final Point point, final Marker marker) {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.update_dialog);
         ((EditText) dialog.findViewById(R.id.name)).setText(point.getName());
@@ -616,6 +671,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 dialog.dismiss();
             }
         });
+        Button btnPush = dialog.findViewById(R.id.btnPush);
+        btnPush.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (point.getSheetId() <= 0) {
+                    point.setSheetId(point.getId());
+                }
+                sheets.storePoint(point);
+            }
+        });
         Button btnDelete = dialog.findViewById(R.id.btnDelete);
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -631,6 +696,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Box<Point> pointBox = boxStore.boxFor(Point.class);
                             pointBox.remove(point);
                             marker.remove();
+
+                            sheets.deletePoint(point);
                             refreshCounts();
                             Toast.makeText(MainActivity.this, "Delete successfully", Toast.LENGTH_SHORT).show();
                         } catch (Exception e) {

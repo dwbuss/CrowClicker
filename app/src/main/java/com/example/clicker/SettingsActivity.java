@@ -3,11 +3,9 @@ package com.example.clicker;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -30,16 +28,7 @@ import androidx.preference.PreferenceManager;
 
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointListAdapter;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.ValueRange;
 
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,11 +45,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -197,52 +182,9 @@ public class SettingsActivity extends AppCompatActivity {
         dialogDelete.show();
     }
 
-    public void importPoints(View view) throws PackageManager.NameNotFoundException {
-        ExecutorService executorService = Executors.newFixedThreadPool(4);
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-
-                    NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-
-                    List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
-                    final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
-
-                    Context appContext = getApplicationContext();
-                    BoxStore boxStore = ((ObjectBoxApp) appContext).getBoxStore();
-                    Box<Point> pointBox = boxStore.boxFor(Point.class);
-                    Bundle metaData = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA).metaData;
-
-                    GoogleCredential credentials = GoogleCredential.fromStream(IOUtils.toInputStream(metaData.getString("com.google.api.credentials"), StandardCharsets.UTF_8)).createScoped(SCOPES);
-                    Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
-                            .setApplicationName("Crow Clicker")
-                            .build();
-                    String range = "Data";
-                    ValueRange response = service.spreadsheets().values()
-                            .get(spreadsheetId, range)
-                            .execute();
-                    List<List<Object>> values = response.getValues();
-                    if (values == null || values.isEmpty()) {
-                        Log.d(TAG, "No data found.");
-                    } else {
-                        int counter = 0;
-                        for (List row : values) {
-                            try {
-                                pointBox.put(new Point(row));
-                                Log.d(TAG, String.format("Point added %s", row.get(0)));
-                                counter++;
-                            } catch (Exception e) {
-                                Log.d(TAG, String.format("Invalid Point %s", row.get(0)));
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Failure during import.", e);
-                }
-            }
-        });
+    public void importPoints(View view)  {
+        SheetAccess sheet = new SheetAccess(getApplicationContext());
+        sheet.importSheet();
         Toast.makeText(this, "Background import started.", Toast.LENGTH_LONG).show();
     }
 

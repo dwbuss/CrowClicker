@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,9 +11,9 @@
 
         <TextView
             android:id="@+id/nameLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Name" />
 
         <EditText
@@ -32,9 +32,9 @@
 
         <TextView
             android:id="@+id/lonLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Longitude " />
 
         <TextView
@@ -53,9 +53,9 @@
 
         <TextView
             android:id="@+id/latLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Latitude" />
 
         <TextView
@@ -74,9 +74,9 @@
 
         <TextView
             android:id="@+id/timeStampLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Time" />
 
         <EditText
@@ -95,9 +95,9 @@
 
         <TextView
             android:id="@+id/contactTypeLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Contact Type" />
 
         <EditText
@@ -116,9 +116,9 @@
 
         <TextView
             android:id="@+id/baitLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Bait" />
 
         <EditText
@@ -137,9 +137,9 @@
 
         <TextView
             android:id="@+id/fishSizeLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Fish Size" />
 
         <EditText
@@ -174,9 +174,9 @@
 
         <TextView
             android:id="@+id/airtempLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Air Temp" />
 
         <EditText
@@ -189,9 +189,9 @@
 
         <TextView
             android:id="@+id/watertempLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Water Temp" />
 
         <EditText
@@ -210,9 +210,9 @@
 
         <TextView
             android:id="@+id/windSpeedLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Wind Speed" />
 
         <EditText
@@ -225,9 +225,9 @@
 
         <TextView
             android:id="@+id/windDirLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Wind Dir" />
 
         <EditText
@@ -246,9 +246,9 @@
 
         <TextView
             android:id="@+id/cloudCoverLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Cloud Cover" />
 
         <EditText
@@ -261,9 +261,9 @@
 
         <TextView
             android:id="@+id/dewPointLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Dew Point" />
 
         <EditText
@@ -282,9 +282,9 @@
 
         <TextView
             android:id="@+id/pressureLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Pressure" />
 
         <EditText
@@ -297,9 +297,9 @@
 
         <TextView
             android:id="@+id/humidityLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Humidity" />
 
         <EditText
@@ -318,9 +318,9 @@
 
         <TextView
             android:id="@+id/notesLbl"
-            android:gravity="right"
-            android:layout_height="wrap_content"
             android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="Notes" />
 
         <EditText
@@ -355,6 +355,18 @@
             android:layout_height="wrap_content"
             android:text="Delete" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnPush"
+            android:layout_width="90dip"
+            android:layout_height="wrap_content"
+            android:text="Push" />
         <Button
             android:id="@+id/btnCancel"
             android:layout_width="90dip"

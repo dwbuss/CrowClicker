@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -106,8 +107,7 @@ public class Point {
 //  [2, , Tony, 35.75, , Crow, 9/17/2021, 9:25 AM, blade blade, 4, -10447030.528943,6306926.152734499, 49.18861458, -93.84727198,   , 54, 54, 14, 27, NW, 1013, 0.64, 42, 0.11, 0, 4 - Waxing Gibbous, FALSE, FALSE]
         sheetId = Long.parseLong(get(row, 0));
         name = get(row, 2).trim();
-        if (name.equalsIgnoreCase("label") ||
-                name.equalsIgnoreCase("scenery") ||
+        if (name.equalsIgnoreCase("scenery") ||
                 name.equalsIgnoreCase("NoFish") ||
                 name.equalsIgnoreCase("ftony") ||
                 name.equalsIgnoreCase("fdan") ||
@@ -116,18 +116,22 @@ public class Point {
             throw new InvalidObjectException("Invalid point " + name);
         lat = Double.parseDouble(get(row, 11));
         lon = Double.parseDouble(get(row, 12));
-        if (((String) row.get(7)).trim().isEmpty()) {
-            DateFormat osLocalizedDateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-            timeStamp = osLocalizedDateFormat.parse(((String) row.get(6)).trim());
-        } else {
-            DateFormat osLocalizedDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.US);
-            timeStamp = osLocalizedDateFormat.parse(((String) row.get(6)).trim() + " " + ((String) row.get(7)).trim());
+        try {
+            if (((String) row.get(7)).trim().isEmpty()) {
+                DateFormat osLocalizedDateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+                timeStamp = osLocalizedDateFormat.parse(((String) row.get(6)).trim());
+            } else {
+                DateFormat osLocalizedDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.US);
+                timeStamp = osLocalizedDateFormat.parse(((String) row.get(6)).trim() + " " + ((String) row.get(7)).trim());
+            }
+        } catch (Exception e) {
+            timeStamp = GregorianCalendar.getInstance().getTime();
         }
         contactType = "CATCH";
         airTemp = get(row, 13);
         bait = get(row, 8);
         fishSize = get(row, 3);
-        // notes = get(row, 13);
+        notes = get(row, 13);
         windSpeed = get(row, 14);
         windDir = get(row, 16);
         cloudCover = get(row, 20);

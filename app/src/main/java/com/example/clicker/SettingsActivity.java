@@ -184,8 +184,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void importPoints(View view)  {
         SheetAccess sheet = new SheetAccess(getApplicationContext());
-        sheet.importSheet();
-        Toast.makeText(this, "Background import started.", Toast.LENGTH_LONG).show();
+        sheet.syncSheet();
+        Toast.makeText(this, "Background sync started.", Toast.LENGTH_LONG).show();
     }
 
     private Location getLastKnownLocation() {

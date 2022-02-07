@@ -105,6 +105,10 @@ public class Point {
     public Point(List row) throws ParseException, InvalidObjectException {
 //  [Row, Verified, Angler, Length, Girth, Lake, Date, Time, Bait, Anglers, Coordinates, Latitude, Longitude, Notes, Temperature, Feels Like, Wind Speed, Wind Gust, Wind Dir, Pressure, Humidity, Dew Point, Cloud Cover, Precip %, Moon Phase, Is Major, Is Minor]
 //  [2, , Tony, 35.75, , Crow, 9/17/2021, 9:25 AM, blade blade, 4, -10447030.528943,6306926.152734499, 49.18861458, -93.84727198,   , 54, 54, 14, 27, NW, 1013, 0.64, 42, 0.11, 0, 4 - Waxing Gibbous, FALSE, FALSE]
+        populatePoint(row);
+    }
+
+    private void populatePoint(List row) throws InvalidObjectException {
         sheetId = Long.parseLong(get(row, 0));
         name = get(row, 2).trim();
         if (name.equalsIgnoreCase("scenery") ||
@@ -130,7 +134,7 @@ public class Point {
         if (!name.equalsIgnoreCase("label"))
             contactType = "CATCH";
         else
-            contactType= " ";
+            contactType = " ";
         airTemp = get(row, 12);
         bait = get(row, 8);
         fishSize = get(row, 3);
@@ -149,7 +153,6 @@ public class Point {
         } catch (Exception e) {
             return "";
         }
-
     }
 
     public long getId() {
@@ -322,5 +325,9 @@ public class Point {
             sheetId = getId();
         return Arrays.asList(
                 Arrays.asList(sheetId, "", name, fishSize, "", "CROW", day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, "", windDir, pressure, humidity, dewPoint, cloudCover, "", "", "", ""));
+    }
+
+    public void refresh(List row) throws InvalidObjectException {
+        populatePoint(row);
     }
 }

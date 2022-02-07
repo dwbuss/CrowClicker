@@ -76,6 +76,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -343,10 +344,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         today.add(Calendar.DATE, 0 - tripLength);
         BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
         Box<Point> pointBox = boxStore.boxFor(Point.class);
+        String label = "label";
         if (mMap != null) {
             mMap.clear();
             markers.clear();
-            List<Point> points = pointBox.query().greater(Point_.timeStamp, today.getTime()).build().find();
+            List<Point> points = pointBox.query()
+                    .greater(Point_.timeStamp, today.getTime())
+                    .or()
+                    .equal(Point_.name, label)
+                    .build().find();
             for (Point p : points) {
                 addPointMarker(p);
             }
@@ -425,7 +431,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int soundBite = R.raw.cc_yousuck2;
         if (!prefs.getBoolean("Friendly", true)) {
-            soundBite = R.raw.f_upped2;
+            Random ran = new Random();
+            List<Integer> tones = new LinkedList<>();
+            tones.add(R.raw.f_upped);
+            tones.add(R.raw.cc_yousuck3);
+            soundBite = tones.get(ran.nextInt(pointList.size()));
         }
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
@@ -436,7 +446,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int soundBite = R.raw.cc_follow2;
         if (!prefs.getBoolean("Friendly", true)) {
-            soundBite = R.raw.wtf_lookin;
+            Random ran = new Random();
+            List<Integer> tones = new LinkedList<>();
+            tones.add(R.raw.wtf_lookin);
+            tones.add(R.raw.cc_follow3);
+            soundBite = tones.get(ran.nextInt(pointList.size()));
         }
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
@@ -447,7 +461,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int soundBite = R.raw.cc_nice2;
         if (!prefs.getBoolean("Friendly", true)) {
-            soundBite = R.raw.g_bitch;
+            Random ran = new Random();
+            List<Integer> tones = new LinkedList<>();
+            tones.add(R.raw.cc_nice3);
+            tones.add(R.raw.g_bitch);
+            soundBite = tones.get(ran.nextInt(pointList.size()));
         }
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();

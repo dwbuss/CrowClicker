@@ -511,7 +511,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (point.getContactType().equals("CATCH") || point.getName().equalsIgnoreCase("label")) {
             String text = point.getName();
-            if (point.getName()==null){
+            if (point.getName() == null) {
                 point.setName("No Name");
             }
             if (point.getName().equalsIgnoreCase("label"))
@@ -681,6 +681,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (point.getSheetId() <= 0) {
                     point.setSheetId(point.getId());
                 }
+                savePoint(view, point, dialog);
                 sheets.storePoint(point);
             }
         });
@@ -725,36 +726,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    point.setName(((EditText) dialog.findViewById(R.id.name)).getText().toString().trim());
-                    point.setContactType(((EditText) dialog.findViewById(R.id.contactType)).getText().toString().trim());
-                    String timeStampStr = ((EditText) dialog.findViewById(R.id.timeStamp)).getText().toString().trim();
-
-                    Date timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").parse(timeStampStr);
-                    point.setTimeStamp(new Timestamp(timeStamp.getTime()));
-                    point.setBait(((EditText) dialog.findViewById(R.id.bait)).getText().toString().trim());
-                    point.setFishSize(((EditText) dialog.findViewById(R.id.fishSize)).getText().toString().trim());
-                    point.setAirTemp(((EditText) dialog.findViewById(R.id.airtemp)).getText().toString().trim());
-                    point.setWaterTemp(((EditText) dialog.findViewById(R.id.watertemp)).getText().toString().trim());
-                    point.setWindSpeed(((EditText) dialog.findViewById(R.id.windSpeed)).getText().toString().trim());
-                    point.setWindDir(((EditText) dialog.findViewById(R.id.windDir)).getText().toString().trim());
-                    point.setCloudCover(((EditText) dialog.findViewById(R.id.cloudCover)).getText().toString().trim());
-                    point.setDewPoint(((EditText) dialog.findViewById(R.id.dewPoint)).getText().toString().trim());
-                    point.setPressure(((EditText) dialog.findViewById(R.id.pressure)).getText().toString().trim());
-                    point.setHumidity(((EditText) dialog.findViewById(R.id.humidity)).getText().toString().trim());
-                    point.setNotes(((EditText) dialog.findViewById(R.id.notes)).getText().toString().trim());
-                    boolean notify = ((CheckBox) dialog.findViewById(R.id.notify)).isChecked();
-                    BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-                    Box<Point> pointBox = boxStore.boxFor(Point.class);
-                    pointBox.put(point);
-                    dialog.dismiss();
-                    if (notify) {
-                        sendMessage(point.getMessage(), point.getContactType());
-                    }
-                    Toast.makeText(getApplicationContext(), "Save Successful", Toast.LENGTH_SHORT).show();
-                } catch (Exception error) {
-                    Log.e("Update error", error.getMessage());
-                }
+                savePoint(view, point, dialog);
             }
         });
         Button weatherUpdate = dialog.findViewById(R.id.btnWeather);
@@ -795,6 +767,39 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
+    }
+
+    private void savePoint(View view, Point point, Dialog dialog) {
+        try {
+            point.setName(((EditText) dialog.findViewById(R.id.name)).getText().toString().trim());
+            point.setContactType(((EditText) dialog.findViewById(R.id.contactType)).getText().toString().trim());
+            String timeStampStr = ((EditText) dialog.findViewById(R.id.timeStamp)).getText().toString().trim();
+
+            Date timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").parse(timeStampStr);
+            point.setTimeStamp(new Timestamp(timeStamp.getTime()));
+            point.setBait(((EditText) dialog.findViewById(R.id.bait)).getText().toString().trim());
+            point.setFishSize(((EditText) dialog.findViewById(R.id.fishSize)).getText().toString().trim());
+            point.setAirTemp(((EditText) dialog.findViewById(R.id.airtemp)).getText().toString().trim());
+            point.setWaterTemp(((EditText) dialog.findViewById(R.id.watertemp)).getText().toString().trim());
+            point.setWindSpeed(((EditText) dialog.findViewById(R.id.windSpeed)).getText().toString().trim());
+            point.setWindDir(((EditText) dialog.findViewById(R.id.windDir)).getText().toString().trim());
+            point.setCloudCover(((EditText) dialog.findViewById(R.id.cloudCover)).getText().toString().trim());
+            point.setDewPoint(((EditText) dialog.findViewById(R.id.dewPoint)).getText().toString().trim());
+            point.setPressure(((EditText) dialog.findViewById(R.id.pressure)).getText().toString().trim());
+            point.setHumidity(((EditText) dialog.findViewById(R.id.humidity)).getText().toString().trim());
+            point.setNotes(((EditText) dialog.findViewById(R.id.notes)).getText().toString().trim());
+            boolean notify = ((CheckBox) dialog.findViewById(R.id.notify)).isChecked();
+            BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
+            Box<Point> pointBox = boxStore.boxFor(Point.class);
+            pointBox.put(point);
+            dialog.dismiss();
+            if (notify) {
+                sendMessage(point.getMessage(), point.getContactType());
+            }
+            Toast.makeText(getApplicationContext(), "Save Successful", Toast.LENGTH_SHORT).show();
+        } catch (Exception error) {
+            Log.e("Update error", error.getMessage());
+        }
     }
 
     public void openSettings(View view) {

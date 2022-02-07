@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     });
     private boolean visible = false;
-    private float zoomLevel = 11;
+    private float zoomLevel = 10;
     private final GoogleMap.OnCameraMoveListener onCameraMoverListener = new GoogleMap.OnCameraMoveListener() {
         @Override
         public void onCameraMove() {
@@ -496,7 +496,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .position(new LatLng(point.getLat(), point.getLon()))
                     .title("Hold to Edit")
                     .draggable(true)
+                    .anchor(0.5f, 0.5f)
                     .visible(false)
+                    .flat(true)
+                    .zIndex(0)
                     .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
@@ -521,17 +524,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Paint strokePaint = new Paint();
             strokePaint.setTextAlign(Paint.Align.LEFT);
             strokePaint.setARGB(255, 255, 255, 255);
-            strokePaint.setTextSize(40.0f);
+            strokePaint.setTextSize(23.0f);
             strokePaint.setTypeface(Typeface.DEFAULT_BOLD);
             strokePaint.setStyle(Paint.Style.STROKE);
-            strokePaint.setStrokeWidth(10);
+            strokePaint.setStrokeWidth(4);
 
             Paint textPaint = new Paint();
             textPaint.setARGB(255, 0, 0, 0);
             textPaint.setTextAlign(Paint.Align.LEFT);
-            textPaint.setTextSize(40.0f);
+            textPaint.setTextSize(23.0f);
             textPaint.setTypeface(Typeface.DEFAULT_BOLD);
-
+            Paint.FontMetrics fm = textPaint.getFontMetrics();
+            float height2 = fm.bottom - fm.top + fm.leading;
             float baseline = -textPaint.ascent(); // ascent() is negative
             int width = (int) (textPaint.measureText(text) + 5.0f); // round
             int height = (int) (baseline + textPaint.descent() + 0.0f);
@@ -539,7 +543,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             int trueWidth = width;
             if (width > height) height = width;
             else width = height;
-            Bitmap image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Bitmap image = Bitmap.createBitmap(width, ((int) height2), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(image);
             canvas.drawText(text, width / 2 - trueWidth / 2, baseline, strokePaint);
             canvas.drawText(text, width / 2 - trueWidth / 2, baseline, textPaint);

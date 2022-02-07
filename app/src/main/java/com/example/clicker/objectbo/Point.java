@@ -127,8 +127,11 @@ public class Point {
         } catch (Exception e) {
             timeStamp = GregorianCalendar.getInstance().getTime();
         }
-        contactType = "CATCH";
-        airTemp = get(row, 13);
+        if (!name.equalsIgnoreCase("label"))
+            contactType = "CATCH";
+        else
+            contactType= " ";
+        airTemp = get(row, 12);
         bait = get(row, 8);
         fishSize = get(row, 3);
         notes = get(row, 13);
@@ -318,6 +321,6 @@ public class Point {
         if (sheetId <= 0)
             sheetId = getId();
         return Arrays.asList(
-                Arrays.asList(sheetId, "", name, fishSize, "", "CROW", day, time, bait, "", "", lat, lon, "", airTemp, "", windSpeed, "", windDir, pressure, humidity, dewPoint, cloudCover, "", "", "", ""));
+                Arrays.asList(sheetId, "", name, fishSize, "", "CROW", day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, "", windDir, pressure, humidity, dewPoint, cloudCover, "", "", "", ""));
     }
 }

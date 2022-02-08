@@ -182,7 +182,7 @@ public class SettingsActivity extends AppCompatActivity {
         dialogDelete.show();
     }
 
-    public void importPoints(View view)  {
+    public void importPoints(View view) {
         SheetAccess sheet = new SheetAccess(getApplicationContext());
         sheet.syncSheet();
         Toast.makeText(this, "Background sync started.", Toast.LENGTH_LONG).show();

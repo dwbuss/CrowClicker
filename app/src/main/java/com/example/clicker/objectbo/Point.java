@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -262,6 +261,7 @@ public class Point {
     public void setWindDir(String windDir) {
         this.windDir = windDir;
     }
+
     public String getWindGust() {
         return windGust;
     }

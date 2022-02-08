@@ -68,6 +68,12 @@ public class Solunar {
         }
     }
 
+    String parseTime(ZonedDateTime time) {
+        if (time != null)
+            return time.format(DateTimeFormatter.ofPattern("h:mm a"));
+        return "N/A";
+    }
+
     public void populate(double lon, double lat, Calendar cal) {
         int offsetInMillis = cal.getTimeZone().getOffset(cal.getTimeInMillis());
         offset = String.format("%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
@@ -137,12 +143,6 @@ public class Solunar {
 
     }
 
-    String parseTime(ZonedDateTime time) {
-        if (time != null)
-            return time.format(DateTimeFormatter.ofPattern("h:mm a"));
-        return "N/A";
-    }
-
     String parseTime(Date time) {
         if (time != null)
             return new SimpleDateFormat("h:mm a").format(time);
@@ -188,21 +188,21 @@ public class Solunar {
 
     String getMoonPhaseText(int phaseValue) {
         if (phaseValue == 0) {
-            return "New";
+            return "1 - New";
         } else if (phaseValue > 0 && phaseValue < 7) {
-            return "Waxing Crescent";
+            return "2 - Waxing Crescent";
         } else if (phaseValue == 7) {
-            return "First Quarter";
+            return "3 - First Quarter";
         } else if (phaseValue > 7 && phaseValue < 15) {
-            return "Waxing Gibbous";
+            return "4 - Waxing Gibbous";
         } else if (phaseValue == 15) {
-            return "Full Moon";
+            return "5 - Full Moon";
         } else if (phaseValue > 15 && phaseValue < 23) {
-            return "Waning Gibbous";
+            return "6 - Waning Gibbous";
         } else if (phaseValue == 23) {
-            return "Third Quarter";
+            return "7 - Third Quarter";
         } else {
-            return "Waning Crescent";
+            return "8 - Waning Crescent";
         }
     }
 

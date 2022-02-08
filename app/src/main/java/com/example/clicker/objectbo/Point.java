@@ -1,5 +1,7 @@
 package com.example.clicker.objectbo;
 
+import com.example.clicker.Solunar;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,22 +26,24 @@ public class Point {
     @Id
     private long id;
     private long sheetId;
-    private String name;
+    private String name = "";
     private double lon;
     private double lat;
     private Date timeStamp;
-    private String contactType;
-    private String airTemp;
-    private String waterTemp;
-    private String bait;
-    private String fishSize;
-    private String notes;
-    private String windSpeed;
-    private String windDir;
-    private String cloudCover;
-    private String dewPoint;
-    private String pressure;
-    private String humidity;
+    private String contactType = "";
+    private String airTemp = "";
+    private String waterTemp = "";
+    private String bait = "";
+    private String fishSize = "";
+    private String notes = "";
+    private String windSpeed = "";
+    private String windGust = "";
+    private String windDir = "";
+    private String precipProbability = "";
+    private String cloudCover = "";
+    private String dewPoint = "";
+    private String pressure = "";
+    private String humidity = "";
 
     public Point(JSONObject jsonObject) throws ParseException, JSONException {
         // id =jsonObject.getLong("id");
@@ -258,6 +262,13 @@ public class Point {
     public void setWindDir(String windDir) {
         this.windDir = windDir;
     }
+    public String getWindGust() {
+        return windGust;
+    }
+
+    public void setWindGust(String windGust) {
+        this.windGust = windGust;
+    }
 
     public String getCloudCover() {
         return cloudCover;
@@ -299,6 +310,14 @@ public class Point {
         this.sheetId = sheetId;
     }
 
+    public String getPrecipProbability() {
+        return precipProbability;
+    }
+
+    public void setPrecipProbability(String precipProbability) {
+        this.precipProbability = precipProbability;
+    }
+
     @Override
     public String toString() {
         return id + "\t" + name + "\t" + lon + "\t" + lat + "\t" + timeStamp + "\t" + contactType + "\t" +
@@ -318,13 +337,17 @@ public class Point {
 
     public List<List<Object>> getSheetBody() {
         DateFormat dayFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-        DateFormat timeFormat = new SimpleDateFormat("HH:mm a", Locale.US);
+        DateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.US);
         String day = dayFormat.format(getTimeStamp());
         String time = timeFormat.format(getTimeStamp());
         if (sheetId <= 0)
             sheetId = getId();
+        Solunar solunar = new Solunar();
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(getTimeStamp());
+        solunar.populate(lon, lat, cal);
         return Arrays.asList(
-                Arrays.asList(sheetId, "", name, fishSize, "", "CROW", day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, "", windDir, pressure, humidity, dewPoint, cloudCover, "", "", "", ""));
+                Arrays.asList(sheetId, "", name, fishSize, "", "", day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, "", windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor)));
     }
 
     public void refresh(List row) throws InvalidObjectException {

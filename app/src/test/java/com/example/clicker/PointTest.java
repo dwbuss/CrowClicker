@@ -189,7 +189,6 @@ public class PointTest {
                     Solunar solunar = new Solunar();
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.setTime(dateD);
-                    int day = cal.get(Calendar.DAY_OF_MONTH);
                     solunar.populate(lon, lat, cal);
                     if (defualttime) {
                         String outputStr = line + "\t" + solunar.moonPhase + "\t" + " " + "\t" + " " + "\r\n";

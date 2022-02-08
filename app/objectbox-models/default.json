@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:8458541215201041067",
-      "lastPropertyId": "19:2108945811781450686",
+      "lastPropertyId": "21:3252694774030957895",
       "name": "Point",
       "properties": [
         {
@@ -101,6 +101,16 @@
           "name": "sheetId",
           "type": 6,
           "flags": 4
+        },
+        {
+          "id": "20:2435593873945734265",
+          "name": "precipProbability",
+          "type": 9
+        },
+        {
+          "id": "21:3252694774030957895",
+          "name": "windGust",
+          "type": 9
         }
       ],
       "relations": []

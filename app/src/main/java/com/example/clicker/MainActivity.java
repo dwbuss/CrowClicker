@@ -76,7 +76,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -431,11 +430,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int soundBite = R.raw.cc_yousuck2;
         if (!prefs.getBoolean("Friendly", true)) {
-            Random ran = new Random();
             List<Integer> tones = new LinkedList<>();
             tones.add(R.raw.f_upped);
             tones.add(R.raw.cc_yousuck3);
-            soundBite = tones.get(ran.nextInt(pointList.size()));
+            soundBite = tones.get((int) (Math.random() * 2 + 1) - 1);
         }
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
@@ -446,11 +444,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int soundBite = R.raw.cc_follow2;
         if (!prefs.getBoolean("Friendly", true)) {
-            Random ran = new Random();
             List<Integer> tones = new LinkedList<>();
             tones.add(R.raw.wtf_lookin);
             tones.add(R.raw.cc_follow3);
-            soundBite = tones.get(ran.nextInt(pointList.size()));
+            soundBite = tones.get((int) (Math.random() * 2 + 1) - 1);
         }
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
@@ -461,11 +458,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int soundBite = R.raw.cc_nice2;
         if (!prefs.getBoolean("Friendly", true)) {
-            Random ran = new Random();
             List<Integer> tones = new LinkedList<>();
             tones.add(R.raw.cc_nice3);
             tones.add(R.raw.g_bitch);
-            soundBite = tones.get(ran.nextInt(pointList.size()));
+            soundBite = tones.get((int) (Math.random() * 2 + 1) - 1);
         }
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
@@ -768,6 +764,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             point.setPressure(weather.pressure);
                             point.setCloudCover(weather.cloudCover);
                             point.setWindDir(weather.windDir);
+                            point.setWindGust(weather.windGust);
+                            point.setPrecipProbability(weather.precipProbability);
                             pointListAdapter.addOrUpdatePoint(point);
                             pointListAdapter.updatePoints();
                         }
@@ -801,7 +799,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Date timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").parse(timeStampStr);
             point.setTimeStamp(new Timestamp(timeStamp.getTime()));
             point.setBait(((EditText) dialog.findViewById(R.id.bait)).getText().toString().trim());
-            point.setFishSize(((EditText) dialog.findViewById(R.id.fishSize)).getText().toString().trim());
+            point.setFishSize(String.format("%.2f", Double.parseDouble(((EditText) dialog.findViewById(R.id.fishSize)).getText().toString().trim())));
             point.setAirTemp(((EditText) dialog.findViewById(R.id.airtemp)).getText().toString().trim());
             point.setWaterTemp(((EditText) dialog.findViewById(R.id.watertemp)).getText().toString().trim());
             point.setWindSpeed(((EditText) dialog.findViewById(R.id.windSpeed)).getText().toString().trim());

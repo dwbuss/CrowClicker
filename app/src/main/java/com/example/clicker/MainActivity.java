@@ -659,6 +659,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
             mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
         } catch (Exception e) {
+            Log.e(TAG, "Failed to load Crow.mbtiles", e);
             Toast.makeText(this, "Failed to load mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }

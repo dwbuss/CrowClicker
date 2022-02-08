@@ -37,7 +37,9 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
     packagingOptions {
-        exclude "META-INF/DEPENDENCIES"
+        resources {
+            excludes += ['META-INF/DEPENDENCIES']
+        }
     }
 }
 

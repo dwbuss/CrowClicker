@@ -97,13 +97,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final List<Point> pointList = new ArrayList<>();
     SupportMapFragment mapFragment;
     private PointListAdapter pointListAdapter;
-    private final GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener = new GoogleMap.OnInfoWindowLongClickListener() {
-        @Override
-        public void onInfoWindowLongClick(final Marker marker) {
-            Point point = (Point) marker.getTag();
-            showDialogUpdate(point, marker);
-        }
-    };
     private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
         @Override
         public void onMarkerDragStart(Marker marker) {
@@ -187,7 +180,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     });
     private boolean visible = false;
-    private float zoomLevel = 10;
+    private final float zoomLevel = 10;
+    private LocationManager locationManager;
+    private MyReceiver solunarReciever;
+    private List<Marker> markers;
     private final GoogleMap.OnCameraMoveListener onCameraMoverListener = new GoogleMap.OnCameraMoveListener() {
         @Override
         public void onCameraMove() {
@@ -203,7 +199,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
-
+    private SheetAccess sheets;
+    private final GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener = new GoogleMap.OnInfoWindowLongClickListener() {
+        @Override
+        public void onInfoWindowLongClick(final Marker marker) {
+            Point point = (Point) marker.getTag();
+            showDialogUpdate(point, marker);
+        }
+    };
     private final GoogleMap.OnMapLongClickListener onMyMapLongClickListener = new GoogleMap.OnMapLongClickListener() {
         @Override
         public void onMapLongClick(final LatLng latLng) {
@@ -226,10 +229,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }).show();
         }
     };
-    private LocationManager locationManager;
-    private MyReceiver solunarReciever;
-    private List<Marker> markers;
-    private SheetAccess sheets;
 
     private static String getExternalStoragePath(Context mContext, boolean is_removable) {
 
@@ -507,14 +506,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(point.getLat(), point.getLon()))
-                    .title("Hold to Edit")
-                    .draggable(true)
-                    .anchor(0.5f, 0.5f)
-                    .visible(false)
-                    .flat(true)
-                    .zIndex(0)
-                    .icon(getMarker(point)));
+                                              .position(new LatLng(point.getLat(), point.getLon()))
+                                              .title("Hold to Edit")
+                                              .draggable(true)
+                                              .anchor(0.5f, 0.5f)
+                                              .visible(false)
+                                              .flat(true)
+                                              .zIndex(0)
+                                              .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
                 m.setVisible(true);

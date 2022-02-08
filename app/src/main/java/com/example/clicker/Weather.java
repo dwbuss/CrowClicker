@@ -49,30 +49,30 @@ public class Weather {
 
     public StringRequest pullWeather(String url, VolleyCallBack callback) {
         return new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject reader = new JSONObject(response);
-                            JSONObject main = reader.getJSONObject("currently");
-                            temperature = ((int)Double.parseDouble(main.getString("temperature")))+ "";
-                            feelsLike = ((int)Double.parseDouble(main.getString("apparentTemperature")))+ "";
-                            dewPoint =((int)Double.parseDouble(main.getString("dewPoint")))+ "";
-                            windSpeed = ((int)Double.parseDouble(main.getString("windSpeed")))+ "";
-                            windDir = getCardinalDirection(main.getDouble("windBearing"));
-                            windGust =((int)Double.parseDouble(main.getString("windGust")))+ "";
-                            date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("time"))));
-                            precipProbability = main.getString("precipProbability");
-                            humidity = main.getString("humidity");
-                            pressure = ((int)Double.parseDouble(main.getString("pressure")))+ "";
-                            cloudCover = main.getString("cloudCover");
-                        } catch (JSONException e) {
-                            Log.e(TAG, "Failure to create SheetAccess", e);
-                        }
+                                 new Response.Listener<String>() {
+                                     @Override
+                                     public void onResponse(String response) {
+                                         try {
+                                             JSONObject reader = new JSONObject(response);
+                                             JSONObject main = reader.getJSONObject("currently");
+                                             temperature = ((int) Double.parseDouble(main.getString("temperature"))) + "";
+                                             feelsLike = ((int) Double.parseDouble(main.getString("apparentTemperature"))) + "";
+                                             dewPoint = ((int) Double.parseDouble(main.getString("dewPoint"))) + "";
+                                             windSpeed = ((int) Double.parseDouble(main.getString("windSpeed"))) + "";
+                                             windDir = getCardinalDirection(main.getDouble("windBearing"));
+                                             windGust = ((int) Double.parseDouble(main.getString("windGust"))) + "";
+                                             date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("time"))));
+                                             precipProbability = main.getString("precipProbability");
+                                             humidity = main.getString("humidity");
+                                             pressure = ((int) Double.parseDouble(main.getString("pressure"))) + "";
+                                             cloudCover = main.getString("cloudCover");
+                                         } catch (JSONException e) {
+                                             Log.e(TAG, "Failure to create SheetAccess", e);
+                                         }
 
-                        callback.onSuccess();
-                    }
-                }, new Response.ErrorListener() {
+                                         callback.onSuccess();
+                                     }
+                                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 callback.onFailure();

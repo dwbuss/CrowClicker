@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.clicker.objectbo.Point;
-import com.example.clicker.objectbo.Point_;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -14,12 +13,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.BatchClearValuesRequest;
-import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
-import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
-import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
-import com.google.api.services.sheets.v4.model.ClearValuesRequest;
 import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
 import com.google.api.services.sheets.v4.model.DimensionRange;
 import com.google.api.services.sheets.v4.model.Request;
@@ -30,9 +24,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -94,7 +86,7 @@ public class SheetAccess {
                                 Log.d(TAG, "Invalid Point Row:" + row);
                             }
                         }
-                        Log.d(TAG, String.format("Imported %s points", Integer.toString(counter)));
+                        Log.d(TAG, String.format("Imported %s points", counter));
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Failure during import.", e);
@@ -148,7 +140,7 @@ public class SheetAccess {
                                 Log.d(TAG, "Invalid Point Row:" + row);
                             }
                         }
-                        Log.d(TAG, String.format("Updated %s points", Integer.toString(counter)));
+                        Log.d(TAG, String.format("Updated %s points", counter));
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Failure during sync.", e);
@@ -170,12 +162,12 @@ public class SheetAccess {
                     else {
                         Request request = new Request()
                                 .setDeleteDimension(new DeleteDimensionRequest()
-                                        .setRange(new DimensionRange()
-                                                .setSheetId(sheetId)
-                                                .setDimension("ROWS")
-                                                .setStartIndex(Integer.parseInt(row) - 1)
-                                                .setEndIndex(Integer.parseInt(row))
-                                        )
+                                                            .setRange(new DimensionRange()
+                                                                              .setSheetId(sheetId)
+                                                                              .setDimension("ROWS")
+                                                                              .setStartIndex(Integer.parseInt(row) - 1)
+                                                                              .setEndIndex(Integer.parseInt(row))
+                                                            )
                                 );
                         List<Request> requests = new ArrayList<Request>();
                         requests.add(request);

@@ -1,6 +1,7 @@
 package com.example.clicker;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,6 +18,7 @@ import java.util.Date;
 
 public class Weather {
 
+    private static final String TAG = "weather";
     public String temperature;
     public String feelsLike;
     public String dewPoint;
@@ -41,39 +43,36 @@ public class Weather {
 
     public void populate(String url, Context context, final VolleyCallBack callback) {
         RequestQueue queue = Volley.newRequestQueue(context);
-
         StringRequest stringRequest = pullWeather(url, callback);
         queue.add(stringRequest);
     }
 
     public StringRequest pullWeather(String url, VolleyCallBack callback) {
         return new StringRequest(Request.Method.GET, url,
-                                 new Response.Listener<String>() {
-                                     @Override
-                                     public void onResponse(String response) {
-                                         try {
-                                             JSONObject reader = new JSONObject(response);
-                                             JSONObject main = reader.getJSONObject("currently");
-                                             temperature = main.getString("temperature") + (char) 0x00B0;
-                                             feelsLike = main.getString("apparentTemperature") + (char) 0x00B0;
-                                             dewPoint = main.getString("dewPoint") + (char) 0x00B0;
-                                             windSpeed = main.getString("windSpeed") + " mph ";
-                                             windDir = getCardinalDirection(main.getDouble("windBearing"));
-                                             windGust = main.getString("windGust") + " mph";
-                                             date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("time"))));
-                                             precipProbability = main.getString("precipProbability");
-                                             humidity = main.getString("humidity");
-                                             pressure = main.getString("pressure") + " mb";
-                                             cloudCover = main.getString("cloudCover");
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject reader = new JSONObject(response);
+                            JSONObject main = reader.getJSONObject("currently");
+                            temperature = ((int)Double.parseDouble(main.getString("temperature")))+ "";
+                            feelsLike = ((int)Double.parseDouble(main.getString("apparentTemperature")))+ "";
+                            dewPoint =((int)Double.parseDouble(main.getString("dewPoint")))+ "";
+                            windSpeed = ((int)Double.parseDouble(main.getString("windSpeed")))+ "";
+                            windDir = getCardinalDirection(main.getDouble("windBearing"));
+                            windGust =((int)Double.parseDouble(main.getString("windGust")))+ "";
+                            date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("time"))));
+                            precipProbability = main.getString("precipProbability");
+                            humidity = main.getString("humidity");
+                            pressure = ((int)Double.parseDouble(main.getString("pressure")))+ "";
+                            cloudCover = main.getString("cloudCover");
+                        } catch (JSONException e) {
+                            Log.e(TAG, "Failure to create SheetAccess", e);
+                        }
 
-                                             JSONObject main1 = reader.getJSONObject("daily");
-                                         } catch (JSONException e) {
-                                             e.printStackTrace();
-                                         }
-
-                                         callback.onSuccess();
-                                     }
-                                 }, new Response.ErrorListener() {
+                        callback.onSuccess();
+                    }
+                }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 callback.onFailure();

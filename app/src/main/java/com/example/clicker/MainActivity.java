@@ -70,6 +70,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -77,6 +78,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import io.flic.flic2libandroid.Flic2Button;
+import io.flic.flic2libandroid.Flic2ButtonListener;
+import io.flic.flic2libandroid.Flic2Manager;
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
@@ -278,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         permissions.add(Manifest.permission.SEND_SMS);
         permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkPermission()) {
+        if (!checkPermission()) {
             requestPermissions(permissions.toArray(new String[permissions.size()]), ALL_PERMISSIONS_RESULT);
         }
 
@@ -296,7 +300,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         sheets = new SheetAccess(getApplicationContext());
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
         getLocation();
+
+        registerClickerButtons();
         initView();
+    }
+
+    private void registerClickerButtons() {
+        List<Flic2Button> buttons = Collections.EMPTY_LIST;
+        ClickerListener clucker = new ClickerListener(this);
+
+        buttons = Flic2Manager.getInstance().getButtons();
+        Log.d(TAG, String.format("Found %d Clickers!", buttons.size()));
+        for (Flic2Button button:buttons) {
+            button.connect();
+            button.addListener(clucker);
+        }
     }
 
     public void openCamera(View view) {
@@ -403,12 +421,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private boolean checkPermission() {
-        int result1 = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
-        int result2 = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+        int result1 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        int result2 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         int result3 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
-        int result4 = ContextCompat.checkSelfPermission(this, android.Manifest.permission.INTERNET);
+        int result4 = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
         int result5 = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-        return (result1 == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED && result3 == PackageManager.PERMISSION_GRANTED && result4 == PackageManager.PERMISSION_GRANTED && result5 == PackageManager.PERMISSION_GRANTED);
+
+        return (result1 == PackageManager.PERMISSION_GRANTED &&
+                result2 == PackageManager.PERMISSION_GRANTED &&
+                result3 == PackageManager.PERMISSION_GRANTED &&
+                result4 == PackageManager.PERMISSION_GRANTED &&
+                result5 == PackageManager.PERMISSION_GRANTED );
     }
 
     @Override

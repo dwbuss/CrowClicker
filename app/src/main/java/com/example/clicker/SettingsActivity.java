@@ -1,13 +1,17 @@
 package com.example.clicker;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.telephony.SmsManager;
@@ -23,12 +27,16 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointListAdapter;
 
+import org.apache.http.impl.execchain.MainClientExec;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,6 +55,9 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
 import java.util.List;
 
+import io.flic.flic2libandroid.Flic2Button;
+import io.flic.flic2libandroid.Flic2Manager;
+import io.flic.flic2libandroid.Flic2ScanCallback;
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
@@ -275,10 +286,73 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
+        private boolean isScanning = false;
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
+            findPreference("scan_for_buttons").setOnPreferenceClickListener(preference -> scanForButtons());
+        }
+
+        @TargetApi(31)
+        private boolean scanForButtons() {
+            FragmentActivity activity = requireActivity();
+            if (isScanning) {
+                Flic2Manager.getInstance().stopScan();
+                isScanning = false;
+            } else {
+                if (Build.VERSION.SDK_INT < 31 || activity.getApplicationInfo().targetSdkVersion < 31) {
+                    if (getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                        Log.d(TAG, "Failure to get ACCESS_FINE_LOCATION permission.");
+                        return false;
+                    }
+                } else {
+                    if (getContext().checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED ||
+                            getContext().checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                        activity.requestPermissions(new String[]{Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT}, 1);
+                        Log.d(TAG, "Failure to get BLUETOOTH_SCAN or BLUETOOTH_CONNECT permissions");
+                        return false;
+                    }
+                }
+                Toast.makeText(activity,"Press and hold down your Clicker until it connects.", Toast.LENGTH_SHORT).show();
+                isScanning = true;
+
+                Flic2Manager.getInstance().startScan(new Flic2ScanCallback() {
+                    @Override
+                    public void onDiscoveredAlreadyPairedButton(Flic2Button button) {
+                        Toast.makeText(getContext(), "Found an already paired clicker. Try another clicker.", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onDiscovered(String bdAddr) {
+                        Toast.makeText(getContext(), "Found clicker, now connecting...", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onConnected() {
+                        Toast.makeText(getContext(),  "Connected. Now pairing...", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onAskToAcceptPairRequest() {
+                        Toast.makeText(getContext(), "Please press \"Pair & Connect\" in the system dialog...", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onComplete(int result, int subCode, Flic2Button button) {
+                        isScanning = false;
+
+                        if (result == Flic2ScanCallback.RESULT_SUCCESS) {
+                            Toast.makeText(getContext(), "Scan success!", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getContext(), "Scan failed with code " + Flic2Manager.errorCodeToString(result), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+            return true;
         }
     }
-
 }
+

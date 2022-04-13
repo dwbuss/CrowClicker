@@ -30,6 +30,11 @@
             app:useSimpleSummaryProvider="true"
             android:persistent="true"
             android:title="Trip Length in Days"/>
+        <Preference
+            android:icon="@android:drawable/ic_menu_search"
+            app:key="scan_for_buttons"
+            app:title="Scan for 'Clickers'">
+        </Preference>
         <EditTextPreference
             android:defaultValue=""
             android:key="Catch Notification"

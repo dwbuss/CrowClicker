@@ -27,8 +27,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -36,7 +34,6 @@ import androidx.preference.PreferenceManager;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointListAdapter;
 
-import org.apache.http.impl.execchain.MainClientExec;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -315,7 +312,7 @@ public class SettingsActivity extends AppCompatActivity {
                         return false;
                     }
                 }
-                Toast.makeText(activity,"Press and hold down your Clicker until it connects.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "Press and hold down your Clicker until it connects.", Toast.LENGTH_SHORT).show();
                 isScanning = true;
 
                 Flic2Manager.getInstance().startScan(new Flic2ScanCallback() {
@@ -331,7 +328,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                     @Override
                     public void onConnected() {
-                        Toast.makeText(getContext(),  "Connected. Now pairing...", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Connected. Now pairing...", Toast.LENGTH_LONG).show();
                     }
 
                     @Override

@@ -22,7 +22,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.storage.StorageManager;
@@ -79,7 +78,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.flic.flic2libandroid.Flic2Button;
-import io.flic.flic2libandroid.Flic2ButtonListener;
 import io.flic.flic2libandroid.Flic2Manager;
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -99,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int PERMISSION_REQUEST_CODE = 100;
     private final static int ALL_PERMISSIONS_RESULT = 101;
     private final List<Point> pointList = new ArrayList<>();
+    private final float zoomLevel = 10;
     SupportMapFragment mapFragment;
     private PointListAdapter pointListAdapter;
     private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
@@ -184,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     });
     private boolean visible = false;
-    private final float zoomLevel = 10;
     private LocationManager locationManager;
     private MyReceiver solunarReciever;
     private List<Marker> markers;
@@ -311,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         buttons = Flic2Manager.getInstance().getButtons();
         Log.d(TAG, String.format("Found %d Clickers!", buttons.size()));
-        for (Flic2Button button:buttons) {
+        for (Flic2Button button : buttons) {
             button.connect();
             button.addListener(clucker);
         }
@@ -431,7 +429,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 result2 == PackageManager.PERMISSION_GRANTED &&
                 result3 == PackageManager.PERMISSION_GRANTED &&
                 result4 == PackageManager.PERMISSION_GRANTED &&
-                result5 == PackageManager.PERMISSION_GRANTED );
+                result5 == PackageManager.PERMISSION_GRANTED);
     }
 
     @Override

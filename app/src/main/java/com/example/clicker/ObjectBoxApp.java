@@ -3,14 +3,11 @@ package com.example.clicker;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Handler;
-import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
 import com.example.clicker.objectbo.MyObjectBox;
 
-import io.flic.flic2libandroid.Flic2Button;
-import io.flic.flic2libandroid.Flic2ButtonListener;
 import io.flic.flic2libandroid.Flic2Manager;
 import io.objectbox.BoxStore;
 

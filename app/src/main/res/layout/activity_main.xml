@@ -54,6 +54,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layersButton"
         app:srcCompat="@drawable/camara" />
+
     <LinearLayout
         android:id="@+id/linearLayout4"
         android:layout_width="0dp"

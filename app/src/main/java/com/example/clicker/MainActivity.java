@@ -22,7 +22,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.storage.StorageManager;
@@ -70,6 +69,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -77,6 +77,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import io.flic.flic2libandroid.Flic2Button;
+import io.flic.flic2libandroid.Flic2Manager;
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int PERMISSION_REQUEST_CODE = 100;
     private final static int ALL_PERMISSIONS_RESULT = 101;
     private final List<Point> pointList = new ArrayList<>();
+    private final float zoomLevel = 10;
     SupportMapFragment mapFragment;
     private PointListAdapter pointListAdapter;
     private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
@@ -180,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     });
     private boolean visible = false;
-    private final float zoomLevel = 10;
     private LocationManager locationManager;
     private MyReceiver solunarReciever;
     private List<Marker> markers;
@@ -277,8 +279,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         permissions.add(Manifest.permission.INTERNET);
         permissions.add(Manifest.permission.SEND_SMS);
         permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        permissions.add(Manifest.permission.READ_CONTACTS);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkPermission()) {
+        if (!checkPermission()) {
             requestPermissions(permissions.toArray(new String[permissions.size()]), ALL_PERMISSIONS_RESULT);
         }
 
@@ -296,7 +299,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         sheets = new SheetAccess(getApplicationContext());
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
         getLocation();
+
+        registerClickerButtons();
         initView();
+    }
+
+    private void registerClickerButtons() {
+        List<Flic2Button> buttons = Collections.EMPTY_LIST;
+        ClickerListener clucker = new ClickerListener(this);
+
+        buttons = Flic2Manager.getInstance().getButtons();
+        Log.d(TAG, String.format("Found %d Clickers!", buttons.size()));
+        for (Flic2Button button : buttons) {
+            button.connect();
+            button.addListener(clucker);
+        }
     }
 
     public void openCamera(View view) {
@@ -403,12 +420,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private boolean checkPermission() {
-        int result1 = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
-        int result2 = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+        int result1 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        int result2 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         int result3 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
-        int result4 = ContextCompat.checkSelfPermission(this, android.Manifest.permission.INTERNET);
+        int result4 = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
         int result5 = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-        return (result1 == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED && result3 == PackageManager.PERMISSION_GRANTED && result4 == PackageManager.PERMISSION_GRANTED && result5 == PackageManager.PERMISSION_GRANTED);
+        int result6 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
+
+        return (result1 == PackageManager.PERMISSION_GRANTED &&
+                result2 == PackageManager.PERMISSION_GRANTED &&
+                result3 == PackageManager.PERMISSION_GRANTED &&
+                result4 == PackageManager.PERMISSION_GRANTED &&
+                result5 == PackageManager.PERMISSION_GRANTED &&
+                result6 == PackageManager.PERMISSION_GRANTED);
     }
 
     @Override
@@ -857,12 +881,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (action.equalsIgnoreCase("CONTACT"))
             notification = prefs.getString("Lost Notification", "");
         if (!notification.isEmpty()) {
-            String[] list = notification.split(",");
             SmsManager smgr = SmsManager.getDefault();
-            int length = Array.getLength(list);
-            for (int i = 0; i < length; i++) {
-                smgr.sendTextMessage(list[i], null, message, null, null);
-            }
+            Map<String, String> contacts = SettingsActivity.GET_CONTACT_LIST(Integer.parseInt(notification), getContentResolver());
+            contacts.forEach((name, number) -> {
+                smgr.sendTextMessage(number, null, message, null, null);
+                Log.d(TAG, String.format("%s message sent to %s ( %s )", action, name, number));
+            });
         }
     }
 }

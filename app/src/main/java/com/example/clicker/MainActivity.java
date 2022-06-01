@@ -279,6 +279,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         permissions.add(Manifest.permission.INTERNET);
         permissions.add(Manifest.permission.SEND_SMS);
         permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        permissions.add(Manifest.permission.READ_CONTACTS);
 
         if (!checkPermission()) {
             requestPermissions(permissions.toArray(new String[permissions.size()]), ALL_PERMISSIONS_RESULT);
@@ -424,12 +425,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         int result3 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
         int result4 = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
         int result5 = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        int result6 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
 
         return (result1 == PackageManager.PERMISSION_GRANTED &&
                 result2 == PackageManager.PERMISSION_GRANTED &&
                 result3 == PackageManager.PERMISSION_GRANTED &&
                 result4 == PackageManager.PERMISSION_GRANTED &&
-                result5 == PackageManager.PERMISSION_GRANTED);
+                result5 == PackageManager.PERMISSION_GRANTED &&
+                result6 == PackageManager.PERMISSION_GRANTED);
     }
 
     @Override
@@ -878,12 +881,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (action.equalsIgnoreCase("CONTACT"))
             notification = prefs.getString("Lost Notification", "");
         if (!notification.isEmpty()) {
-            String[] list = notification.split(",");
             SmsManager smgr = SmsManager.getDefault();
-            int length = Array.getLength(list);
-            for (int i = 0; i < length; i++) {
-                smgr.sendTextMessage(list[i], null, message, null, null);
-            }
+            Map<String, String> contacts = SettingsActivity.GET_CONTACT_LIST(Integer.parseInt(notification), getContentResolver());
+            contacts.forEach((name, number) -> {
+                smgr.sendTextMessage(number, null, message, null, null);
+                Log.d(TAG, String.format("%s message sent to %s ( %s )", action, name, number));
+            });
         }
     }
 }

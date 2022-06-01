@@ -44,6 +44,7 @@
             android:layout_weight="1"
             android:gravity="bottom"
             android:text="" />
+
         <TextView
             android:id="@+id/latLbl"
             android:layout_width="100dip"
@@ -122,6 +123,7 @@
             android:layout_weight="1"
             android:gravity="bottom"
             android:text="" />
+
         <TextView
             android:id="@+id/fishSizeLbl"
             android:layout_width="100dip"

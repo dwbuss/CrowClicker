@@ -267,6 +267,8 @@ public class SettingsActivity extends AppCompatActivity {
             });
             Snackbar.make(view, "Message sent to " + contacts.keySet(), Snackbar.LENGTH_LONG).show();
         }
+        else
+            Snackbar.make(view, "Group not set.", Snackbar.LENGTH_LONG).show();
     }
 
     public void exportPoints(View view) {
@@ -355,13 +357,16 @@ public class SettingsActivity extends AppCompatActivity {
             Log.d(TAG, "URI: " + uri);
             String[] projection = new String[]{
                     ContactsContract.Groups._ID,
-                    ContactsContract.Groups.TITLE
+                    ContactsContract.Groups.TITLE,
+                    ContactsContract.Groups.ACCOUNT_TYPE
             };
             //Loader<Cursor> loader = new CursorLoader(getContext(),  uri, projection, null, null, null);
             Cursor results = getActivity().getContentResolver().query(uri, projection, null, null, null);
             while (results.moveToNext()) {
-                entries.add(results.getString(1));
-                values.add(results.getString(0));
+                if ( results.getString(2).equals("com.google")) {
+                    entries.add(results.getString(1));
+                    values.add(results.getString(0));
+                }
             }
             contactGroups.setEntries(entries.toArray(new CharSequence[entries.size()]));
             contactGroups.setEntryValues(values.toArray(new CharSequence[entries.size()]));

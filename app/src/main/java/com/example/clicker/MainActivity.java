@@ -822,7 +822,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Date timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").parse(timeStampStr);
             point.setTimeStamp(new Timestamp(timeStamp.getTime()));
             point.setBait(((EditText) dialog.findViewById(R.id.bait)).getText().toString().trim());
-            point.setFishSize(String.format("%.2f", Double.parseDouble(((EditText) dialog.findViewById(R.id.fishSize)).getText().toString().trim())));
+            String fishSize = ((EditText) dialog.findViewById(R.id.fishSize)).getText().toString().trim();
+            if ( !fishSize.isEmpty() )
+                point.setFishSize(String.format("%.2f", Double.parseDouble(fishSize)));
             point.setAirTemp(((EditText) dialog.findViewById(R.id.airtemp)).getText().toString().trim());
             point.setWaterTemp(((EditText) dialog.findViewById(R.id.watertemp)).getText().toString().trim());
             point.setWindSpeed(((EditText) dialog.findViewById(R.id.windSpeed)).getText().toString().trim());
@@ -842,7 +844,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             Toast.makeText(getApplicationContext(), "Save Successful", Toast.LENGTH_SHORT).show();
         } catch (Exception error) {
-            Log.e("Update error", error.getMessage());
+            Log.e("Update error", error.getMessage(), error);
         }
     }
 

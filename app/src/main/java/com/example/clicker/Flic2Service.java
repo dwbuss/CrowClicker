@@ -45,18 +45,4 @@ public class Flic2Service extends Service {
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not implemented");
     }
-
-    public static class BootUpReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // The Application class's onCreate has already been called at this point, which is what we want
-        }
-    }
-
-    public static class UpdateReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // The Application class's onCreate has already been called at this point, which is what we want
-        }
-    }
 }

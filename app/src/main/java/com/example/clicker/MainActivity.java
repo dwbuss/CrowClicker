@@ -33,10 +33,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,6 +71,7 @@ import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -492,15 +496,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void addPoint(String contactType) {
-        if (getLocation() != null) {
-            addPoint(contactType, getLocation());
+        final Location location = getLocation();
+        if (location != null) {
+            addPoint(contactType, location);
         }
     }
 
     public void addPoint(String contactType, Location loc) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String username = prefs.getString("Username", null);
+        String defaultBait = prefs.getString("CurrentBait", "");
         final Point point = new Point(0, username, contactType, loc.getLongitude(), loc.getLatitude());
+        point.setBait(defaultBait);
         final Weather weather = new Weather();
         weather.populate(loc.getLatitude(), loc.getLongitude(), getApplicationContext(), new VolleyCallBack() {
             @Override
@@ -687,12 +694,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.update_dialog);
         ((EditText) dialog.findViewById(R.id.name)).setText(point.getName());
-        ((EditText) dialog.findViewById(R.id.contactType)).setText(point.getContactType());
+
+        Spinner contactType = dialog.findViewById(R.id.contactType);
+        String[] contactTypes = getResources().getStringArray(R.array.contact_array);
+        ArrayAdapter<String> contactAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, contactTypes);
+        contactAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        contactType.setAdapter(contactAdapter);
+        contactType.setSelection(Arrays.asList(contactTypes).indexOf(point.getContactType()));
+
         String timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp());
         ((TextView) dialog.findViewById(R.id.timeStamp)).setText(timeStamp);
         ((TextView) dialog.findViewById(R.id.lat)).setText(Double.toString(point.getLat()));
         ((TextView) dialog.findViewById(R.id.lon)).setText(Double.toString(point.getLon()));
-        ((EditText) dialog.findViewById(R.id.bait)).setText(point.getBait());
+
+        Spinner baitEntry = dialog.findViewById(R.id.bait);
+        String[] baits = getResources().getStringArray(R.array.bait_array);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, baits);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        baitEntry.setAdapter(adapter);
+        baitEntry.setSelection(Arrays.asList(baits).indexOf(point.getBait()));
+
         ((EditText) dialog.findViewById(R.id.fishSize)).setText(point.getFishSize());
         ((EditText) dialog.findViewById(R.id.airtemp)).setText(point.getAirTemp());
         ((EditText) dialog.findViewById(R.id.watertemp)).setText(point.getWaterTemp());
@@ -816,12 +837,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void savePoint(View view, Point point, Dialog dialog) {
         try {
             point.setName(((EditText) dialog.findViewById(R.id.name)).getText().toString().trim());
-            point.setContactType(((EditText) dialog.findViewById(R.id.contactType)).getText().toString().trim());
+            point.setContactType(((Spinner) dialog.findViewById(R.id.contactType)).getSelectedItem().toString().trim());
             String timeStampStr = ((EditText) dialog.findViewById(R.id.timeStamp)).getText().toString().trim();
 
             Date timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").parse(timeStampStr);
             point.setTimeStamp(new Timestamp(timeStamp.getTime()));
-            point.setBait(((EditText) dialog.findViewById(R.id.bait)).getText().toString().trim());
+            point.setBait(((Spinner) dialog.findViewById(R.id.bait)).getSelectedItem().toString().trim());
             String fishSize = ((EditText) dialog.findViewById(R.id.fishSize)).getText().toString().trim();
             if ( !fishSize.isEmpty() )
                 point.setFishSize(String.format("%.2f", Double.parseDouble(fishSize)));
@@ -835,16 +856,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             point.setHumidity(((EditText) dialog.findViewById(R.id.humidity)).getText().toString().trim());
             point.setNotes(((EditText) dialog.findViewById(R.id.notes)).getText().toString().trim());
             boolean notify = ((CheckBox) dialog.findViewById(R.id.notify)).isChecked();
-            BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-            Box<Point> pointBox = boxStore.boxFor(Point.class);
-            pointBox.put(point);
+            storeAndNotify(point, notify);
             dialog.dismiss();
-            if (notify) {
-                sendMessage(point.getMessage(), point.getContactType());
-            }
             Toast.makeText(getApplicationContext(), "Save Successful", Toast.LENGTH_SHORT).show();
         } catch (Exception error) {
             Log.e("Update error", error.getMessage(), error);
+        }
+    }
+
+    void storeAndNotify(Point point, boolean notify) {
+        BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
+        Box<Point> pointBox = boxStore.boxFor(Point.class);
+        pointBox.put(point);
+        if (notify) {
+            sendMessage(point.getMessage(), point.getContactType());
         }
     }
 

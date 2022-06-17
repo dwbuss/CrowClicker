@@ -17,4 +17,20 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string-array name="bait_array">
+        <item>Blades</item>
+        <item>Crank Bait</item>
+        <item>Glide</item>
+        <item>Jig</item>
+        <item>Jerk Bait</item>
+        <item>Rubber</item>
+        <item>Spoon</item>
+        <item>Swim Bait</item>
+        <item>Top Water</item>
+    </string-array>
+    <string-array name="contact_array">
+        <item>CONTACT</item>
+        <item>CATCH</item>
+        <item>FOLLOW</item>
+    </string-array>
 </resources>

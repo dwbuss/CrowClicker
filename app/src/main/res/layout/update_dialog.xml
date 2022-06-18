@@ -1,368 +1,478 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/nameLbl"
-            android:layout_width="100dip"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Name" />
+            android:orientation="horizontal"
+            android:weightSum="100">
 
-        <EditText
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/nameLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="end"
+                android:text="Name"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="80"
+                android:inputType="textAutoCorrect"
+                android:maxLines="1"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/lonLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="21"
+                android:gravity="end"
+                android:text="Longitude"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/lon"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="30"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/latLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="19"
+                android:gravity="end"
+                android:text="Latitude"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/lat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="30"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/timeStampLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="end"
+                android:text="Time"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/timeStamp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="80"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/contactTypeLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="end"
+                android:text="Type"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/contactType"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="bottom"
+                android:layout_weight="45"/>
+
+            <CheckBox
+                android:id="@+id/notify"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:checked="true"
+                android:text="Notify" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/baitLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="end"
+                android:text="Bait"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/bait"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="bottom"
+                android:layout_weight="40"/>
+
+            <TextView
+                android:id="@+id/fishSizeLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="end"
+                android:text="Fish Size"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/fishSize"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:inputType="numberDecimal"
+                android:maxLines="1"
+                android:text="" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/airtempLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="end"
+                android:text="Air Temp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/airtemp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="30"
+                android:inputType="numberDecimal"
+                android:maxLines="1"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/watertempLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:gravity="end"
+                android:text="Water Temp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/watertemp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:inputType="numberDecimal"
+                android:maxLines="1"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/windSpeedLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="end"
+                android:text="Wind Speed"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/windSpeed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="30"
+                android:maxLines="1"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/windDirLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:gravity="end"
+                android:text="Wind Direction"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/windDir"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/cloudCoverLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="end"
+                android:text="Cloud Cover"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/cloudCover"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="30"
+                android:inputType="numberDecimal"
+                android:maxLines="1"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/dewPointLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:gravity="end"
+                android:text="Dew Point"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/dewPoint"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:inputType="numberDecimal"
+                android:maxLines="1"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/pressureLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="end"
+                android:text="Pressure"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/pressure"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="30"
+                android:inputType="numberDecimal"
+                android:maxLines="1"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/humidityLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:gravity="end"
+                android:text="Humidity"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/humidity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:inputType="numberDecimal"
+                android:maxLines="1"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/notesLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="end"
+                android:text="Notes"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/notes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="80"
+                android:inputType="text"
+                android:text="" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Save" />
+
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Delete" />
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Cancel" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnWeather"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Weather" />
+
+            <Button
+                android:id="@+id/btnPush"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Push" />
+
+        </LinearLayout>
     </LinearLayout>
+</ScrollView>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/lonLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Longitude " />
-
-        <TextView
-            android:id="@+id/lon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-
-        <TextView
-            android:id="@+id/latLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Latitude" />
-
-        <TextView
-            android:id="@+id/lat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/timeStampLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Time" />
-
-        <EditText
-            android:id="@+id/timeStamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/contactTypeLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Contact Type" />
-
-        <EditText
-            android:id="@+id/contactType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/baitLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Bait" />
-
-        <EditText
-            android:id="@+id/bait"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-
-        <TextView
-            android:id="@+id/fishSizeLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Fish Size" />
-
-        <EditText
-            android:id="@+id/fishSize"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:orientation="horizontal">
-
-        <CheckBox
-            android:id="@+id/notify"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="Notify" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/airtempLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Air Temp" />
-
-        <EditText
-            android:id="@+id/airtemp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-
-        <TextView
-            android:id="@+id/watertempLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Water Temp" />
-
-        <EditText
-            android:id="@+id/watertemp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/windSpeedLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Wind Speed" />
-
-        <EditText
-            android:id="@+id/windSpeed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-
-        <TextView
-            android:id="@+id/windDirLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Wind Dir" />
-
-        <EditText
-            android:id="@+id/windDir"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/cloudCoverLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Cloud Cover" />
-
-        <EditText
-            android:id="@+id/cloudCover"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-
-        <TextView
-            android:id="@+id/dewPointLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Dew Point" />
-
-        <EditText
-            android:id="@+id/dewPoint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/pressureLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Pressure" />
-
-        <EditText
-            android:id="@+id/pressure"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-
-        <TextView
-            android:id="@+id/humidityLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Humidity" />
-
-        <EditText
-            android:id="@+id/humidity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/notesLbl"
-            android:layout_width="100dip"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Notes" />
-
-        <EditText
-            android:id="@+id/notes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="" />
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Save" />
-
-        <Button
-            android:id="@+id/btnWeather"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Weather" />
-
-        <Button
-            android:id="@+id/btnDelete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Delete" />
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btnPush"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Push" />
-
-        <Button
-            android:id="@+id/btnCancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancel" />
-    </LinearLayout>
-</LinearLayout>

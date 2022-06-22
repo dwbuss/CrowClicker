@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:orientation="vertical">
@@ -35,52 +35,6 @@
                 android:layout_weight="80"
                 android:inputType="textAutoCorrect"
                 android:maxLines="1"
-                android:text="" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="100">
-
-            <TextView
-                android:id="@+id/lonLbl"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_weight="21"
-                android:gravity="end"
-                android:text="Longitude"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/lon"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_weight="30"
-                android:text="" />
-
-            <TextView
-                android:id="@+id/latLbl"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_weight="19"
-                android:gravity="end"
-                android:text="Latitude"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/lat"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_weight="30"
                 android:text="" />
         </LinearLayout>
 
@@ -214,16 +168,13 @@
                 android:text="Air Temp"
                 android:textStyle="bold" />
 
-            <EditText
+            <TextView
                 android:id="@+id/airtemp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_weight="30"
-                android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:text="" />
+                android:layout_weight="30"/>
 
             <TextView
                 android:id="@+id/watertempLbl"
@@ -243,8 +194,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
                 android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:text="" />
+                android:maxLines="1"/>
         </LinearLayout>
 
         <LinearLayout
@@ -263,15 +213,13 @@
                 android:text="Wind Speed"
                 android:textStyle="bold" />
 
-            <EditText
+            <TextView
                 android:id="@+id/windSpeed"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_weight="30"
-                android:maxLines="1"
-                android:text="" />
+                android:layout_weight="30" />
 
             <TextView
                 android:id="@+id/windDirLbl"
@@ -283,16 +231,13 @@
                 android:text="Wind Direction"
                 android:textStyle="bold" />
 
-            <EditText
+            <TextView
                 android:id="@+id/windDir"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_weight="25"
-                android:inputType="text"
-                android:maxLines="1"
-                android:text="" />
+                android:layout_weight="25"/>
         </LinearLayout>
 
         <LinearLayout
@@ -311,16 +256,13 @@
                 android:text="Cloud Cover"
                 android:textStyle="bold" />
 
-            <EditText
+            <TextView
                 android:id="@+id/cloudCover"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_weight="30"
-                android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:text="" />
+                android:layout_weight="30"/>
 
             <TextView
                 android:id="@+id/dewPointLbl"
@@ -332,16 +274,13 @@
                 android:text="Dew Point"
                 android:textStyle="bold" />
 
-            <EditText
+            <TextView
                 android:id="@+id/dewPoint"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_weight="25"
-                android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:text="" />
+                android:layout_weight="25"/>
         </LinearLayout>
 
         <LinearLayout
@@ -360,16 +299,13 @@
                 android:text="Pressure"
                 android:textStyle="bold" />
 
-            <EditText
+            <TextView
                 android:id="@+id/pressure"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_weight="30"
-                android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:text="" />
+                android:layout_weight="30"/>
 
             <TextView
                 android:id="@+id/humidityLbl"
@@ -381,16 +317,13 @@
                 android:text="Humidity"
                 android:textStyle="bold" />
 
-            <EditText
+            <TextView
                 android:id="@+id/humidity"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_weight="25"
-                android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:text="" />
+                android:layout_weight="25"/>
         </LinearLayout>
 
         <LinearLayout
@@ -440,7 +373,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Delete" />
+                android:text="Delete"
+                android:visibility="visible"/>
 
             <Button
                 android:id="@+id/btnCancel"
@@ -462,7 +396,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Weather" />
+                android:text="Weather"
+                android:visibility="visible"/>
 
             <Button
                 android:id="@+id/btnPush"
@@ -470,7 +405,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Push" />
+                android:text="Push"
+                android:visibility="visible"/>
 
         </LinearLayout>
     </LinearLayout>

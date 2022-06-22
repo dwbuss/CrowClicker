@@ -704,8 +704,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         String timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp());
         ((TextView) dialog.findViewById(R.id.timeStamp)).setText(timeStamp);
-        ((TextView) dialog.findViewById(R.id.lat)).setText(Double.toString(point.getLat()));
-        ((TextView) dialog.findViewById(R.id.lon)).setText(Double.toString(point.getLon()));
 
         Spinner baitEntry = dialog.findViewById(R.id.bait);
         String[] baits = getResources().getStringArray(R.array.bait_array);
@@ -715,15 +713,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         baitEntry.setSelection(Arrays.asList(baits).indexOf(point.getBait()));
 
         ((EditText) dialog.findViewById(R.id.fishSize)).setText(point.getFishSize());
-        ((EditText) dialog.findViewById(R.id.airtemp)).setText(point.getAirTemp());
+        ((TextView) dialog.findViewById(R.id.airtemp)).setText(point.getAirTemp());
         ((EditText) dialog.findViewById(R.id.watertemp)).setText(point.getWaterTemp());
-        ((EditText) dialog.findViewById(R.id.windSpeed)).setText(point.getWindSpeed());
-        ((EditText) dialog.findViewById(R.id.windDir)).setText(point.getWindDir());
-        ((EditText) dialog.findViewById(R.id.cloudCover)).setText(point.getCloudCover());
-        ((EditText) dialog.findViewById(R.id.dewPoint)).setText(point.getDewPoint());
-        ((EditText) dialog.findViewById(R.id.pressure)).setText(point.getPressure());
-        ((EditText) dialog.findViewById(R.id.humidity)).setText(point.getHumidity());
-        ((EditText) dialog.findViewById(R.id.notes)).setText(point.getNotes());
+        ((TextView) dialog.findViewById(R.id.windSpeed)).setText(point.getWindSpeed());
+        ((TextView) dialog.findViewById(R.id.windDir)).setText(point.getWindDir());
+        ((TextView) dialog.findViewById(R.id.cloudCover)).setText(point.getCloudCover());
+        ((TextView) dialog.findViewById(R.id.dewPoint)).setText(point.getDewPoint());
+        ((TextView) dialog.findViewById(R.id.pressure)).setText(point.getPressure());
+        ((TextView) dialog.findViewById(R.id.humidity)).setText(point.getHumidity());
+        ((TextView) dialog.findViewById(R.id.notes)).setText(point.getNotes());
 
         int width = (int) (this.getResources().getDisplayMetrics().widthPixels * 0.95);
         int height = (int) (this.getResources().getDisplayMetrics().heightPixels * 0.95);
@@ -818,15 +816,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         public void onFailure() {
                         }
                     });
-
-                    ((EditText) dialog.findViewById(R.id.airtemp)).setText(point.getAirTemp());
                     ((EditText) dialog.findViewById(R.id.watertemp)).setText(point.getWaterTemp());
-                    ((EditText) dialog.findViewById(R.id.windSpeed)).setText(point.getWindSpeed());
-                    ((EditText) dialog.findViewById(R.id.windDir)).setText(point.getWindDir());
-                    ((EditText) dialog.findViewById(R.id.cloudCover)).setText(point.getCloudCover());
-                    ((EditText) dialog.findViewById(R.id.dewPoint)).setText(point.getDewPoint());
-                    ((EditText) dialog.findViewById(R.id.pressure)).setText(point.getPressure());
-                    ((EditText) dialog.findViewById(R.id.humidity)).setText(point.getHumidity());
                 } catch (Exception error) {
                     Log.e("Update Weather error", error.getMessage());
                 }
@@ -846,14 +836,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             String fishSize = ((EditText) dialog.findViewById(R.id.fishSize)).getText().toString().trim();
             if ( !fishSize.isEmpty() )
                 point.setFishSize(String.format("%.2f", Double.parseDouble(fishSize)));
-            point.setAirTemp(((EditText) dialog.findViewById(R.id.airtemp)).getText().toString().trim());
+            point.setAirTemp(((TextView) dialog.findViewById(R.id.airtemp)).getText().toString().trim());
             point.setWaterTemp(((EditText) dialog.findViewById(R.id.watertemp)).getText().toString().trim());
-            point.setWindSpeed(((EditText) dialog.findViewById(R.id.windSpeed)).getText().toString().trim());
-            point.setWindDir(((EditText) dialog.findViewById(R.id.windDir)).getText().toString().trim());
-            point.setCloudCover(((EditText) dialog.findViewById(R.id.cloudCover)).getText().toString().trim());
-            point.setDewPoint(((EditText) dialog.findViewById(R.id.dewPoint)).getText().toString().trim());
-            point.setPressure(((EditText) dialog.findViewById(R.id.pressure)).getText().toString().trim());
-            point.setHumidity(((EditText) dialog.findViewById(R.id.humidity)).getText().toString().trim());
+            point.setWindSpeed(((TextView) dialog.findViewById(R.id.windSpeed)).getText().toString().trim());
+            point.setWindDir(((TextView) dialog.findViewById(R.id.windDir)).getText().toString().trim());
+            point.setCloudCover(((TextView) dialog.findViewById(R.id.cloudCover)).getText().toString().trim());
+            point.setDewPoint(((TextView) dialog.findViewById(R.id.dewPoint)).getText().toString().trim());
+            point.setPressure(((TextView) dialog.findViewById(R.id.pressure)).getText().toString().trim());
+            point.setHumidity(((TextView) dialog.findViewById(R.id.humidity)).getText().toString().trim());
             point.setNotes(((EditText) dialog.findViewById(R.id.notes)).getText().toString().trim());
             boolean notify = ((CheckBox) dialog.findViewById(R.id.notify)).isChecked();
             storeAndNotify(point, notify);

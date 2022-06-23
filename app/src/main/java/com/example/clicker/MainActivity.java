@@ -451,46 +451,67 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void addContact(View view) {
+    private void addFromClick(ContactType type) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int soundBite = R.raw.cc_yousuck2;
-        if (!prefs.getBoolean("Friendly", true)) {
-            List<Integer> tones = new LinkedList<>();
-            tones.add(R.raw.f_upped);
-            tones.add(R.raw.cc_yousuck3);
-            soundBite = tones.get((int) (Math.random() * 2 + 1) - 1);
-        }
+        boolean friendly = prefs.getBoolean("Friendly", true);
+        int soundBite = type.lookupSoundBite(friendly);
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
-        addPoint("CONTACT");
+        addPoint(type.toString());
+    }
+
+    public void addFromButton(ContactType contactType) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean friendly = prefs.getBoolean("Friendly", true);
+
+        int soundBite = contactType.lookupSoundBite(friendly);
+        MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
+        song.start();
+
+        String username = prefs.getString("Username", null);
+        String defaultBait = prefs.getString("CurrentBait", "");
+
+        Location loc = getLocation();
+        if ( loc == null ) return;
+
+        final Point point = new Point(0, username, contactType.toString(), loc.getLongitude(), loc.getLatitude());
+        point.setBait(defaultBait);
+        point.setName(username);
+
+        final Weather weather = new Weather();
+        weather.populate(loc.getLatitude(), loc.getLongitude(), getApplicationContext(), new VolleyCallBack() {
+            @Override
+            public void onSuccess() {
+                point.setAirTemp(weather.temperature);
+                point.setDewPoint(weather.dewPoint);
+                point.setWindSpeed(weather.windSpeed);
+                point.setHumidity(weather.humidity);
+                point.setPressure(weather.pressure);
+                point.setCloudCover(weather.cloudCover);
+                point.setWindDir(weather.windDir);
+                pointListAdapter.addOrUpdatePoint(point);
+                pointListAdapter.updatePoints();
+            }
+
+            @Override
+            public void onFailure() {
+            }
+        });
+        addPointMarker(point);
+        storeAndNotify(point, true);
+        refreshCounts();
+    }
+
+    public void addContact(View view) {
+        addFromClick(ContactType.CONTACT);
     }
 
     public void addFollow(View view) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int soundBite = R.raw.cc_follow2;
-        if (!prefs.getBoolean("Friendly", true)) {
-            List<Integer> tones = new LinkedList<>();
-            tones.add(R.raw.wtf_lookin);
-            tones.add(R.raw.cc_follow3);
-            soundBite = tones.get((int) (Math.random() * 2 + 1) - 1);
-        }
-        MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
-        song.start();
-        addPoint("FOLLOW");
+        addFromClick(ContactType.FOLLOW);
     }
 
     public void addCatch(View view) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int soundBite = R.raw.cc_nice2;
-        if (!prefs.getBoolean("Friendly", true)) {
-            List<Integer> tones = new LinkedList<>();
-            tones.add(R.raw.cc_nice3);
-            tones.add(R.raw.g_bitch);
-            soundBite = tones.get((int) (Math.random() * 2 + 1) - 1);
-        }
-        MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
-        song.start();
-        addPoint("CATCH");
+        addFromClick(ContactType.CATCH);
     }
 
     public void addPoint(String contactType) {

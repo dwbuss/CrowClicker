@@ -13,7 +13,7 @@ public class ClickerListener extends Flic2ButtonListener {
     @Override
     public void onButtonSingleOrDoubleClick(Flic2Button button, boolean wasQueued, boolean lastQueued, long timestamp, boolean isSingleClick, boolean isDoubleClick) {
         super.onButtonSingleOrDoubleClick(button, wasQueued, lastQueued, timestamp, isSingleClick, isDoubleClick);
-        if (isSingleClick) activity.addFollow(activity.getCurrentFocus());
-        if (isDoubleClick) activity.addContact(activity.getCurrentFocus());
+        if (isSingleClick) activity.addFromButton(ContactType.FOLLOW);
+        if (isDoubleClick) activity.addFromButton(ContactType.CONTACT);
     }
 }

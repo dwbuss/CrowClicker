@@ -87,7 +87,6 @@ import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
-    public static final String NOTIFICATION_CHANNEL_ID = "10001";
     private static final String TAG = "MainActivity";
     private static final String KWS_SEARCH = "wakeup";
     private static final String LOST = "lost";

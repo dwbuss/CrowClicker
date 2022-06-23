@@ -34,7 +34,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -87,7 +86,6 @@ import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
-    public static final String NOTIFICATION_CHANNEL_ID = "10001";
     private static final String TAG = "MainActivity";
     private static final String KWS_SEARCH = "wakeup";
     private static final String LOST = "lost";
@@ -834,7 +832,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             point.setTimeStamp(new Timestamp(timeStamp.getTime()));
             point.setBait(((Spinner) dialog.findViewById(R.id.bait)).getSelectedItem().toString().trim());
             String fishSize = ((EditText) dialog.findViewById(R.id.fishSize)).getText().toString().trim();
-            if ( !fishSize.isEmpty() )
+            if (!fishSize.isEmpty())
                 point.setFishSize(String.format("%.2f", Double.parseDouble(fishSize)));
             point.setAirTemp(((TextView) dialog.findViewById(R.id.airtemp)).getText().toString().trim());
             point.setWaterTemp(((EditText) dialog.findViewById(R.id.watertemp)).getText().toString().trim());

@@ -328,11 +328,11 @@ public class Point {
 
     public String getMessage() {
         if (contactType.equalsIgnoreCase("CATCH"))
-            return getName() + " caught a " + getFishSize() + " on a " + getBait() + "\r\nhttp://maps.google.com/maps?q=" + getLat() + "," + getLon();
+            return String.format("%s caught a %s on a %s.%n%s%nhttp://maps.google.com/maps?q=%f,%f", getName().trim(), getFishSize().trim(), getBait(), getNotes().trim(), getLat(), getLon());
         else if (contactType.equalsIgnoreCase("FOLLOW"))
-            return getName() + " saw one on a " + getBait() + "\r\nhttp://maps.google.com/maps?q=" + getLat() + "," + getLon();
+            return String.format("%s saw one on a %s.%n%s%nhttp://maps.google.com/maps?q=%f,%f", getName().trim(), getBait(), getNotes().trim(), getLat(), getLon());
         else
-            return getName() + " lost one on a " + getBait() + "\r\nhttp://maps.google.com/maps?q=" + getLat() + "," + getLon();
+            return String.format("%s lost one on a %s.%n%s%nhttp://maps.google.com/maps?q=%f,%f", getName().trim(), getBait(), getNotes().trim(), getLat(), getLon());
     }
 
     public List<List<Object>> getSheetBody() {

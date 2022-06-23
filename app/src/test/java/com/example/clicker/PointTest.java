@@ -29,6 +29,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class PointTest {
+    @Test
+    public void testGetMessageFollow() throws ParseException {
+        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\tThu Sep 02 09:11:00 CDT 2021\tFOLLOW\t61.5°\t\tdusa\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77";
+        Point point = new Point(csvRecord);
+        assertEquals("Dan saw one on a dusa.\n\nhttp://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage());
+    }
+
+    @Test
+    public void testGetMessageCatch() throws ParseException {
+        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\tThu Sep 02 09:11:00 CDT 2021\tCATCH\t61.5°\t\tdusa\t39\tTypical pike!\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77";
+        Point point = new Point(csvRecord);
+        assertEquals("Dan caught a 39 on a dusa.\nTypical pike!\nhttp://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage());
+    }
+
+    @Test
+    public void testGetMessageContact() throws ParseException {
+        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\tThu Sep 02 09:11:00 CDT 2021\tCONTACT\t61.5°\t\tdusa\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77";
+        Point point = new Point(csvRecord);
+        assertEquals("Dan lost one on a dusa.\n\nhttp://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage());
+    }
 
     @Test
     public void testCreatePoint() throws ParseException {

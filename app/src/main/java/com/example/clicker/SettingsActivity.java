@@ -266,8 +266,7 @@ public class SettingsActivity extends AppCompatActivity {
                 Log.d(TAG, String.format("Message sent to %s ( %s )", name, number));
             });
             Snackbar.make(view, "Message sent to " + contacts.keySet(), Snackbar.LENGTH_LONG).show();
-        }
-        else
+        } else
             Snackbar.make(view, "Group not set.", Snackbar.LENGTH_LONG).show();
     }
 
@@ -363,7 +362,7 @@ public class SettingsActivity extends AppCompatActivity {
             //Loader<Cursor> loader = new CursorLoader(getContext(),  uri, projection, null, null, null);
             Cursor results = getActivity().getContentResolver().query(uri, projection, null, null, null);
             while (results.moveToNext()) {
-                if ( results.getString(2).equals("com.google")) {
+                if (results.getString(2).equals("com.google")) {
                     entries.add(results.getString(1));
                     values.add(results.getString(0));
                 }

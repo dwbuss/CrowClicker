@@ -60,12 +60,6 @@
             android:persistent="true"
             android:title="Lost Notification List"
             app:useSimpleSummaryProvider="true" />
-        <ListPreference
-            android:defaultValue=""
-            android:key="Message Notification"
-            android:persistent="true"
-            android:title="Message Notification List"
-            app:useSimpleSummaryProvider="true" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="MapLocation"

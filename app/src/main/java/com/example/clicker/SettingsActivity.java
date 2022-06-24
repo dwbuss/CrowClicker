@@ -252,24 +252,6 @@ public class SettingsActivity extends AppCompatActivity {
         return bestLocation;
     }
 
-    public void sendMessage(View view) {
-        String msg = ((EditText) findViewById(R.id.messageTxt)).getText().toString();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String value = prefs.getString("Message Notification", "");
-        if (!value.isEmpty()) {
-            Location loc = getLastKnownLocation();
-            String message = msg + "\r\nhttp://maps.google.com/maps?q=" + loc.getLatitude() + "," + loc.getLongitude();
-            SmsManager smgr = SmsManager.getDefault();
-            Map<String, String> contacts = GET_CONTACT_LIST(Integer.parseInt(value), getContentResolver());
-            contacts.forEach((name, number) -> {
-                smgr.sendTextMessage(number, null, message, null, null);
-                Log.d(TAG, String.format("Message sent to %s ( %s )", name, number));
-            });
-            Snackbar.make(view, "Message sent to " + contacts.keySet(), Snackbar.LENGTH_LONG).show();
-        } else
-            Snackbar.make(view, "Group not set.", Snackbar.LENGTH_LONG).show();
-    }
-
     public void exportPoints(View view) {
         try {
             BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
@@ -341,7 +323,6 @@ public class SettingsActivity extends AppCompatActivity {
             configureCatchNotificationChoices("Catch Notification");
             configureCatchNotificationChoices("Follow Notification");
             configureCatchNotificationChoices("Lost Notification");
-            configureCatchNotificationChoices("Message Notification");
         }
 
         private void configureCatchNotificationChoices(String key) {

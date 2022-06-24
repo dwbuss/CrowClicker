@@ -405,7 +405,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Push"
+                android:text="Save/Push"
                 android:visibility="visible"/>
 
         </LinearLayout>

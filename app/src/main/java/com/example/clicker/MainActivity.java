@@ -472,7 +472,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         String defaultBait = prefs.getString("CurrentBait", "");
 
         Location loc = getLocation();
-        if ( loc == null ) return;
+        if (loc == null) return;
 
         final Point point = new Point(0, username, contactType.toString(), loc.getLongitude(), loc.getLatitude());
         point.setBait(defaultBait);
@@ -556,14 +556,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                                              .position(new LatLng(point.getLat(), point.getLon()))
-                                              .title("Hold to Edit")
-                                              .draggable(true)
-                                              .anchor(0.5f, 0.5f)
-                                              .visible(false)
-                                              .flat(true)
-                                              .zIndex(0)
-                                              .icon(getMarker(point)));
+                    .position(new LatLng(point.getLat(), point.getLon()))
+                    .title("Hold to Edit")
+                    .draggable(true)
+                    .anchor(0.5f, 0.5f)
+                    .visible(false)
+                    .flat(true)
+                    .zIndex(0)
+                    .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
                 m.setVisible(true);
@@ -711,6 +711,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void showDialogUpdate(final Point point, final Marker marker) {
         final Dialog dialog = new Dialog(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         dialog.setContentView(R.layout.update_dialog);
         ((EditText) dialog.findViewById(R.id.name)).setText(point.getName());
 
@@ -761,8 +762,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (point.getSheetId() <= 0) {
                     point.setSheetId(point.getId());
                 }
-                savePoint(view, point, dialog);
-                sheets.storePoint(point);
+                savePoint(point, dialog);
+                sheets.storePoint(point, prefs.getString("Lake", ""));
             }
         });
         Button btnDelete = dialog.findViewById(R.id.btnDelete);
@@ -806,7 +807,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                savePoint(view, point, dialog);
+                savePoint(point, dialog);
             }
         });
         Button weatherUpdate = dialog.findViewById(R.id.btnWeather);
@@ -843,7 +844,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void savePoint(View view, Point point, Dialog dialog) {
+    private void savePoint(Point point, Dialog dialog) {
         try {
             point.setName(((EditText) dialog.findViewById(R.id.name)).getText().toString().trim());
             point.setContactType(((Spinner) dialog.findViewById(R.id.contactType)).getSelectedItem().toString().trim());

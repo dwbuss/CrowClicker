@@ -335,7 +335,7 @@ public class Point {
             return String.format("%s lost one on a %s.%n%s%nhttp://maps.google.com/maps?q=%f,%f", getName().trim(), getBait(), getNotes().trim(), getLat(), getLon());
     }
 
-    public List<List<Object>> getSheetBody() {
+    public List<List<Object>> getSheetBody(String lake) {
         DateFormat dayFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
         DateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.US);
         String day = dayFormat.format(getTimeStamp());
@@ -347,7 +347,7 @@ public class Point {
         cal.setTime(getTimeStamp());
         solunar.populate(lon, lat, cal);
         return Arrays.asList(
-                Arrays.asList(sheetId, "", name, fishSize, "", "", day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, "", windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor)));
+                Arrays.asList(sheetId, "", name, fishSize, "", lake, day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, "", windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor)));
     }
 
     public void refresh(List row) throws InvalidObjectException {

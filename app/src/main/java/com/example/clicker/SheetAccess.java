@@ -184,7 +184,7 @@ public class SheetAccess {
         });
     }
 
-    public void storePoint(Point point) {
+    public void storePoint(Point point, String lake) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
             @Override
@@ -192,13 +192,13 @@ public class SheetAccess {
                 try {
                     String row = findRow(point);
                     ValueRange body = new ValueRange()
-                            .setValues(point.getSheetBody());
+                            .setValues(point.getSheetBody(lake));
                     if (row.isEmpty()) {
                         service.spreadsheets().values()
                                 .append(spreadsheetId, sheetName, body)
                                 .setValueInputOption("USER_ENTERED")
                                 .execute();
-                        Log.d(TAG, "Created new row " + point.getSheetBody());
+                        Log.d(TAG, "Created new row " + point.getSheetBody(lake));
                     } else {
                         service.spreadsheets().values()
                                 .update(spreadsheetId, sheetName + "!A" + row, body)
@@ -207,7 +207,7 @@ public class SheetAccess {
                         Log.d(TAG, "Updated row " + row);
                     }
                 } catch (IOException e) {
-                    Log.e(TAG, "Failure during store " + point.getSheetBody(), e);
+                    Log.e(TAG, "Failure during store " + point.getSheetBody(lake), e);
                 }
             }
         });

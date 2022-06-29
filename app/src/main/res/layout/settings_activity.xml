@@ -196,7 +196,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="importPoints"
-                android:text="Sync" />
+                android:text="Pull" />
 
             <Button
                 android:id="@+id/exportBtn"

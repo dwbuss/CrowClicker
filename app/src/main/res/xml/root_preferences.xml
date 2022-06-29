@@ -25,6 +25,12 @@
             android:title="Name"
             app:useSimpleSummaryProvider="true" />
         <EditTextPreference
+            android:defaultValue=""
+            android:key="Lake"
+            android:persistent="true"
+            android:title="Lake"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
             android:defaultValue="14"
             android:key="TripLength"
             android:persistent="true"

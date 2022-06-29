@@ -162,12 +162,12 @@ public class SheetAccess {
                     else {
                         Request request = new Request()
                                 .setDeleteDimension(new DeleteDimensionRequest()
-                                                            .setRange(new DimensionRange()
-                                                                              .setSheetId(sheetId)
-                                                                              .setDimension("ROWS")
-                                                                              .setStartIndex(Integer.parseInt(row) - 1)
-                                                                              .setEndIndex(Integer.parseInt(row))
-                                                            )
+                                        .setRange(new DimensionRange()
+                                                .setSheetId(sheetId)
+                                                .setDimension("ROWS")
+                                                .setStartIndex(Integer.parseInt(row) - 1)
+                                                .setEndIndex(Integer.parseInt(row))
+                                        )
                                 );
                         List<Request> requests = new ArrayList<Request>();
                         requests.add(request);
@@ -194,11 +194,15 @@ public class SheetAccess {
                     ValueRange body = new ValueRange()
                             .setValues(point.getSheetBody(lake));
                     if (row.isEmpty()) {
-                        service.spreadsheets().values()
-                                .append(spreadsheetId, sheetName, body)
-                                .setValueInputOption("USER_ENTERED")
-                                .execute();
-                        Log.d(TAG, "Created new row " + point.getSheetBody(lake));
+                        if (point.getContactType().equalsIgnoreCase("CATCH")) {
+                            service.spreadsheets().values()
+                                    .append(spreadsheetId, sheetName, body)
+                                    .setValueInputOption("USER_ENTERED")
+                                    .execute();
+                            Log.d(TAG, "Created new row " + point.getSheetBody(lake));
+                        } else {
+                            Log.d(TAG, "Can only store catches");
+                        }
                     } else {
                         service.spreadsheets().values()
                                 .update(spreadsheetId, sheetName + "!A" + row, body)

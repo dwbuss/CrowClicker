@@ -154,7 +154,7 @@ public class SheetsTest {
     private Point storePoint(Point point) throws IOException, ParseException {
         String row = findRow(point);
         ValueRange body = new ValueRange()
-                .setValues(point.getSheetBody());
+                .setValues(point.getSheetBody("Test"));
         if (row.isEmpty())
             service.spreadsheets().values()
                     .append(spreadsheetId, "test", body)

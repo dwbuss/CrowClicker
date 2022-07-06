@@ -50,6 +50,11 @@ public class CustomAdapter extends ArrayAdapter<Point> implements View.OnClickLi
                 Snackbar.make(v, "Ready for Edit " + timeStamp, Snackbar.LENGTH_LONG)
                         .setAction("No action", null).show();
                 break;
+            case R.id.mapBtn:
+                String timeStamp2 = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp());
+                Snackbar.make(v, "Ready for Edit " + timeStamp2, Snackbar.LENGTH_LONG)
+                        .setAction("No action", null).show();
+                break;
         }
     }
 
@@ -87,7 +92,10 @@ public class CustomAdapter extends ArrayAdapter<Point> implements View.OnClickLi
         viewHolder.txtName.setText(point.getName());
         String timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp());
         viewHolder.txtType.setText(timeStamp);
-        viewHolder.txtVersion.setText(point.getContactType() + ":" + point.getFishSize());
+        if (point.getContactType().equalsIgnoreCase("CATCH"))
+            viewHolder.txtVersion.setText(point.getFishSize());
+        else
+            viewHolder.txtVersion.setText(point.getContactType());
         viewHolder.info.setOnClickListener(this);
         viewHolder.info.setTag(position);
         // Return the completed view to render on screen

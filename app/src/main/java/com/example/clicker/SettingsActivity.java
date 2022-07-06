@@ -38,6 +38,7 @@ import androidx.preference.PreferenceManager;
 
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointListAdapter;
+import com.example.clicker.report.ReportActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
@@ -196,6 +197,11 @@ public class SettingsActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.totalCatch)).setText(pointListAdapter.getTotalCatch());
         ((TextView) findViewById(R.id.totalContact)).setText(pointListAdapter.getTotalContact());
         ((TextView) findViewById(R.id.totalFollow)).setText(pointListAdapter.getTotalFollow());
+    }
+
+    public void reportPoints(View view) {
+        Intent report = new Intent(this, ReportActivity.class);
+        startActivity(report);
     }
 
     public void clearPoints(View view) {

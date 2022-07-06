@@ -667,8 +667,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
         Location location = getLocation();
-        LatLng crow = new LatLng(location.getLatitude(), location.getLongitude());// new LatLng(49.217314, -93.863248);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(crow, (float) 16.0));
+        if (location != null) {
+            LatLng crow = new LatLng(location.getLatitude(), location.getLongitude());// new LatLng(49.217314, -93.863248);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(crow, (float) 16.0));
+        }
         mMap.setOnMyLocationButtonClickListener(onMyLocationButtonClickListener);
         mMap.setOnMapLongClickListener(onMyMapLongClickListener);
         mMap.setOnCameraMoveStartedListener(onCameraMoveStartedListener);

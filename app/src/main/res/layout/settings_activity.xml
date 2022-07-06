@@ -65,6 +65,8 @@
 
             <TextView
                 android:id="@+id/dailyLabel"
+                android:clickable="true"
+                android:onClick="reportPoints"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"

@@ -282,6 +282,8 @@ public class Solunar {
     }
 
     public String getEventNotification(String time) {
+        if (minor == null)
+            return "";
         String minor1 = minor.split("    ")[0];
         String minor2 = minor.split("    ")[1];
 

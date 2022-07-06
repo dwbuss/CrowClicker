@@ -20,16 +20,16 @@
         android:layout_below="@+id/name"
         android:layout_marginTop="5dp"
         android:text="Android 6.0"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/black" />
-
-    <ImageView
-        android:id="@+id/item_info"
+    <Button
+        android:id="@+id/editBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:src="@android:drawable/ic_dialog_info" />
+        android:text="Edit" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -41,8 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" "
-            android:textColor="@android:color/black"
-            android:textStyle="bold" />
+            android:textColor="@android:color/black" />
 
         <TextView
             android:id="@+id/version_number"
@@ -50,8 +49,7 @@
             android:layout_height="wrap_content"
             android:text="23"
             android:textAppearance="?android:attr/textAppearanceButton"
-            android:textColor="@android:color/black"
-            android:textStyle="bold" />
+            android:textColor="@android:color/black"/>
     </LinearLayout>
 </RelativeLayout>
 

@@ -16,6 +16,7 @@ import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.Point_;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -53,7 +54,7 @@ public class ReportActivity extends AppCompatActivity {
         today.add(Calendar.DATE, 0 - tripLength);
         int flags = QueryBuilder.NULLS_LAST | QueryBuilder.DESCENDING;
         List<Point> points = pointBox.query()
-                .order(Point_.timeStamp,flags)
+                .order(Point_.timeStamp, flags)
                 .greater(Point_.timeStamp, today.getTime())
                 .build().find();
         for (Point p : points) {
@@ -67,8 +68,10 @@ public class ReportActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Point dataModel = dataModels.get(position);
-                Snackbar.make(view, dataModel.getName() + "\n" + dataModel.getTimeStamp().toString() + " " + dataModel.getFishSize(), Snackbar.LENGTH_LONG)
+                Point point = dataModels.get(position);
+
+                String timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp());
+                Snackbar.make(view, point.getName() + "\n" + timeStamp + " " + point.getFishSize(), Snackbar.LENGTH_LONG)
                         .setAction("No action", null).show();
             }
         });

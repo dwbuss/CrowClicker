@@ -711,7 +711,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void showDialogUpdate(final Point point, final Marker marker) {
+    public void showDialogUpdate(final Point point, final Marker marker) {
         final Dialog dialog = new Dialog(this);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         dialog.setContentView(R.layout.update_dialog);

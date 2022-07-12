@@ -4,23 +4,17 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.clicker.ContactType;
 import com.example.clicker.MainActivity;
 import com.example.clicker.PointActivity;
-import com.example.clicker.PointUpdater;
 import com.example.clicker.R;
-import com.example.clicker.SheetAccess;
 import com.example.clicker.objectbo.Point;
-import com.example.clicker.objectbo.PointsHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

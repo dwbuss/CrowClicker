@@ -1,5 +1,7 @@
 package com.example.clicker.report;
 
+import static com.example.clicker.Constants.DELETE_ACTION;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -73,14 +75,17 @@ public class ReportActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> editPointActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    // There are no request codes
-                    Intent data = result.getData();
-                    Point point = data.getParcelableExtra("point");
-                    if ( dataModels.contains(point) ) {
-                        int position = dataModels.indexOf(point);
+                Intent data = result.getData();
+                Point point = data.getParcelableExtra("point");
+                if ( point != null && dataModels.contains(point) ) {
+                    int position = dataModels.indexOf(point);
+                    if (result.getResultCode() == DELETE_ACTION) {
+                        dataModels.remove(position);
+                        adapter.notifyItemRemoved(position);
+                    } else {
                         dataModels.set(position, point);
                         adapter.notifyItemChanged(position);
                     }
-            }});
+                }
+            });
 }

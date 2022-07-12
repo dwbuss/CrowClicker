@@ -1,5 +1,7 @@
 package com.example.clicker;
 
+import static com.example.clicker.Constants.*;
+
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +34,7 @@ public class PointActivity extends AppCompatActivity {
     private PointsHelper helper;
     private SheetAccess sheets;
     private boolean shouldNotifyDefault;
+    private int lastAction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +54,13 @@ public class PointActivity extends AppCompatActivity {
     public void finish() {
         Intent returnIntent = new Intent();
         returnIntent.putExtra("point", point);
-        setResult(RESULT_OK, returnIntent);
+        returnIntent.putExtra("lastAction", lastAction);
+        setResult(lastAction, returnIntent);
         super.finish();
     }
 
     public void cancelButton(View v) {
+        lastAction = CANCEL_ACTION;
         finish();
     }
 
@@ -65,6 +70,7 @@ public class PointActivity extends AppCompatActivity {
         if (shouldNotify) {
             sendMessage(point.getMessage(), point.getContactType());
         }
+        lastAction = SAVE_ACTION;
         finish();
     }
 
@@ -75,6 +81,7 @@ public class PointActivity extends AppCompatActivity {
         dialogDelete.setPositiveButton("Yes", (dialogInterface, i) -> {
             helper.deletePoint(point.getId());
             sheets.deletePoint(point);
+            lastAction = DELETE_ACTION;
             dialogInterface.dismiss();
             finish();
         });
@@ -91,6 +98,7 @@ public class PointActivity extends AppCompatActivity {
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         sheets.storePoint(point, prefs.getString("Lake", ""));
+        lastAction = PUSH_ACTION;
         finish();
     }
 
@@ -111,12 +119,12 @@ public class PointActivity extends AppCompatActivity {
                     point.setWindGust(weather.windGust);
                     point.setPrecipProbability(weather.precipProbability);
                     helper.addOrUpdatePoint(point);
-                    Toast.makeText(getApplicationContext(), "Weather data updated.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Weather data updated, you will still need to press the Save button to store changes.", Toast.LENGTH_LONG).show();
                 }
 
                 @Override
                 public void onFailure() {
-                    Toast.makeText(getApplicationContext(), "Unable to retrieve weather data.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Unable to retrieve weather data.  Please try again later.", Toast.LENGTH_LONG).show();
                 }
             });
         } catch (Exception e) {
@@ -167,7 +175,6 @@ public class PointActivity extends AppCompatActivity {
         point.setNotes(binding.notes.getText().toString().trim());
         return binding.notify.isChecked();
     }
-
 
     private void sendMessage(String message, String action) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);

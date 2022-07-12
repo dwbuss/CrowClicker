@@ -6,7 +6,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -18,15 +17,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
@@ -37,9 +32,8 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.example.clicker.objectbo.Point;
-import com.example.clicker.objectbo.PointListAdapter;
+import com.example.clicker.objectbo.PointsHelper;
 import com.example.clicker.report.ReportActivity;
-import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -72,35 +66,32 @@ public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = "SettingsActivity";
     ActivityResultLauncher<Intent> importActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        // There are no request codes
-                        Intent data = result.getData();
-                        try {
-                            BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-                            Box<Point> pointBox = boxStore.boxFor(Point.class);
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    // There are no request codes
+                    Intent data = result.getData();
+                    try {
+                        BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
+                        Box<Point> pointBox = boxStore.boxFor(Point.class);
 
-                            InputStream ifile = getContentResolver().openInputStream(data.getData());
-                            InputStreamReader is = new InputStreamReader(ifile);
-                            BufferedReader bufferedReader = new BufferedReader(is);
-                            int counter = 0;
-                            if (bufferedReader.ready()) {
-                                //skip header
-                                bufferedReader.readLine();
-                            }
-                            while (bufferedReader.ready()) {
-                                String line = bufferedReader.readLine();
-                                pointBox.put(new Point(line));
-                                counter++;
-                            }
-                            updateCounts();
-                            Toast.makeText(getApplicationContext(), "Imported " + counter + " points", Toast.LENGTH_SHORT).show();
-                        } catch (Exception e) {
-                            Toast.makeText(getApplicationContext(), "File Import " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            e.printStackTrace();
+                        InputStream ifile = getContentResolver().openInputStream(data.getData());
+                        InputStreamReader is = new InputStreamReader(ifile);
+                        BufferedReader bufferedReader = new BufferedReader(is);
+                        int counter = 0;
+                        if (bufferedReader.ready()) {
+                            //skip header
+                            bufferedReader.readLine();
                         }
+                        while (bufferedReader.ready()) {
+                            String line = bufferedReader.readLine();
+                            pointBox.put(new Point(line));
+                            counter++;
+                        }
+                        updateCounts();
+                        Toast.makeText(getApplicationContext(), "Imported " + counter + " points", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Toast.makeText(getApplicationContext(), "File Import " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
                     }
                 }
             });
@@ -183,20 +174,23 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void updateCounts() {
-        PointListAdapter pointListAdapter;
-        pointListAdapter = new PointListAdapter(this.getApplicationContext());
+        PointsHelper pointsHelper;
+        pointsHelper = new PointsHelper(this.getApplicationContext());
 
-        ((TextView) findViewById(R.id.dailyCatch)).setText(pointListAdapter.getDailyCatch());
-        ((TextView) findViewById(R.id.dailyContact)).setText(pointListAdapter.getDailyContact());
-        ((TextView) findViewById(R.id.dailyFollow)).setText(pointListAdapter.getDailyFollow());
+        ((TextView) findViewById(R.id.dailyCatch)).setText(pointsHelper.getDailyCatch());
+        ((TextView) findViewById(R.id.dailyContact)).setText(pointsHelper.getDailyContact());
+        ((TextView) findViewById(R.id.dailyFollow)).setText(pointsHelper.getDailyFollow());
 
-        ((TextView) findViewById(R.id.tripCatch)).setText(pointListAdapter.getTripCatch());
-        ((TextView) findViewById(R.id.tripContact)).setText(pointListAdapter.getTripContact());
-        ((TextView) findViewById(R.id.tripFollow)).setText(pointListAdapter.getTripFollow());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int tripLength = Integer.parseInt(prefs.getString("TripLength", "0"));
 
-        ((TextView) findViewById(R.id.totalCatch)).setText(pointListAdapter.getTotalCatch());
-        ((TextView) findViewById(R.id.totalContact)).setText(pointListAdapter.getTotalContact());
-        ((TextView) findViewById(R.id.totalFollow)).setText(pointListAdapter.getTotalFollow());
+        ((TextView) findViewById(R.id.tripCatch)).setText(pointsHelper.getTripCatch(tripLength));
+        ((TextView) findViewById(R.id.tripContact)).setText(pointsHelper.getTripContact(tripLength));
+        ((TextView) findViewById(R.id.tripFollow)).setText(pointsHelper.getTripFollow(tripLength));
+
+        ((TextView) findViewById(R.id.totalCatch)).setText(pointsHelper.getTotalCatch());
+        ((TextView) findViewById(R.id.totalContact)).setText(pointsHelper.getTotalContact());
+        ((TextView) findViewById(R.id.totalFollow)).setText(pointsHelper.getTotalFollow());
     }
 
     public void reportPoints(View view) {
@@ -208,30 +202,22 @@ public class SettingsActivity extends AppCompatActivity {
         AlertDialog.Builder dialogDelete = new AlertDialog.Builder(view.getContext());
         dialogDelete.setTitle("Warning!!");
         dialogDelete.setMessage("Are you sure to delete all points?");
-        dialogDelete.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                try {
-                    BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-                    Box<Point> pointBox = boxStore.boxFor(Point.class);
-                    List<Point> points = pointBox.query().build().find();
-                    for (Point p : points) {
-                        pointBox.remove(p);
-                    }
-                    updateCounts();
-                    Toast.makeText(getApplicationContext(), "Delete successfully", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Log.e("error", e.getMessage());
+        dialogDelete.setPositiveButton("Yes", (dialogInterface, i) -> {
+            try {
+                BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
+                Box<Point> pointBox = boxStore.boxFor(Point.class);
+                List<Point> points = pointBox.query().build().find();
+                for (Point p : points) {
+                    pointBox.remove(p);
                 }
-                dialogInterface.dismiss();
+                updateCounts();
+                Toast.makeText(getApplicationContext(), "Delete successfully", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Log.e("error", e.getMessage());
             }
+            dialogInterface.dismiss();
         });
-        dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
+        dialogDelete.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss());
         dialogDelete.show();
     }
 
@@ -269,8 +255,8 @@ public class SettingsActivity extends AppCompatActivity {
             List<Point> points = pointBox.query().build().find();
             int counter = 0;
 
-            PointListAdapter pointListAdapter;
-            pointListAdapter = new PointListAdapter(this.getApplicationContext());
+            PointsHelper pointsHelper;
+            pointsHelper = new PointsHelper(this.getApplicationContext());
 
             outputStreamWriter.write("id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\n");
             for (Point point : points) {
@@ -286,8 +272,7 @@ public class SettingsActivity extends AppCompatActivity {
                             point.setPressure(weather.pressure);
                             point.setCloudCover(weather.cloudCover);
                             point.setWindDir(weather.windDir);
-                            pointListAdapter.addOrUpdatePoint(point);
-                            pointListAdapter.updatePoints();
+                            pointsHelper.addOrUpdatePoint(point);
                         }
 
                         @Override
@@ -312,12 +297,9 @@ public class SettingsActivity extends AppCompatActivity {
     public static class SettingsFragment extends PreferenceFragmentCompat {
         ActivityResultLauncher<Intent> catchNotificationActivity = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            Intent data = result.getData();
-                        }
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
                     }
                 });
         private boolean isScanning = false;

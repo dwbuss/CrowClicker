@@ -48,11 +48,11 @@ public class SheetAccess {
     Sheets service;
     String sheetName = "test";
     int sheetId = 1890696516;
-    Context context;
+    private final Context context;
 
     public SheetAccess(Context appContext) {
+        this.context = appContext;
         try {
-            this.context = appContext;
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             Bundle metaData = appContext.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA).metaData;
             GoogleCredential credentials = GoogleCredential.fromStream(IOUtils.toInputStream(metaData.getString("com.google.api.credentials"), StandardCharsets.UTF_8)).createScoped(SCOPES);

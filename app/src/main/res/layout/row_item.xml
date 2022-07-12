@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:text="Marshmallow"
+        android:text="Angler's Name"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/black" />
 
@@ -19,11 +19,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/name"
         android:layout_marginTop="5dp"
-        android:text="Android 6.0"
+        android:text="Date/Time"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/black" />
 
-    <Button
+    <ImageButton
         android:id="@+id/mapBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,15 +31,17 @@
         android:layout_marginStart="7dp"
         android:layout_marginEnd="3dp"
         android:layout_toStartOf="@+id/editBtn"
+        android:src="@drawable/ic_baseline_map_24"
         android:text="Map" />
 
-    <Button
+    <ImageButton
         android:id="@+id/editBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:src="@drawable/ic_baseline_edit_24"
         android:text="Edit" />
 
     <LinearLayout
@@ -53,7 +55,7 @@
             android:id="@+id/version_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="23"
+            android:text="Len/Type"
             android:textAppearance="?android:attr/textAppearanceButton"
             android:textColor="@android:color/black" />
 

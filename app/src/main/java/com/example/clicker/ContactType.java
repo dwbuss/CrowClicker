@@ -1,6 +1,6 @@
 package com.example.clicker;
 
-enum ContactType {
+public enum ContactType {
 
     CONTACT( R.raw.cc_yousuck2, new int[] { R.raw.f_upped, R.raw.cc_yousuck3 }),
     FOLLOW ( R.raw.cc_follow2,  new int[] { R.raw.wtf_lookin, R.raw.cc_follow3}),
@@ -16,5 +16,14 @@ enum ContactType {
 
     int lookupSoundBite(boolean isFriendly) {
         return (isFriendly) ? this.friendly : bites[(int)(System.currentTimeMillis() % bites.length)];
+    }
+
+    public final static String[] asStringArray() {
+        String[] names = new String[values().length];
+        for (int i = 0; i < values().length; i++) {
+            ContactType current = values()[i];
+            names[i] = current.toString();
+        }
+        return names;
     }
 }

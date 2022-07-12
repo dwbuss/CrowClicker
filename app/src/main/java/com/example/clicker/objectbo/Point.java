@@ -1,5 +1,8 @@
 package com.example.clicker.objectbo;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.example.clicker.Solunar;
 
 import org.json.JSONException;
@@ -15,12 +18,24 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 
 @Entity
-public class Point {
+public final class Point implements Parcelable {
+    public static final Creator<Point> CREATOR = new Creator<Point>() {
+        @Override
+        public Point createFromParcel(Parcel in) {
+            return new Point(in);
+        }
+
+        @Override
+        public Point[] newArray(int size) {
+            return new Point[size];
+        }
+    };
 
     @Id
     private long id;
@@ -43,6 +58,67 @@ public class Point {
     private String dewPoint = "";
     private String pressure = "";
     private String humidity = "";
+
+    protected Point(Parcel in) {
+        id = in.readLong();
+        sheetId = in.readLong();
+        name = in.readString();
+        lon = in.readDouble();
+        lat = in.readDouble();
+        timeStamp = new Date();
+        timeStamp.setTime(in.readLong());
+        contactType = in.readString();
+        airTemp = in.readString();
+        waterTemp = in.readString();
+        bait = in.readString();
+        fishSize = in.readString();
+        notes = in.readString();
+        windSpeed = in.readString();
+        windDir = in.readString();
+        windGust = in.readString();
+        precipProbability = in.readString();
+        cloudCover = in.readString();
+        dewPoint = in.readString();
+        pressure = in.readString();
+        humidity = in.readString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Point point = (Point) o;
+        return getId() == point.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeLong(id);
+        parcel.writeLong(sheetId);
+        parcel.writeString(name);
+        parcel.writeDouble(lon);
+        parcel.writeDouble(lat);
+        parcel.writeLong(timeStamp.getTime());
+        parcel.writeString(contactType);
+        parcel.writeString(airTemp);
+        parcel.writeString(waterTemp);
+        parcel.writeString(bait);
+        parcel.writeString(fishSize);
+        parcel.writeString(notes);
+        parcel.writeString(windSpeed);
+        parcel.writeString(windDir);
+        parcel.writeString(windGust);
+        parcel.writeString(precipProbability);
+        parcel.writeString(cloudCover);
+        parcel.writeString(dewPoint);
+        parcel.writeString(pressure);
+        parcel.writeString(humidity);
+    }
 
     public Point(JSONObject jsonObject) throws ParseException, JSONException {
         // id =jsonObject.getLong("id");
@@ -352,5 +428,14 @@ public class Point {
 
     public void refresh(List row) throws InvalidObjectException {
         populatePoint(row);
+    }
+
+    public String timeStampAsString() {
+        return new SimpleDateFormat("MM-dd-yyyy h:mm a").format(getTimeStamp());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 }

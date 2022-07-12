@@ -1,22 +1,25 @@
 package com.example.clicker.report;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.util.Log;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.clicker.ObjectBoxApp;
 import com.example.clicker.R;
+import com.example.clicker.databinding.ActivityPointBinding;
+import com.example.clicker.databinding.ActivityReportBinding;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.Point_;
-import com.google.android.material.snackbar.Snackbar;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -27,20 +30,18 @@ import io.objectbox.BoxStore;
 import io.objectbox.query.QueryBuilder;
 
 public class ReportActivity extends AppCompatActivity {
-
-
-    ArrayList<Point> dataModels;
-    ListView listView;
-    private static CustomAdapter adapter;
+    private static final String TAG = "ReportActivity";
+    private RecyclerView pointsView;
+    private LinearLayoutManager layoutManager;
+    private PointAdapter adapter;
+    private ArrayList<Point> dataModels;
+    private ActivityReportBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_report);
-        //    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //   setSupportActionBar(toolbar);
-
-        listView = (ListView) findViewById(R.id.list);
+        binding = ActivityReportBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         dataModels = new ArrayList<>();
         BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
@@ -62,33 +63,24 @@ public class ReportActivity extends AppCompatActivity {
                 dataModels.add(p);
         }
 
-        adapter = new CustomAdapter(dataModels, getApplicationContext());
-
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Point point = dataModels.get(position);
-
-                String timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp());
-                Snackbar.make(view, point.getName() + "\n" + timeStamp + " " + point.getFishSize(), Snackbar.LENGTH_LONG)
-                        .setAction("No action", null).show();
-            }
-        });
+        adapter = new PointAdapter(dataModels, editPointActivity);
+        layoutManager = new LinearLayoutManager(this);
+        pointsView = binding.pointsRecyclerView;
+        pointsView.setLayoutManager(layoutManager);
+        pointsView.setAdapter(adapter);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        //  if (id == R.id.action_settings) {
-        //       return true;
-        //  }
-
-        return super.onOptionsItemSelected(item);
-    }
+    ActivityResultLauncher<Intent> editPointActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    // There are no request codes
+                    Intent data = result.getData();
+                    Point point = data.getParcelableExtra("point");
+                    if ( dataModels.contains(point) ) {
+                        int position = dataModels.indexOf(point);
+                        dataModels.set(position, point);
+                        adapter.notifyItemChanged(position);
+                    }
+            }});
 }

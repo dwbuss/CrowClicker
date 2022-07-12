@@ -42,8 +42,7 @@ public class MyReceiver extends BroadcastReceiver {
 
                 NotificationManager notificationmanager = (NotificationManager) context
                         .getSystemService(Context.NOTIFICATION_SERVICE);
-                int importance = NotificationManager.IMPORTANCE_HIGH;
-                NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, importance);
+                NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
                 assert notificationmanager != null;
                 notificationmanager.createNotificationChannel(notificationChannel);
                 // Build Notification with Notification Manager

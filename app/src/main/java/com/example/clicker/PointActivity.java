@@ -92,7 +92,11 @@ public class PointActivity extends AppCompatActivity {
     }
 
     public void pushButton(View v) {
-        updatePoint();
+        boolean shouldNotify = updatePoint();
+        helper.addOrUpdatePoint(point);
+        if (shouldNotify) {
+            sendMessage(point.getMessage(), point.getContactType());
+        }
         if (point.getSheetId() <= 0) {
             point.setSheetId(point.getId());
         }
@@ -154,7 +158,7 @@ public class PointActivity extends AppCompatActivity {
         String timeStampStr = binding.timeStamp.getText().toString().trim();
 
         try {
-            Date timeStamp = timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").parse(timeStampStr);
+            Date timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").parse(timeStampStr);
             point.setTimeStamp(new Timestamp(timeStamp.getTime()));
         } catch (ParseException e) {
             Log.e(TAG, "Error parsing date/time", e);

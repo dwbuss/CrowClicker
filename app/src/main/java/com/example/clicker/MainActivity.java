@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onResume() {
         super.onResume();
         initView();
-        if ( getIntent().hasExtra("gotoPoint") ) {
+        if (getIntent().hasExtra("gotoPoint")) {
             gotoPoint = getIntent().getParcelableExtra("gotoPoint");
         }
     }
@@ -548,14 +548,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                                              .position(new LatLng(point.getLat(), point.getLon()))
-                                              .title("Hold to Edit")
-                                              .draggable(true)
-                                              .anchor(0.5f, 0.5f)
-                                              .visible(false)
-                                              .flat(true)
-                                              .zIndex(0)
-                                              .icon(getMarker(point)));
+                    .position(new LatLng(point.getLat(), point.getLon()))
+                    .title("Hold to Edit")
+                    .draggable(true)
+                    .anchor(0.5f, 0.5f)
+                    .visible(false)
+                    .flat(true)
+                    .zIndex(0)
+                    .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
                 m.setVisible(true);
@@ -568,41 +568,71 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private BitmapDescriptor getMarker(Point point) {
 
         if (point.getContactType().equals("CATCH") || point.getName().equalsIgnoreCase("label")) {
-            String text = point.getName();
-            if (point.getName() == null) {
-                point.setName("No Name");
+            if (point.getName().equalsIgnoreCase("Adam")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_adam);
+            } else if (point.getName().equalsIgnoreCase("Amy")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_amy);
+            } else if (point.getName().equalsIgnoreCase("Blair")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_blair);
+            } else if (point.getName().equalsIgnoreCase("Calvin")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_calvin);
+            } else if (point.getName().equalsIgnoreCase("Carey")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_carey);
+            } else if (point.getName().equalsIgnoreCase("Chris")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_chris);
+            } else if (point.getName().equalsIgnoreCase("Chuck")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_chuck);
+            } else if (point.getName().equalsIgnoreCase("Cullen")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_cullen);
+            } else if (point.getName().equalsIgnoreCase("Dan")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_dan);
+            } else if (point.getName().equalsIgnoreCase("Deb")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_deb);
+            } else if (point.getName().equalsIgnoreCase("Eric")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_eric);
+            } else if (point.getName().equalsIgnoreCase("Jeff")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_jeff);
+            } else if (point.getName().equalsIgnoreCase("Kendra")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_kendra);
+            } else if (point.getName().equalsIgnoreCase("Mark")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_mark);
+            } else if (point.getName().equalsIgnoreCase("Nicole")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_nicole);
+            } else if (point.getName().equalsIgnoreCase("Tony")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_tony);
             }
-            if (point.getName().equalsIgnoreCase("label"))
-                text = point.getNotes();
-            if (text == null)
-                text = " ";
-            Paint strokePaint = new Paint();
-            strokePaint.setTextAlign(Paint.Align.LEFT);
-            strokePaint.setARGB(255, 255, 255, 255);
-            strokePaint.setTextSize(23.0f);
-            strokePaint.setTypeface(Typeface.DEFAULT_BOLD);
-            strokePaint.setStyle(Paint.Style.STROKE);
-            strokePaint.setStrokeWidth(4);
+            if (!point.getName().equalsIgnoreCase("Label")) {
+                return BitmapDescriptorFactory.fromResource(R.drawable.gm_dave);
+            } else {
+                String text = point.getNotes();
+                Paint strokePaint = new Paint();
+                strokePaint.setTextAlign(Paint.Align.LEFT);
+                strokePaint.setARGB(255, 255, 255, 255);
+                strokePaint.setTextSize(23.0f);
+                strokePaint.setTypeface(Typeface.DEFAULT_BOLD);
+                strokePaint.setStyle(Paint.Style.STROKE);
+                strokePaint.setStrokeWidth(4);
 
-            Paint textPaint = new Paint();
-            textPaint.setARGB(255, 0, 0, 0);
-            textPaint.setTextAlign(Paint.Align.LEFT);
-            textPaint.setTextSize(23.0f);
-            textPaint.setTypeface(Typeface.DEFAULT_BOLD);
-            Paint.FontMetrics fm = textPaint.getFontMetrics();
-            float height2 = fm.bottom - fm.top + fm.leading;
-            float baseline = -textPaint.ascent(); // ascent() is negative
-            int width = (int) (textPaint.measureText(text) + 5.0f); // round
-            int height = (int) (baseline + textPaint.descent() + 0.0f);
+                Paint textPaint = new Paint();
+                textPaint.setARGB(255, 0, 0, 0);
+                textPaint.setTextAlign(Paint.Align.LEFT);
+                textPaint.setTextSize(23.0f);
+                textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+                Paint.FontMetrics fm = textPaint.getFontMetrics();
+                float height2 = fm.bottom - fm.top + fm.leading;
+                float baseline = -textPaint.ascent(); // ascent() is negative
+                int width = (int) (textPaint.measureText(text) + 5.0f); // round
+                int height = (int) (baseline + textPaint.descent() + 0.0f);
 
-            int trueWidth = width;
-            if (width > height) height = width;
-            else width = height;
-            Bitmap image = Bitmap.createBitmap(width, ((int) height2), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(image);
-            canvas.drawText(text, width / 2 - trueWidth / 2, baseline, strokePaint);
-            canvas.drawText(text, width / 2 - trueWidth / 2, baseline, textPaint);
-            return BitmapDescriptorFactory.fromBitmap(image);
+                int trueWidth = width;
+                if (width > height) height = width;
+                else width = height;
+                Bitmap image = Bitmap.createBitmap(width, ((int) height2), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(image);
+                canvas.drawText(text, width / 2 - trueWidth / 2, baseline, strokePaint);
+                canvas.drawText(text, width / 2 - trueWidth / 2, baseline, textPaint);
+                return BitmapDescriptorFactory.fromBitmap(image);
+            }
         } else if (point.getContactType().equals("CONTACT"))
             return BitmapDescriptorFactory.fromResource(R.drawable.gm_contact);
         return BitmapDescriptorFactory.fromResource(R.drawable.gm_follow);

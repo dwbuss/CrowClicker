@@ -376,11 +376,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         today.add(Calendar.DATE, 0 - tripLength);
         BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
         Box<Point> pointBox = boxStore.boxFor(Point.class);
-        return pointBox.query()
-                .greater(Point_.timeStamp, today.getTime())
-                .or()
-                .equal(Point_.name, label)
-                .build().find();
+
+        if (prefs.getBoolean("ViewLabels", true))
+            return pointBox.query()
+                    .greater(Point_.timeStamp, today.getTime())
+                    .or()
+                    .equal(Point_.name, label)
+                    .build().find();
+        else
+            return pointBox.query()
+                    .greater(Point_.timeStamp, today.getTime())
+                    .and()
+                    .notEqual(Point_.name, label)
+                    .build().find();
     }
 
     private void flash(TextView textObj) {

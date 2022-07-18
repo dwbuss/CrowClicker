@@ -354,6 +354,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((ImageButton) findViewById(R.id.forecastButton)).setImageResource(solunar.moonPhaseIcon);
         pointsHelper = new PointsHelper(getApplicationContext());
         refreshCounts();
+
+        if (mMap != null) {
+            mMap.clear();
+            markers.clear();
+            List<Point> points = filterPoints();
+            for (Point p : points) {
+                addPointMarker(p);
+            }
+            addCrowLayer();
+        }
+    }
+
+    private List<Point> filterPoints() {
+        String label = "label";
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int tripLength = Integer.parseInt(prefs.getString("TripLength", "0"));
         Calendar today = GregorianCalendar.getInstance();
@@ -362,20 +376,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         today.add(Calendar.DATE, 0 - tripLength);
         BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
         Box<Point> pointBox = boxStore.boxFor(Point.class);
-        String label = "label";
-        if (mMap != null) {
-            mMap.clear();
-            markers.clear();
-            List<Point> points = pointBox.query()
-                    .greater(Point_.timeStamp, today.getTime())
-                    .or()
-                    .equal(Point_.name, label)
-                    .build().find();
-            for (Point p : points) {
-                addPointMarker(p);
-            }
-            addCrowLayer();
-        }
+        return pointBox.query()
+                .greater(Point_.timeStamp, today.getTime())
+                .or()
+                .equal(Point_.name, label)
+                .build().find();
     }
 
     private void flash(TextView textObj) {
@@ -695,9 +700,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraMoveListener(onCameraMoverListener);
 
         addCrowLayer();
-        BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-        Box<Point> pointBox = boxStore.boxFor(Point.class);
-        List<Point> points = pointBox.getAll();
+        List<Point> points = filterPoints();
         for (Point p : points) {
             addPointMarker(p);
         }

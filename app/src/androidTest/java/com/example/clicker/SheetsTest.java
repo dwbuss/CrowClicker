@@ -99,22 +99,22 @@ public class SheetsTest {
 
     @Test
     public void testUpdateSheets() throws IOException, ParseException {
-        Point point = getPoint("5");
-        assertEquals("5", Long.toString(point.getSheetId()));
-        assertEquals("44.50", point.getFishSize());
+        Point point = getPoint("11");
+        assertEquals("11", Long.toString(point.getSheetId()));
+        assertEquals("54.00", point.getFishSize());
         point.setFishSize("50.50");
         Point storedPoint = storePoint(point);
         assertEquals("50.50", storedPoint.getFishSize());
-        point.setFishSize("44.50");
+        point.setFishSize("54.00");
         storedPoint = storePoint(point);
-        assertEquals("44.50", storedPoint.getFishSize());
+        assertEquals("54.00", storedPoint.getFishSize());
     }
 
     @Test
     public void testCreateAndDeleteSheets() throws IOException, ParseException {
-        Point point = getPoint("5");
-        assertEquals("5", Long.toString(point.getSheetId()));
-        point.setSheetId(1234);
+        Point point = getPoint("11");
+        assertEquals("11", Long.toString(point.getSheetId()));
+        point.setSheetId(5);
         point.setFishSize("50.50");
         Point storedPoint = storePoint(point);
         assertEquals("50.50", storedPoint.getFishSize());

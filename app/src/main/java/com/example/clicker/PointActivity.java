@@ -3,6 +3,7 @@ package com.example.clicker;
 import static com.example.clicker.Constants.*;
 
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -67,7 +68,11 @@ public class PointActivity extends AppCompatActivity {
         boolean shouldNotify = updatePoint();
         helper.addOrUpdatePoint(point);
         if (shouldNotify) {
-            sendMessage(point.getMessage(), ContactType.valueOf(point.getContactType()));
+            ContentResolver contentResolver = getContentResolver();
+            SEND_MESSAGE(point.getMessage(),
+                         ContactType.valueOf(point.getContactType()),
+                         PreferenceManager.getDefaultSharedPreferences(this),
+                         contentResolver);
         }
         lastAction = SAVE_ACTION;
         finish();
@@ -91,13 +96,13 @@ public class PointActivity extends AppCompatActivity {
     public void pushButton(View v) {
         boolean shouldNotify = updatePoint();
         helper.addOrUpdatePoint(point);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (shouldNotify) {
-            sendMessage(point.getMessage(), ContactType.valueOf(point.getContactType()));
+            SEND_MESSAGE(point.getMessage(), ContactType.valueOf(point.getContactType()), prefs, getContentResolver());
         }
         if (point.getSheetId() <= 0) {
             point.setSheetId(point.getId());
         }
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         sheets.storePoint(point, prefs.getString("Lake", ""));
         lastAction = PUSH_ACTION;
         finish();
@@ -177,11 +182,7 @@ public class PointActivity extends AppCompatActivity {
         return binding.notify.isChecked();
     }
 
-    /**
-     * @TODO Resolve this duplication, method is also in MainActivity.
-     */
-    private void sendMessage(String message, ContactType action) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    public static void SEND_MESSAGE(String message, ContactType action, SharedPreferences prefs, ContentResolver resolver) {
         String notification;
         switch(action) {
             case CATCH:
@@ -198,7 +199,7 @@ public class PointActivity extends AppCompatActivity {
         }
         if (!notification.trim().isEmpty()) {
             SmsManager smgr = SmsManager.getDefault();
-            Map<String, String> contacts = SettingsActivity.GET_CONTACT_LIST(Integer.parseInt(notification), getContentResolver());
+            Map<String, String> contacts = SettingsActivity.GET_CONTACT_LIST(Integer.parseInt(notification), resolver);
             contacts.forEach((name, number) -> {
                 smgr.sendTextMessage(number, null, message, null, null);
                 Log.d(TAG, String.format("%s message sent to %s ( %s )", action, name, number));

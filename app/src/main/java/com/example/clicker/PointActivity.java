@@ -46,7 +46,6 @@ public class PointActivity extends AppCompatActivity {
         shouldNotifyDefault = getIntent().getBooleanExtra("shouldNotify", false);
         binding.setPoint(point);
         sheets = new SheetAccess(this);
-
         populateForm();
     }
 
@@ -68,7 +67,7 @@ public class PointActivity extends AppCompatActivity {
         boolean shouldNotify = updatePoint();
         helper.addOrUpdatePoint(point);
         if (shouldNotify) {
-            sendMessage(point.getMessage(), point.getContactType());
+            sendMessage(point.getMessage(), ContactType.valueOf(point.getContactType()));
         }
         lastAction = SAVE_ACTION;
         finish();
@@ -85,9 +84,7 @@ public class PointActivity extends AppCompatActivity {
             dialogInterface.dismiss();
             finish();
         });
-        dialogDelete.setNegativeButton("Cancel", (dialogInterface, i) -> {
-            dialogInterface.dismiss();
-        });
+        dialogDelete.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss());
         dialogDelete.show();
     }
 
@@ -95,7 +92,7 @@ public class PointActivity extends AppCompatActivity {
         boolean shouldNotify = updatePoint();
         helper.addOrUpdatePoint(point);
         if (shouldNotify) {
-            sendMessage(point.getMessage(), point.getContactType());
+            sendMessage(point.getMessage(), ContactType.valueOf(point.getContactType()));
         }
         if (point.getSheetId() <= 0) {
             point.setSheetId(point.getId());
@@ -122,8 +119,8 @@ public class PointActivity extends AppCompatActivity {
                     point.setWindDir(weather.windDir);
                     point.setWindGust(weather.windGust);
                     point.setPrecipProbability(weather.precipProbability);
-                    helper.addOrUpdatePoint(point);
-                    Toast.makeText(getApplicationContext(), "Weather data updated, you will still need to press the Save button to store changes.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Weather data updated.  Remember to SAVE or SAVE/PUSH to store the new weather data.", Toast.LENGTH_LONG).show();
+                    binding.invalidateAll();
                 }
 
                 @Override
@@ -180,16 +177,23 @@ public class PointActivity extends AppCompatActivity {
         return binding.notify.isChecked();
     }
 
-    private void sendMessage(String message, String action) {
+    private void sendMessage(String message, ContactType action) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String notification = "";
-        if (action.equalsIgnoreCase("CATCH"))
-            notification = prefs.getString("Catch Notification", "");
-        if (action.equalsIgnoreCase("FOLLOW"))
-            notification = prefs.getString("Follow Notification", "");
-        if (action.equalsIgnoreCase("CONTACT"))
-            notification = prefs.getString("Lost Notification", "");
-        if (!notification.isEmpty()) {
+        String notification;
+        switch(action) {
+            case CATCH:
+                notification = prefs.getString("Catch Notification", "");
+                break;
+            case FOLLOW:
+                notification = prefs.getString("Follow Notification", "");
+                break;
+            case CONTACT:
+                notification = prefs.getString("Lost Notification", "");
+                break;
+            default:
+                notification = "";
+        }
+        if (!notification.trim().isEmpty()) {
             SmsManager smgr = SmsManager.getDefault();
             Map<String, String> contacts = SettingsActivity.GET_CONTACT_LIST(Integer.parseInt(notification), getContentResolver());
             contacts.forEach((name, number) -> {

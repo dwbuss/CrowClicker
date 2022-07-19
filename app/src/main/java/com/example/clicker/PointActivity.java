@@ -204,6 +204,7 @@ public class PointActivity extends AppCompatActivity {
                 smgr.sendTextMessage(number, null, message, null, null);
                 Log.d(TAG, String.format("%s message sent to %s ( %s )", action, name, number));
             });
-        }
+        } else
+            Log.d(TAG, "No notifications found.");
     }
 }

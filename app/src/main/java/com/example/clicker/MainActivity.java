@@ -51,6 +51,7 @@ import androidx.preference.PreferenceManager;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
 import com.example.clicker.objectbo.Point_;
+import com.example.clicker.report.ReportActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -499,27 +500,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         point.setBait(defaultBait);
         point.setName(username);
 
-        final Weather weather = new Weather();
-        weather.populate(point.getLat(), point.getLon(), getApplicationContext(), new VolleyCallBack() {
-            @Override
-            public void onSuccess() {
-                point.setAirTemp(weather.temperature);
-                point.setDewPoint(weather.dewPoint);
-                point.setWindSpeed(weather.windSpeed);
-                point.setHumidity(weather.humidity);
-                point.setPressure(weather.pressure);
-                point.setCloudCover(weather.cloudCover);
-                point.setWindDir(weather.windDir);
-                point.setWindGust(weather.windGust);
-                point.setPrecipProbability(weather.precipProbability);
-                pointsHelper.addOrUpdatePoint(point);
-            }
-
-            @Override
-            public void onFailure() {
-                pointsHelper.addOrUpdatePoint(point);
-            }
-        });
+        pointsHelper.addOrUpdatePoint(point);
         addPointMarker(point);
         refreshCounts();
         PointActivity.SEND_MESSAGE(point.getMessage(), contactType, prefs, getContentResolver());
@@ -550,34 +531,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         String defaultBait = prefs.getString("CurrentBait", "");
         final Point point = new Point(0, username, contactType.toString(), loc.getLongitude(), loc.getLatitude());
         point.setBait(defaultBait);
-        final Weather weather = new Weather();
-        weather.populate(point.getLat(), point.getLon(), getApplicationContext(), new VolleyCallBack() {
-            @Override
-            public void onSuccess() {
-                point.setAirTemp(weather.temperature);
-                point.setDewPoint(weather.dewPoint);
-                point.setWindSpeed(weather.windSpeed);
-                point.setHumidity(weather.humidity);
-                point.setPressure(weather.pressure);
-                point.setCloudCover(weather.cloudCover);
-                point.setWindDir(weather.windDir);
-                point.setWindGust(weather.windGust);
-                point.setPrecipProbability(weather.precipProbability);
-                Intent addPoint = new Intent(MainActivity.this, PointActivity.class);
-                addPoint.putExtra("point", point);
-                addPoint.putExtra("shouldNotify", true);
-                startActivity(addPoint);
-            }
-
-            @Override
-            public void onFailure() {
-                Toast.makeText(getApplicationContext(), "Unable to retrieve weather data.", Toast.LENGTH_LONG).show();
-                Intent addPoint = new Intent(MainActivity.this, PointActivity.class);
-                addPoint.putExtra("point", point);
-                addPoint.putExtra("shouldNotify", true);
-                startActivity(addPoint);
-            }
-        });
+        Intent addPoint = new Intent(MainActivity.this, PointActivity.class);
+        addPoint.putExtra("point", point);
+        addPoint.putExtra("shouldNotify", true);
+        startActivity(addPoint);
     }
 
     private Marker addPointMarker(Point point) {
@@ -801,6 +758,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent forecast = new Intent(this, ForecastActivity.class);
         forecast.putExtra("LOCATION", getLocation());
         startActivity(forecast);
+    }
+
+    public void reportPoints(View view) {
+        Intent report = new Intent(this, ReportActivity.class);
+        startActivity(report);
     }
 
     public void switchLayer(View view) {

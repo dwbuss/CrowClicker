@@ -500,6 +500,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
         addPointMarker(point);
         refreshCounts();
+        sendMessage(point.getMessage(), contactType);
+    }
+
+    /**
+     * @TODO Resolve this duplication, method is also in PointActivity.
+     */
+    private void sendMessage(String message, ContactType action) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String notification;
+        switch (action) {
+            case CATCH:
+                notification = prefs.getString("Catch Notification", "");
+                break;
+            case FOLLOW:
+                notification = prefs.getString("Follow Notification", "");
+                break;
+            case CONTACT:
+                notification = prefs.getString("Lost Notification", "");
+                break;
+            default:
+                notification = "";
+        }
+        if (!notification.trim().isEmpty()) {
+            SmsManager smgr = SmsManager.getDefault();
+            Map<String, String> contacts = SettingsActivity.GET_CONTACT_LIST(Integer.parseInt(notification), getContentResolver());
+            contacts.forEach((name, number) -> {
+                smgr.sendTextMessage(number, null, message, null, null);
+                Log.d(TAG, String.format("%s message sent to %s ( %s )", action, name, number));
+            });
+        }
     }
 
     public void addContact(View view) {

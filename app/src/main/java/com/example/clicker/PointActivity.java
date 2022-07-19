@@ -177,6 +177,9 @@ public class PointActivity extends AppCompatActivity {
         return binding.notify.isChecked();
     }
 
+    /**
+     * @TODO Resolve this duplication, method is also in MainActivity.
+     */
     private void sendMessage(String message, ContactType action) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String notification;

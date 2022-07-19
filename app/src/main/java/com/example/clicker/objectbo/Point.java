@@ -214,16 +214,17 @@ public final class Point implements Parcelable {
             contactType = "CATCH";
         else
             contactType = " ";
-        airTemp = get(row, 12);
+        airTemp = get(row, 14);
         bait = get(row, 8);
         fishSize = get(row, 3);
         notes = get(row, 13);
-        windSpeed = get(row, 14);
-        windDir = get(row, 16);
-        cloudCover = get(row, 20);
-        dewPoint = get(row, 19);
-        pressure = get(row, 17);
-        humidity = get(row, 18);
+        windSpeed = get(row, 16);
+        windGust = get(row, 17);
+        windDir = get(row, 18);
+        cloudCover = get(row, 22);
+        dewPoint = get(row, 21);
+        pressure = get(row, 19);
+        humidity = get(row, 20);
     }
 
     String get(List row, int id) {

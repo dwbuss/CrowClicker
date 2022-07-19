@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,6 +61,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 
@@ -107,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List<Marker> markers;
     private SheetAccess sheets;
     private Point gotoPoint = null;
+    TileOverlay satelliteOptions;
 
     private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
         @Override
@@ -339,6 +342,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void initView() {
+        SeekBar volumeControl = (SeekBar) findViewById(R.id.seekBar);
+        volumeControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int pval = 0;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                pval = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                float value = (new Float(pval).floatValue() * .01f - 1) * -1;
+                satelliteOptions.setTransparency(value);
+            }
+        });
         Solunar solunar = new Solunar();
         solunar.populate(getLocation(), GregorianCalendar.getInstance());
         TextView majorText = findViewById(R.id.majorLbl);
@@ -733,6 +755,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             File file;
             if (locationLocal) {
+                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Satellite.mbtiles");
+                // File sdcard = new File("/mnt/sdcard/");
+                //  file = new File(sdcard, "Satellite.mbtiles");
+            } else {
+                File sdcard = new File(getExternalStoragePath(getApplicationContext(), true));
+                file = new File(sdcard, "Satellite.mbtiles");
+            }
+            if (!file.exists())
+                Toast.makeText(this, "File not Found" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+
+            TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
+            mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to load Satellite.mbtiles", e);
+            Toast.makeText(this, "Failed to load Satellite mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        try {
+            File file;
+            if (locationLocal) {
                 file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Crow.mbtiles");
                 // File sdcard = new File("/mnt/sdcard/");
                 //  file = new File(sdcard, "Crow.mbtiles");
@@ -744,10 +785,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast.makeText(this, "File not Found" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
 
             TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
-            mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+            satelliteOptions = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
         } catch (Exception e) {
             Log.e(TAG, "Failed to load Crow.mbtiles", e);
-            Toast.makeText(this, "Failed to load mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Failed to load Crow mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 

@@ -64,6 +64,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.lang.reflect.Array;
@@ -221,19 +222,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     };
 
     private final GoogleMap.OnMapLongClickListener onMyMapLongClickListener = latLng -> {
-        String[] contactType = {"CATCH", "CONTACT", "FOLLOW"};
+        String[] contactTypes = ContactType.asStringArray();
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("Choose an Action")
-                .setItems(contactType, (dialog, which) -> {
+                .setItems(contactTypes, (dialog, which) -> {
                     Location loc = new Location(LocationManager.GPS_PROVIDER);
                     loc.setLongitude(latLng.longitude);
                     loc.setLatitude(latLng.latitude);
-                    if (which == 0)
-                        addPoint("CATCH", loc);
-                    if (which == 1)
-                        addPoint("CONTACT", loc);
-                    if (which == 2)
-                        addPoint("FOLLOW", loc);
+                    addPoint(ContactType.valueOf(contactTypes[which]), loc);
                 }).show();
     };
 
@@ -482,7 +478,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         int soundBite = type.lookupSoundBite(friendly);
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
-        addPoint(type.toString());
+        addPoint(type);
     }
 
     public void addFromButton(ContactType contactType) {
@@ -504,7 +500,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         point.setName(username);
 
         final Weather weather = new Weather();
-        weather.populate(loc.getLatitude(), loc.getLongitude(), getApplicationContext(), new VolleyCallBack() {
+        weather.populate(point.getLat(), point.getLon(), getApplicationContext(), new VolleyCallBack() {
             @Override
             public void onSuccess() {
                 point.setAirTemp(weather.temperature);
@@ -514,6 +510,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 point.setPressure(weather.pressure);
                 point.setCloudCover(weather.cloudCover);
                 point.setWindDir(weather.windDir);
+                point.setWindGust(weather.windGust);
+                point.setPrecipProbability(weather.precipProbability);
                 pointsHelper.addOrUpdatePoint(point);
             }
 
@@ -524,6 +522,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
         addPointMarker(point);
         refreshCounts();
+        sendMessage(point.getMessage(), contactType);
+    }
+
+    /**
+     * @TODO Resolve this duplication, method is also in PointActivity.
+     */
+    private void sendMessage(String message, ContactType action) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String notification;
+        switch (action) {
+            case CATCH:
+                notification = prefs.getString("Catch Notification", "");
+                break;
+            case FOLLOW:
+                notification = prefs.getString("Follow Notification", "");
+                break;
+            case CONTACT:
+                notification = prefs.getString("Lost Notification", "");
+                break;
+            default:
+                notification = "";
+        }
+        if (!notification.trim().isEmpty()) {
+            SmsManager smgr = SmsManager.getDefault();
+            Map<String, String> contacts = SettingsActivity.GET_CONTACT_LIST(Integer.parseInt(notification), getContentResolver());
+            contacts.forEach((name, number) -> {
+                smgr.sendTextMessage(number, null, message, null, null);
+                Log.d(TAG, String.format("%s message sent to %s ( %s )", action, name, number));
+            });
+        }
     }
 
     public void addContact(View view) {
@@ -538,21 +566,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         addFromClick(ContactType.CATCH);
     }
 
-    public void addPoint(String contactType) {
+    public void addPoint(ContactType contactType) {
         final Location location = getLocation();
         if (location != null) {
             addPoint(contactType, location);
         }
     }
 
-    public void addPoint(String contactType, Location loc) {
+    public void addPoint(ContactType contactType, Location loc) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String username = prefs.getString("Username", null);
         String defaultBait = prefs.getString("CurrentBait", "");
-        final Point point = new Point(0, username, contactType, loc.getLongitude(), loc.getLatitude());
+        final Point point = new Point(0, username, contactType.toString(), loc.getLongitude(), loc.getLatitude());
         point.setBait(defaultBait);
         final Weather weather = new Weather();
-        weather.populate(loc.getLatitude(), loc.getLongitude(), getApplicationContext(), new VolleyCallBack() {
+        weather.populate(point.getLat(), point.getLon(), getApplicationContext(), new VolleyCallBack() {
             @Override
             public void onSuccess() {
                 point.setAirTemp(weather.temperature);
@@ -562,7 +590,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 point.setPressure(weather.pressure);
                 point.setCloudCover(weather.cloudCover);
                 point.setWindDir(weather.windDir);
-                Log.d(TAG, point.toString());
+                point.setWindGust(weather.windGust);
+                point.setPrecipProbability(weather.precipProbability);
                 Intent addPoint = new Intent(MainActivity.this, PointActivity.class);
                 addPoint.putExtra("point", point);
                 addPoint.putExtra("shouldNotify", true);

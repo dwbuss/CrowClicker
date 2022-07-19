@@ -44,16 +44,26 @@
         app:srcCompat="@drawable/cc_layer24" />
 
     <ImageButton
+        android:id="@+id/tripReportButton"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:onClick="reportPoints"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layersButton"
+        app:srcCompat="@android:drawable/ic_menu_agenda" />
+
+    <ImageButton
         android:id="@+id/cameraButton"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:onClick="openCamera"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layersButton"
-        app:srcCompat="@drawable/camara" />
+        app:layout_constraintTop_toBottomOf="@+id/tripReportButton"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
 
     <LinearLayout
         android:id="@+id/linearLayout4"

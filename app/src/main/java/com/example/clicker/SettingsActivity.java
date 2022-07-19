@@ -193,11 +193,6 @@ public class SettingsActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.totalFollow)).setText(pointsHelper.getTotalFollow());
     }
 
-    public void reportPoints(View view) {
-        Intent report = new Intent(this, ReportActivity.class);
-        startActivity(report);
-    }
-
     public void clearPoints(View view) {
         AlertDialog.Builder dialogDelete = new AlertDialog.Builder(view.getContext());
         dialogDelete.setTitle("Warning!!");

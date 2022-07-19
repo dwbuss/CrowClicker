@@ -31,7 +31,7 @@
         android:layout_marginStart="7dp"
         android:layout_marginEnd="3dp"
         android:layout_toStartOf="@+id/editBtn"
-        android:src="@drawable/ic_baseline_map_24"
+        android:src="@android:drawable/ic_menu_mapmode"
         android:text="Map" />
 
     <ImageButton
@@ -41,7 +41,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_baseline_edit_24"
+        android:src="@android:drawable/ic_menu_edit"
         android:text="Edit" />
 
     <LinearLayout

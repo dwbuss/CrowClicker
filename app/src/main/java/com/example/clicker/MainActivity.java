@@ -779,7 +779,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this.getApplicationContext(), NOTIFICATION_CHANNEL_ID)
                 .setContentTitle("Crow Clicker")
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentText(String.format("Catches: %s, Contact: %s, Follows: %s", pointsHelper.getDailyCatch(), pointsHelper.getDailyContact(), pointsHelper.getDailyFollow()));
+                .setContentText(String.format("Catches: %s, Contacts: %s, Follows: %s", pointsHelper.getDailyCatch(), pointsHelper.getDailyContact(), pointsHelper.getDailyFollow()));
         NotificationManagerCompat.from(this).notify(SERVICE_NOTIFICATION_ID, notification.build());
     }
 }

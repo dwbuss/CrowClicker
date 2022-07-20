@@ -1,11 +1,13 @@
 package com.example.clicker;
 
+import static com.example.clicker.Constants.NOTIFICATION_CHANNEL_ID;
+import static com.example.clicker.Constants.SERVICE_NOTIFICATION_ID;
+
 import android.Manifest;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -23,10 +25,8 @@ import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.os.storage.StorageManager;
 import android.provider.MediaStore;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,13 +39,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceManager;
 
 import com.example.clicker.objectbo.Point;
@@ -65,7 +64,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.lang.reflect.Array;
@@ -777,5 +775,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((Button) findViewById(R.id.catchBtn)).setText(pointsHelper.getDailyCatch());
         ((Button) findViewById(R.id.contactBtn)).setText(pointsHelper.getDailyContact());
         ((Button) findViewById(R.id.followBtn)).setText(pointsHelper.getDailyFollow());
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this.getApplicationContext(), NOTIFICATION_CHANNEL_ID)
+                .setContentTitle("Crow Clicker")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentText(String.format("Catches: %s, Contact: %s, Follows: %s", pointsHelper.getDailyCatch(), pointsHelper.getDailyContact(), pointsHelper.getDailyFollow()));
+        NotificationManagerCompat.from(this).notify(SERVICE_NOTIFICATION_ID, notification.build());
     }
 }

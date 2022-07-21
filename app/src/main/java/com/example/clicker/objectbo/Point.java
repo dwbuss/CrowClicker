@@ -36,6 +36,7 @@ public final class Point implements Parcelable {
             return new Point[size];
         }
     };
+    public static final String CSV_TIMESTAMP_FORMAT = "EEE MMM d HH:mm:ss zzz yyyy";
 
     @Id
     private long id;
@@ -125,7 +126,7 @@ public final class Point implements Parcelable {
         name = jsonObject.optString("name");
         lon = jsonObject.optDouble("lon");
         lat = jsonObject.optDouble("lat");
-        DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.US);
+        DateFormat osLocalizedDateFormat = new SimpleDateFormat(CSV_TIMESTAMP_FORMAT, Locale.US);
         timeStamp = osLocalizedDateFormat.parse(jsonObject.getString("timeStamp"));
         contactType = jsonObject.optString("contactType");
         airTemp = jsonObject.optString("airTemp");
@@ -146,7 +147,7 @@ public final class Point implements Parcelable {
         name = parts[1];
         lon = Double.valueOf(parts[2]);
         lat = Double.valueOf(parts[3]);
-        DateFormat osLocalizedDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.US);
+        DateFormat osLocalizedDateFormat = new SimpleDateFormat(CSV_TIMESTAMP_FORMAT, Locale.US);
         timeStamp = osLocalizedDateFormat.parse(parts[4]);
         contactType = parts[5];
         airTemp = parts[6];
@@ -401,7 +402,8 @@ public final class Point implements Parcelable {
 
     @Override
     public String toString() {
-        return id + "\t" + name + "\t" + lon + "\t" + lat + "\t" + this.timeStampAsString() + "\t" + contactType + "\t" +
+        DateFormat osLocalizedDateFormat = new SimpleDateFormat(CSV_TIMESTAMP_FORMAT, Locale.US);
+        return id + "\t" + name + "\t" + lon + "\t" + lat + "\t" + osLocalizedDateFormat.format(timeStamp) + "\t" + contactType + "\t" +
                 airTemp + "\t" + waterTemp + "\t" + bait + "\t" + fishSize + "\t" + notes + "\t" +
                 windSpeed + "\t" + windDir + "\t" + cloudCover + "\t" + dewPoint + "\t" +
                 pressure + "\t" + humidity;
@@ -436,7 +438,7 @@ public final class Point implements Parcelable {
     }
 
     public String timeStampAsString() {
-        return new SimpleDateFormat("MM-dd-yyyy h:mm a").format(getTimeStamp());
+        return new SimpleDateFormat("MM-dd-yyyy h:mm a", Locale.US).format(getTimeStamp());
     }
 
     @Override

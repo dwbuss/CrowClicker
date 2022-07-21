@@ -395,9 +395,13 @@ public final class Point implements Parcelable {
         this.precipProbability = precipProbability;
     }
 
+    public static final String CSV_HEADER() {
+        return "id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\n";
+    }
+
     @Override
     public String toString() {
-        return id + "\t" + name + "\t" + lon + "\t" + lat + "\t" + timeStamp + "\t" + contactType + "\t" +
+        return id + "\t" + name + "\t" + lon + "\t" + lat + "\t" + this.timeStampAsString() + "\t" + contactType + "\t" +
                 airTemp + "\t" + waterTemp + "\t" + bait + "\t" + fishSize + "\t" + notes + "\t" +
                 windSpeed + "\t" + windDir + "\t" + cloudCover + "\t" + dewPoint + "\t" +
                 pressure + "\t" + humidity;

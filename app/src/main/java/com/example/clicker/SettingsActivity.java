@@ -15,13 +15,14 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
@@ -33,7 +34,6 @@ import androidx.preference.PreferenceManager;
 
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
-import com.example.clicker.report.ReportActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,8 +45,7 @@ import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -96,6 +95,34 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             });
 
+    ActivityResultLauncher<Intent> exportActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        List<Point> points = new PointsHelper(getApplicationContext()).getAll();
+                        int counter = 0;
+
+                        try (OutputStreamWriter os = new OutputStreamWriter(SettingsActivity.this.getContentResolver().openOutputStream(result.getData().getData()))) {
+                            os.write(Point.CSV_HEADER());
+                            for (Point point : points) {
+                                if (!point.getName().trim().equals("label")) {
+                                    os.write(point + "\n");
+                                    counter++;
+                                }
+                            }
+                        }
+                        catch (IOException e) {
+                            Log.e(TAG, "Failure writing out file of applications.", e);
+                            Toast.makeText(SettingsActivity.this, "Failure exporting applications.", Toast.LENGTH_LONG).show();
+                        }
+                        finally {
+                            Toast.makeText(SettingsActivity.this, String.format("Exported %d points.", counter), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+            });
 
     static int convertPoints(Box<Point> pointBox, JSONArray points) throws JSONException {
         CRSFactory crsFactory = new CRSFactory();
@@ -194,26 +221,18 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void clearPoints(View view) {
-        AlertDialog.Builder dialogDelete = new AlertDialog.Builder(view.getContext());
-        dialogDelete.setTitle("Warning!!");
-        dialogDelete.setMessage("Are you sure to delete all points?");
-        dialogDelete.setPositiveButton("Yes", (dialogInterface, i) -> {
-            try {
-                BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-                Box<Point> pointBox = boxStore.boxFor(Point.class);
-                List<Point> points = pointBox.query().build().find();
-                for (Point p : points) {
-                    pointBox.remove(p);
-                }
-                updateCounts();
-                Toast.makeText(getApplicationContext(), "Delete successfully", Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                Log.e("error", e.getMessage());
-            }
-            dialogInterface.dismiss();
-        });
-        dialogDelete.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss());
-        dialogDelete.show();
+        AlertDialog dialogDelete = new AlertDialog.Builder(view.getContext())
+                .setTitle("Warning!!")
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setMessage("Are you sure to delete all points?")
+                .setPositiveButton("Yes", (dialogInterface, i) -> {
+                    PointsHelper helper = new PointsHelper(getApplicationContext());
+                    helper.clearPoints();
+                    updateCounts();
+                    Toast.makeText(getApplicationContext(), "Delete successfully", Toast.LENGTH_SHORT).show();
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss()).show();
     }
 
     public void importPoints(View view) {
@@ -240,53 +259,11 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void exportPoints(View view) {
-        try {
-            BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-            Box<Point> pointBox = boxStore.boxFor(Point.class);
-
-            // File file = new File("/mnt/sdcard/", "points.txt");
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "points.csv");
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file));
-            List<Point> points = pointBox.query().build().find();
-            int counter = 0;
-
-            PointsHelper pointsHelper;
-            pointsHelper = new PointsHelper(this.getApplicationContext());
-
-            outputStreamWriter.write("id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\n");
-            for (Point point : points) {
-                if (point.getAirTemp().trim().isEmpty()) {
-                    Weather weather = new Weather();
-                    weather.populate(point.getLat(), point.getLon(), point.getTimeStamp(), getApplicationContext(), new VolleyCallBack() {
-                        @Override
-                        public void onSuccess() {
-                            point.setAirTemp(weather.temperature);
-                            point.setDewPoint(weather.dewPoint);
-                            point.setWindSpeed(weather.windSpeed);
-                            point.setHumidity(weather.humidity);
-                            point.setPressure(weather.pressure);
-                            point.setCloudCover(weather.cloudCover);
-                            point.setWindDir(weather.windDir);
-                            pointsHelper.addOrUpdatePoint(point);
-                        }
-
-                        @Override
-                        public void onFailure() {
-                            Toast.makeText(getApplicationContext(), "Failed to locate weather", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-                outputStreamWriter.write(point + "\n");
-                counter++;
-            }
-            updateCounts();
-            outputStreamWriter.flush();
-            outputStreamWriter.close();
-            Toast.makeText(getApplicationContext(), "Exported " + counter + " points as " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "Export file Failed " + e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
+        Intent chooseFile = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        chooseFile.setType("text/csv");
+        chooseFile.putExtra(Intent.EXTRA_TITLE, "points.csv");
+        chooseFile = Intent.createChooser(chooseFile, "Select Export File");
+        exportActivity.launch(chooseFile);
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {

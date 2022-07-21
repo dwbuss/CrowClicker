@@ -6,6 +6,7 @@ import com.example.clicker.ContactType;
 import com.example.clicker.ObjectBoxApp;
 
 import java.util.Calendar;
+import java.util.List;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -75,6 +76,10 @@ public class PointsHelper {
         if (point != null) {
             pointBox.remove(id);
         }
+    }
+
+    public List<Point> getAll() {
+        return pointBox.query().build().find();
     }
 
     private String retrieveDaily(ContactType type) {

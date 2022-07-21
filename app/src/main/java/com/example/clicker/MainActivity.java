@@ -9,6 +9,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -776,9 +777,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((Button) findViewById(R.id.contactBtn)).setText(pointsHelper.getDailyContact());
         ((Button) findViewById(R.id.followBtn)).setText(pointsHelper.getDailyFollow());
 
+        Intent notificationIntent = new Intent(this, ReportActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this.getApplicationContext(), NOTIFICATION_CHANNEL_ID)
                 .setContentTitle("Crow Clicker")
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(contentIntent)
+                .setOngoing(true)
                 .setContentText(String.format("Catches: %s, Contacts: %s, Follows: %s", pointsHelper.getDailyCatch(), pointsHelper.getDailyContact(), pointsHelper.getDailyFollow()));
         NotificationManagerCompat.from(this).notify(SERVICE_NOTIFICATION_ID, notification.build());
     }

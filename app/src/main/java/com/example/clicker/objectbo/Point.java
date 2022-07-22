@@ -36,7 +36,7 @@ public final class Point implements Parcelable {
             return new Point[size];
         }
     };
-    public static final String CSV_TIMESTAMP_FORMAT = "EEE MMM d HH:mm:ss zzz yyyy";
+    public static final String CSV_TIMESTAMP_FORMAT = "MM-dd-yyyy h:mm a";
 
     @Id
     private long id;
@@ -438,7 +438,7 @@ public final class Point implements Parcelable {
     }
 
     public String timeStampAsString() {
-        return new SimpleDateFormat("MM-dd-yyyy h:mm a", Locale.US).format(getTimeStamp());
+        return new SimpleDateFormat(CSV_TIMESTAMP_FORMAT, Locale.US).format(getTimeStamp());
     }
 
     @Override

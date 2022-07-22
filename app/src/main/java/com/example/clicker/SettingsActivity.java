@@ -35,6 +35,8 @@ import androidx.preference.PreferenceManager;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +51,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,39 +66,29 @@ import io.objectbox.BoxStore;
 public class SettingsActivity extends AppCompatActivity {
 
     private static final String TAG = "SettingsActivity";
-    ActivityResultLauncher<Intent> importActivity = registerForActivityResult(
+    ActivityResultLauncher<Intent> importFromTSVActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
-                    // There are no request codes
                     Intent data = result.getData();
-                    try {
-                        BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
-                        Box<Point> pointBox = boxStore.boxFor(Point.class);
-
-                        InputStream ifile = getContentResolver().openInputStream(data.getData());
-                        InputStreamReader is = new InputStreamReader(ifile);
-                        BufferedReader bufferedReader = new BufferedReader(is);
-                        int counter = 0;
-                        if (bufferedReader.ready()) {
-                            //skip header
-                            bufferedReader.readLine();
-                        }
-                        while (bufferedReader.ready()) {
-                            String line = bufferedReader.readLine();
-                            pointBox.put(new Point(line));
-                            counter++;
+                    PointsHelper helper = new PointsHelper(getApplicationContext());
+                    try ( BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(getContentResolver().openInputStream(data.getData()))) )
+                    {
+                        List<String> lines = IOUtils.readLines(bufferedReader);
+                        lines.remove(0);
+                        for (String line : lines) {
+                            helper.addOrUpdatePoint(new Point(line));
                         }
                         updateCounts();
-                        Toast.makeText(getApplicationContext(), "Imported " + counter + " points", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
+                        Toast.makeText(getApplicationContext(), String.format("Imported %d points", lines.size()), Toast.LENGTH_SHORT).show();
+                    } catch (IOException | ParseException e) {
                         Toast.makeText(getApplicationContext(), "File Import " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
+                        Log.e(TAG, "Failure to import from CSV", e);
                     }
                 }
             });
 
-    ActivityResultLauncher<Intent> exportActivity = registerForActivityResult(
+    ActivityResultLauncher<Intent> exportToTSVActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
@@ -258,12 +251,20 @@ public class SettingsActivity extends AppCompatActivity {
         return bestLocation;
     }
 
-    public void exportPoints(View view) {
+    public void importFromTSV(View view) {
+        Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+        chooseFile.setType("*/*");
+        chooseFile.putExtra(Intent.EXTRA_TITLE, "points.tsv");
+        chooseFile = Intent.createChooser(chooseFile, "Select Import TSV File");
+        importFromTSVActivity.launch(chooseFile);
+    }
+
+    public void exportPointsToTSV(View view) {
         Intent chooseFile = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        chooseFile.setType("text/csv");
-        chooseFile.putExtra(Intent.EXTRA_TITLE, "points.csv");
-        chooseFile = Intent.createChooser(chooseFile, "Select Export File");
-        exportActivity.launch(chooseFile);
+        chooseFile.setType("text/tsv");
+        chooseFile.putExtra(Intent.EXTRA_TITLE, "points.tsv");
+        chooseFile = Intent.createChooser(chooseFile, "Select Export TSV File");
+        exportToTSVActivity.launch(chooseFile);
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {

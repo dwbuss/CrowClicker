@@ -8,6 +8,8 @@ import android.util.Log;
 import com.example.clicker.objectbo.Point;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
@@ -20,15 +22,21 @@ import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -45,10 +53,11 @@ public class SheetAccess {
      */
     private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
     final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
+    private final Context context;
     Sheets service;
     String sheetName = "test";
     int sheetId = 1890696516;
-    private final Context context;
+    private String token;
 
     public SheetAccess(Context appContext) {
         this.context = appContext;
@@ -56,6 +65,7 @@ public class SheetAccess {
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             Bundle metaData = appContext.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA).metaData;
             GoogleCredential credentials = GoogleCredential.fromStream(IOUtils.toInputStream(metaData.getString("com.google.api.credentials"), StandardCharsets.UTF_8)).createScoped(SCOPES);
+            token = credentials.getAccessToken();
             service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
                     .setApplicationName(APPLICATION_NAME)
                     .build();
@@ -162,12 +172,12 @@ public class SheetAccess {
                     else {
                         Request request = new Request()
                                 .setDeleteDimension(new DeleteDimensionRequest()
-                                        .setRange(new DimensionRange()
-                                                .setSheetId(sheetId)
-                                                .setDimension("ROWS")
-                                                .setStartIndex(Integer.parseInt(row) - 1)
-                                                .setEndIndex(Integer.parseInt(row))
-                                        )
+                                                            .setRange(new DimensionRange()
+                                                                              .setSheetId(sheetId)
+                                                                              .setDimension("ROWS")
+                                                                              .setStartIndex(Integer.parseInt(row) - 1)
+                                                                              .setEndIndex(Integer.parseInt(row))
+                                                            )
                                 );
                         List<Request> requests = new ArrayList<Request>();
                         requests.add(request);
@@ -217,7 +227,7 @@ public class SheetAccess {
         });
     }
 
-    private String findRow(Point point) throws IOException {
+    String findRow(Point point) throws IOException {
         String row = "";
         List<List<Object>> values = getRows();
         if (values == null || values.isEmpty()) {
@@ -234,4 +244,65 @@ public class SheetAccess {
         }
         return row;
     }
+
+    Point findById(int id) {
+        List<Object> row = Collections.EMPTY_LIST;
+        Point point = null;
+        try {
+            List<List<Object>> values = getRows();
+            if (values == null || values.isEmpty()) {
+                Log.d(TAG, "No data found." + sheetName);
+                return null;
+            }
+
+            for (int i = 1; i < values.size(); i++) {
+                List<Object> currentRow = values.get(i);
+                if (currentRow.size() > 0 && Integer.parseInt(currentRow.get(0).toString()) == id) {
+                    row = currentRow;
+                    break;
+                }
+            }
+            if (!row.isEmpty())
+                point = new Point(row);
+
+        } catch (IOException | ParseException e) {
+            Log.e(TAG, "Failure looking up row by id.", e);
+            point = null;
+        }
+        return point;
+    }
+
+    Point findByIdUsingSQL(int id) {
+        String sql = String.format("select%%20*%%20where%%20A%%3D%d", id);
+        String url = String.format("https://docs.google.com/spreadsheets/d/%s/gviz/tq?gid=%d&tqx=out:tsv&range=A2:AA&access_token=%s&tq=", spreadsheetId, sheetId, token) + sql;
+        Point point = null;
+        try {
+            HttpResponse response = service.getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
+            if (response.getStatusCode() == 200) {
+                String line = IOUtils.readLines(response.getContent(), StandardCharsets.UTF_8).get(1);
+                String json = line.substring(line.indexOf("{"), line.lastIndexOf("}") + 1);
+                JSONArray answer = new JSONObject(json).getJSONObject("table").getJSONArray("rows").getJSONObject(0).getJSONArray("c");
+                List<String> row = new ArrayList<>();
+                for (int i = 0; i < answer.length(); i++) {
+                    if (!answer.getString(i).equals("null")) {
+                        JSONObject cell = answer.getJSONObject(i);
+                        row.add(cell.getString(cell.has("f") ? "f" : "v"));
+                    } else
+                        row.add("");
+                }
+                point = new Point(row);
+            } else
+                throw new IOException(String.format("Failed to lookup row by id, call returned: %d", response.getStatusCode()));
+        } catch (ParseException | IOException | JSONException e) {
+            Log.e(TAG, "Failure looking up row by id.", e);
+            point = null;
+        }
+        return point;
+    }
+
+    private String printCollection(Collection<?> c) {
+        String s = c.stream().map(Object::toString).collect(Collectors.joining(","));
+        return String.format("[%s]", s);
+    }
+
 }

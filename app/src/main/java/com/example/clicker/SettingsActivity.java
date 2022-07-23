@@ -119,7 +119,7 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             });
 
-    static int convertPoints(Box<Point> pointBox, JSONArray points) throws JSONException {
+    static int convertPoints(Box<Point> pointBox, JSONArray points) throws ParseException, JSONException {
         CRSFactory crsFactory = new CRSFactory();
         CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("epsg:3857");
         CoordinateReferenceSystem wgs84 = crsFactory.createFromName("epsg:4326");

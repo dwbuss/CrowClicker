@@ -3,12 +3,9 @@ package com.example.clicker;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.os.IResultReceiver;
 import android.util.Log;
 
-import com.example.clicker.databinding.ActivityPointBinding;
 import com.example.clicker.objectbo.Point;
-import com.example.clicker.objectbo.PointsHelper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -16,15 +13,10 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
-import com.google.api.services.sheets.v4.model.DataFilter;
 import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
-import com.google.api.services.sheets.v4.model.DeveloperMetadataLookup;
 import com.google.api.services.sheets.v4.model.DimensionRange;
 import com.google.api.services.sheets.v4.model.Request;
-import com.google.api.services.sheets.v4.model.SearchDeveloperMetadataRequest;
-import com.google.api.services.sheets.v4.model.SearchDeveloperMetadataResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import org.apache.commons.io.IOUtils;
@@ -33,7 +25,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -82,7 +73,7 @@ public class SheetAccess {
                     BoxStore boxStore = ((ObjectBoxApp) context).getBoxStore();
                     Box<Point> pointBox = boxStore.boxFor(Point.class);
 
-                    List<List<Object>> values = getRowsFromSpreadSheet();
+                    List<List<Object>> values = getRows();
                     if (values == null || values.isEmpty()) {
                         Log.d(TAG, "No data found.");
                     } else {
@@ -104,7 +95,7 @@ public class SheetAccess {
         });
     }
 
-    public List<List<Object>> getRowsFromSpreadSheet() throws IOException {
+    public List<List<Object>> getRows() throws IOException {
         ValueRange response = service.spreadsheets().values()
                 .get(spreadsheetId, sheetName)
                 .execute();
@@ -128,24 +119,22 @@ public class SheetAccess {
                     BoxStore boxStore = ((ObjectBoxApp) context).getBoxStore();
                     Box<Point> pointBox = boxStore.boxFor(Point.class);
 
-                    List<List<Object>> spreadSheetRows = getRowsFromSpreadSheet();
-                    if (spreadSheetRows == null || spreadSheetRows.isEmpty()) {
+                    List<List<Object>> values = getRows();
+                    if (values == null || values.isEmpty()) {
                         Log.d(TAG, "No data found.");
                     } else {
                         int counter = 0;
-                        List<Point> localPoints = pointBox.query().build().find();
-                        for (List row : spreadSheetRows) {
+                        List<Point> points = pointBox.query()
+                                .build().find();
+                        for (List row : values) {
                             try {
-                                Point sheetPoint = new Point(row);
-                                // Find Sheet point in local db by ID
-                                Optional<Point> localPoint = localPoints.stream().filter(p -> p.getSheetId() == sheetPoint.getSheetId()).findFirst();
-                                if (localPoint.isPresent())
-                                    // update the local point from sheet (pulls any changes to matching ID)
-                                    localPoint.get().refresh(row);
+                                Point storedPoint = new Point(row);
+                                Optional<Point> sheetPoint = points.stream().filter(p -> p.getSheetId() == storedPoint.getSheetId()).findFirst();
+                                if (sheetPoint.isPresent())
+                                    sheetPoint.get().refresh(row);
                                 else
-                                    // new Sheet point add to local DB
-                                    localPoint = Optional.of(new Point(row));
-                                pointBox.put(localPoint.get());
+                                    sheetPoint = Optional.of(new Point(row));
+                                pointBox.put(sheetPoint.get());
                                 counter++;
                             } catch (Exception e) {
                                 Log.d(TAG, "Invalid Point Row:" + row);
@@ -166,32 +155,30 @@ public class SheetAccess {
             @Override
             public void run() {
                 String row = "";
-                if (point.getSheetId() != 0) {
-                    try {
-                        row = findRowNumberFromSpreadSheetForPointBySheetId(point);
-                        if (row.isEmpty())
-                            Log.d(TAG, "No row found for ID " + point.getSheetId());
-                        else {
-                            Request request = new Request()
-                                    .setDeleteDimension(new DeleteDimensionRequest()
-                                            .setRange(new DimensionRange()
-                                                    .setSheetId(sheetId)
-                                                    .setDimension("ROWS")
-                                                    .setStartIndex(Integer.parseInt(row) - 1)
-                                                    .setEndIndex(Integer.parseInt(row))
-                                            )
-                                    );
-                            List<Request> requests = new ArrayList<Request>();
-                            requests.add(request);
-                            BatchUpdateSpreadsheetRequest content = new BatchUpdateSpreadsheetRequest();
-                            content.setRequests(requests);
-                            Sheets.Spreadsheets.BatchUpdate update = service.spreadsheets().batchUpdate(spreadsheetId, content);
-                            update.execute();
-                            Log.d(TAG, "Deleted point from row " + row);
-                        }
-                    } catch (IOException e) {
-                        Log.e(TAG, "Failure during deleting row " + row, e);
+                try {
+                    row = findRow(point);
+                    if (row.isEmpty())
+                        Log.d(TAG, "No row found for ID " + point.getSheetId());
+                    else {
+                        Request request = new Request()
+                                .setDeleteDimension(new DeleteDimensionRequest()
+                                        .setRange(new DimensionRange()
+                                                .setSheetId(sheetId)
+                                                .setDimension("ROWS")
+                                                .setStartIndex(Integer.parseInt(row) - 1)
+                                                .setEndIndex(Integer.parseInt(row))
+                                        )
+                                );
+                        List<Request> requests = new ArrayList<Request>();
+                        requests.add(request);
+                        BatchUpdateSpreadsheetRequest content = new BatchUpdateSpreadsheetRequest();
+                        content.setRequests(requests);
+                        Sheets.Spreadsheets.BatchUpdate update = service.spreadsheets().batchUpdate(spreadsheetId, content);
+                        update.execute();
+                        Log.d(TAG, "Deleted point from row " + row);
                     }
+                } catch (IOException e) {
+                    Log.e(TAG, "Failure during deleting row " + row, e);
                 }
             }
         });
@@ -203,29 +190,25 @@ public class SheetAccess {
             @Override
             public void run() {
                 try {
-                    if (point.getSheetId() == 0) {
+                    String row = findRow(point);
+                    ValueRange body = new ValueRange()
+                            .setValues(point.getSheetBody(lake));
+                    if (row.isEmpty()) {
                         if (point.getContactType().equalsIgnoreCase("CATCH")) {
-                            ValueRange body = new ValueRange().setValues(point.getSheetBodyWithOutId(lake));
-                            AppendValuesResponse reponse = service.spreadsheets().values()
+                            service.spreadsheets().values()
                                     .append(spreadsheetId, sheetName, body)
                                     .setValueInputOption("USER_ENTERED")
                                     .execute();
-                            ValueRange newRow = service.spreadsheets().values()
-                                    .get(spreadsheetId, reponse.getUpdates().getUpdatedRange())
-                                    .execute();
-                            point.setSheetId(Long.parseLong((String) newRow.getValues().get(0).get(0)));
                             Log.d(TAG, "Created new row " + point.getSheetBody(lake));
                         } else {
                             Log.d(TAG, "Can only store catches");
                         }
                     } else {
-                        String rowNumber = findRowNumberFromSpreadSheetForPointBySheetId(point);
-                        ValueRange body = new ValueRange().setValues(point.getSheetBody(lake));
                         service.spreadsheets().values()
-                                .update(spreadsheetId, sheetName + "!A" + rowNumber, body)
+                                .update(spreadsheetId, sheetName + "!A" + row, body)
                                 .setValueInputOption("USER_ENTERED")
                                 .execute();
-                        Log.d(TAG, "Updated row " + rowNumber);
+                        Log.d(TAG, "Updated row " + row);
                     }
                 } catch (IOException e) {
                     Log.e(TAG, "Failure during store " + point.getSheetBody(lake), e);
@@ -234,20 +217,9 @@ public class SheetAccess {
         });
     }
 
-    String findRowNumberFromSpreadSheetForPointBySheetId(Point point) throws IOException {
-        SearchDeveloperMetadataRequest context = new SearchDeveloperMetadataRequest();
-        List<DataFilter> filter = new LinkedList<>();
-        DataFilter f = new DataFilter();
-        DeveloperMetadataLookup lookup = new DeveloperMetadataLookup();
-        lookup.setMetadataKey("userEnteredValue");
-        lookup.setMetadataValue(Long.toString(point.getSheetId()));
-        f.setDeveloperMetadataLookup(lookup);
-        filter.add(f);
-        context.setDataFilters(filter);
-        SearchDeveloperMetadataResponse result = service.spreadsheets().developerMetadata().search(spreadsheetId, context).execute();
-
+    private String findRow(Point point) throws IOException {
         String row = "";
-        List<List<Object>> values = getRowsFromSpreadSheet();
+        List<List<Object>> values = getRows();
         if (values == null || values.isEmpty()) {
             Log.d(TAG, "No data found." + sheetName);
             return null;

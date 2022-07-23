@@ -777,7 +777,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((Button) findViewById(R.id.contactBtn)).setText(pointsHelper.getDailyContact());
         ((Button) findViewById(R.id.followBtn)).setText(pointsHelper.getDailyFollow());
 
-        Intent notificationIntent = new Intent(this, ReportActivity.class);
+        Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this.getApplicationContext(), NOTIFICATION_CHANNEL_ID)

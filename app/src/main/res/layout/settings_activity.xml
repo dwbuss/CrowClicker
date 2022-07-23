@@ -203,8 +203,16 @@
                 android:id="@+id/exportBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="exportPoints"
-                android:text="Export" />
+                android:onClick="exportPointsToTSV"
+                android:text="Export TSV" />
+
+            <Button
+                android:id="@+id/importBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="importFromTSV"
+                android:text="Import TSV" />
+
         </TableRow>
 
     </TableLayout>

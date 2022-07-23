@@ -24,6 +24,7 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,7 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-@RunWith(AndroidJUnit4.class)
+//@RunWith(AndroidJUnit4.class)
 public class SheetsTest {
     private static final String APPLICATION_NAME = "crowapp-257113";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
@@ -60,7 +61,7 @@ public class SheetsTest {
                 .build();
     }
 
-    @Test
+    @Ignore
     public void testReadSheets() throws IOException {
         String range = "test";
         ValueRange response = service.spreadsheets().values()
@@ -85,7 +86,7 @@ public class SheetsTest {
         }
     }
 
-    @Test
+    @Ignore
     public void testWriteSheets() throws IOException {
         ValueRange body = new ValueRange()
                 .setValues(Arrays.asList(
@@ -97,7 +98,7 @@ public class SheetsTest {
                 .execute();
     }
 
-    @Test
+    @Ignore
     public void testUpdateSheets() throws IOException, ParseException {
         Point point = getPoint("11");
         assertEquals("11", Long.toString(point.getSheetId()));
@@ -110,7 +111,7 @@ public class SheetsTest {
         assertEquals("54.00", storedPoint.getFishSize());
     }
 
-    @Test
+    @Ignore
     public void testCreateAndDeleteSheets() throws IOException, ParseException {
         Point point = getPoint("11");
         assertEquals("11", Long.toString(point.getSheetId()));

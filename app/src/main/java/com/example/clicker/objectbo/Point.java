@@ -172,12 +172,13 @@ public final class Point implements Parcelable {
         this.contactType = contactType;
     }
 
-    public Point(long id, String name, String length, String datetime, double lon, double lat) {
+    public Point(long id, String name, String length, String datetime, double lon, double lat) throws ParseException {
         this.id = id;
         this.name = name;
         this.contactType = "CATCH";
         this.fishSize = length;
-        this.timeStamp = Calendar.getInstance().getTime();
+        DateFormat osLocalizedDateFormat = new SimpleDateFormat(CSV_TIMESTAMP_FORMAT, Locale.US);
+        this.timeStamp = osLocalizedDateFormat.parse(datetime);
         this.lat = lat;
         this.lon = lon;
     }

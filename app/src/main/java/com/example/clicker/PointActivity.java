@@ -19,7 +19,10 @@ import androidx.preference.PreferenceManager;
 import com.example.clicker.databinding.ActivityPointBinding;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
+import com.google.api.services.sheets.v4.model.AppendValuesResponse;
+import com.google.api.services.sheets.v4.model.ValueRange;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -70,9 +73,9 @@ public class PointActivity extends AppCompatActivity {
         if (shouldNotify) {
             ContentResolver contentResolver = getContentResolver();
             SEND_MESSAGE(point.getMessage(),
-                         ContactType.valueOf(point.getContactType()),
-                         PreferenceManager.getDefaultSharedPreferences(this),
-                         contentResolver);
+                    ContactType.valueOf(point.getContactType()),
+                    PreferenceManager.getDefaultSharedPreferences(this),
+                    contentResolver);
         }
         lastAction = SAVE_ACTION;
         finish();
@@ -99,9 +102,6 @@ public class PointActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (shouldNotify) {
             SEND_MESSAGE(point.getMessage(), ContactType.valueOf(point.getContactType()), prefs, getContentResolver());
-        }
-        if (point.getSheetId() <= 0) {
-            point.setSheetId(point.getId());
         }
         sheets.storePoint(point, prefs.getString("Lake", ""));
         lastAction = PUSH_ACTION;
@@ -184,7 +184,7 @@ public class PointActivity extends AppCompatActivity {
 
     public static void SEND_MESSAGE(String message, ContactType action, SharedPreferences prefs, ContentResolver resolver) {
         String notification;
-        switch(action) {
+        switch (action) {
             case CATCH:
                 notification = prefs.getString("Catch Notification", "");
                 break;

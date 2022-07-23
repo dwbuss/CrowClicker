@@ -89,8 +89,8 @@ public class SheetsTest {
     public void testWriteSheets() throws IOException {
         ValueRange body = new ValueRange()
                 .setValues(Arrays.asList(
-                        Arrays.asList("10", "", "Dan", "54.00", "", "Crow", "9/13/2021", "2:04 PM", "blades", "4", "-10431566.362659,6310076.194329302", "49.20710543", "-93.70835501"),
-                        Arrays.asList("11", "", "Tony", "54.00", "", "Crow", "9/13/2021", "2:04 PM", "blades", "4", "-10431566.362659,6310076.194329302", "49.20710543", "-93.70835501")));
+                        Arrays.asList("10", "", "Dan", "54.00", "", "Crow", "09/13/2021", "2:04 PM", "blades", "4", "-10431566.362659,6310076.194329302", "49.20710543", "-93.70835501"),
+                        Arrays.asList("11", "", "Tony", "54.00", "", "Crow", "09/13/2021", "2:04 PM", "blades", "4", "-10431566.362659,6310076.194329302", "49.20710543", "-93.70835501")));
         UpdateValuesResponse result = service.spreadsheets().values()
                 .update(spreadsheetId, "test!A10", body)
                 .setValueInputOption("RAW")

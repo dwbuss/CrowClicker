@@ -445,4 +445,20 @@ public final class Point implements Parcelable {
     public int describeContents() {
         return 0;
     }
+
+    public List<List<Object>> getSheetBodyWithOutId(String lake) {
+        DateFormat dayFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        DateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.US);
+        String day = dayFormat.format(getTimeStamp());
+        String time = timeFormat.format(getTimeStamp());
+        if (sheetId <= 0)
+            sheetId = getId();
+        Solunar solunar = new Solunar();
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(getTimeStamp());
+        solunar.populate(lon, lat, cal);
+        return Arrays.asList(
+                Arrays.asList("=ROW()", "", name, fishSize, "", lake, day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor)));
+
+    }
 }

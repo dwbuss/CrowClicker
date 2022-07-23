@@ -22,14 +22,12 @@ import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -274,26 +272,16 @@ public class SheetAccess {
 
     Point findByIdUsingSQL(int id) {
         String sql = String.format("select%%20*%%20where%%20A%%3D%d", id);
-        String url = String.format("https://docs.google.com/spreadsheets/d/%s/gviz/tq?gid=%d&tqx=out:tsv&range=A2:AA&access_token=%s&tq=", spreadsheetId, sheetId, token) + sql;
+        String url = String.format("https://docs.google.com/spreadsheets/d/%s/gviz/tq?gid=%d&tqx=out:csv&range=A2:AA&access_token=%s&tq=", spreadsheetId, sheetId, token) + sql;
         Point point = null;
         try {
             HttpResponse response = service.getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
             if (response.getStatusCode() == 200) {
-                String line = IOUtils.readLines(response.getContent(), StandardCharsets.UTF_8).get(1);
-                String json = line.substring(line.indexOf("{"), line.lastIndexOf("}") + 1);
-                JSONArray answer = new JSONObject(json).getJSONObject("table").getJSONArray("rows").getJSONObject(0).getJSONArray("c");
-                List<String> row = new ArrayList<>();
-                for (int i = 0; i < answer.length(); i++) {
-                    if (!answer.getString(i).equals("null")) {
-                        JSONObject cell = answer.getJSONObject(i);
-                        row.add(cell.getString(cell.has("f") ? "f" : "v"));
-                    } else
-                        row.add("");
-                }
-                point = new Point(row);
+                String line = IOUtils.toString(response.getContent(), StandardCharsets.UTF_8).replaceAll("\"", "");
+                point = new Point(Arrays.asList(line.split(",")));
             } else
                 throw new IOException(String.format("Failed to lookup row by id, call returned: %d", response.getStatusCode()));
-        } catch (ParseException | IOException | JSONException e) {
+        } catch (ParseException | IOException e) {
             Log.e(TAG, "Failure looking up row by id.", e);
             point = null;
         }

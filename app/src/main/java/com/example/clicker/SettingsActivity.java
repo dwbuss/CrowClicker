@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -72,11 +73,12 @@ public class SettingsActivity extends AppCompatActivity {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent data = result.getData();
                     PointsHelper helper = new PointsHelper(getApplicationContext());
-                    try ( BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(getContentResolver().openInputStream(data.getData()))) )
+                    try ( Reader reader = new InputStreamReader(getContentResolver().openInputStream(data.getData())))
                     {
-                        List<String> lines = IOUtils.readLines(bufferedReader);
+                        List<String> lines = IOUtils.readLines(reader);
                         lines.remove(0);
                         for (String line : lines) {
+                            Log.d(TAG, line);
                             helper.addOrUpdatePoint(new Point(line));
                         }
                         updateCounts();

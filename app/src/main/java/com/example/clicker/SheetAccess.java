@@ -214,10 +214,12 @@ public class SheetAccess {
                     if (point.getSheetId() == 0) {
                         if (point.getContactType().equalsIgnoreCase("CATCH")) {
                             ValueRange body = new ValueRange().setValues(point.getSheetBodyWithOutId(lake));
+                            // store new row
                             AppendValuesResponse reponse = service.spreadsheets().values()
                                     .append(spreadsheetId, sheetName, body)
                                     .setValueInputOption("USER_ENTERED")
                                     .execute();
+                            // returns new row with generated sheetid
                             ValueRange newRow = service.spreadsheets().values()
                                     .get(spreadsheetId, reponse.getUpdates().getUpdatedRange())
                                     .execute();
@@ -228,6 +230,7 @@ public class SheetAccess {
                             Log.d(TAG, "Can only store catches");
                         }
                     } else {
+                        // TODO: if sheetid is set then it should match rowid and not need to query for match? safe?
                         long rowNumber = findByIdUsingSQL(point.getSheetId()).getSheetId();
                         ValueRange body = new ValueRange().setValues(point.getSheetBody(lake));
                         service.spreadsheets().values()

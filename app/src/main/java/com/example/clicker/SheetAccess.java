@@ -135,7 +135,7 @@ public class SheetAccess {
                 try {
                     BoxStore boxStore = ((ObjectBoxApp) context).getBoxStore();
                     Box<Point> pointBox = boxStore.boxFor(Point.class);
-
+//TODO: delete all points where sheetid <> 0 before sync then just add all points from spreadsheet
                     List<List<Object>> spreadSheetRows = getRowsFromSpreadSheet();
                     if (spreadSheetRows == null || spreadSheetRows.isEmpty()) {
                         Log.d(TAG, "No data found.");

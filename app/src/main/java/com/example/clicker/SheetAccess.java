@@ -176,6 +176,7 @@ public class SheetAccess {
                 String row = "";
                 if (point.getSheetId() != 0) {
                     try {
+                        // TODO: shouldn't need to search for row if sheetid is set correctly.
                         row = findRowNumberFromSpreadSheetForPointBySheetId(point);
                         if (row.isEmpty())
                             Log.d(TAG, "No row found for ID " + point.getSheetId());

@@ -41,14 +41,14 @@ public class SheetAccessTest {
 
     @Test
     public void canGetAllRows() throws IOException {
-        List<List<Object>> rows = access.getRows();
+        List<List<Object>> rows = access.getRowsFromSpreadSheet();
         assertTrue("We should have more than 500 rows returned.", rows.size() > 500);
         assertEquals("First row should have these columns.", 27, rows.get(0).size());
     }
 
     @Test
     public void canFindRowByPoint() throws Exception {
-        String row = access.findRow(new Point(890, "Dan", "44", "07-27-2012 07:48 PM", -93.82745682, 49.22014097));
+        String row = access.findRowNumberFromSpreadSheetForPointBySheetId(new Point(890, "Dan", "44", "07-27-2012 07:48 PM", -93.82745682, 49.22014097));
         assertEquals("", row);
     }
 

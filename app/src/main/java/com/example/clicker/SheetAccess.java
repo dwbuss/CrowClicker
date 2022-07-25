@@ -47,6 +47,7 @@ import java.util.stream.Collectors;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
+import kotlin.Result;
 
 public class SheetAccess {
 
@@ -65,6 +66,7 @@ public class SheetAccess {
     String sheetName = "test";
     int sheetId = 1890696516;
     private String token;
+    long newSheetId;
 
     public SheetAccess(Context appContext) {
         this.context = appContext;
@@ -206,7 +208,7 @@ public class SheetAccess {
         });
     }
 
-    public void storePoint(Point point, String lake) {
+    public void storePoint(Point point, String lake, VolleyCallBack callback) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
             @Override
@@ -225,7 +227,8 @@ public class SheetAccess {
                                     .get(spreadsheetId, reponse.getUpdates().getUpdatedRange())
                                     .execute();
                             //TODO: not storing new Sheetid in point which cause new point on edit.
-                            point.setSheetId(Long.parseLong((String) newRow.getValues().get(0).get(0)));
+                            newSheetId = Long.parseLong((String) newRow.getValues().get(0).get(0));
+                            point.setSheetId(newSheetId);
                             Log.d(TAG, "Created new row " + point.getSheetBody(lake));
                         } else {
                             Log.d(TAG, "Can only store catches");
@@ -240,8 +243,10 @@ public class SheetAccess {
                                 .execute();
                         Log.d(TAG, "Updated row " + rowNumber);
                     }
+                    callback.onSuccess();
                 } catch (IOException e) {
                     Log.e(TAG, "Failure during store " + point.getSheetBody(lake), e);
+                    callback.onFailure();
                 }
             }
         });

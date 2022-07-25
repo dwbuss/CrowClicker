@@ -228,13 +228,13 @@ public class SheetAccess {
                                     .execute();
                             //TODO: not storing new Sheetid in point which cause new point on edit.
                             newSheetId = Long.parseLong((String) newRow.getValues().get(0).get(0));
-                            point.setSheetId(newSheetId);
                             Log.d(TAG, "Created new row " + point.getSheetBody(lake));
                         } else {
                             Log.d(TAG, "Can only store catches");
                         }
                     } else {
                         // TODO: if sheetid is set then it should match rowid and not need to query for match? safe?
+                        newSheetId = point.getSheetId();
                         long rowNumber = findByIdUsingSQL(point.getSheetId()).getSheetId();
                         ValueRange body = new ValueRange().setValues(point.getSheetBody(lake));
                         service.spreadsheets().values()

@@ -97,12 +97,12 @@ public class PointActivity extends AppCompatActivity {
     }
 
     public void pushButton(View v) {
+        boolean shouldNotify = updatePoint();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         VolleyCallBack callback = new VolleyCallBack() {
             @Override
             public void onSuccess() {
                 point.setSheetId(sheets.newSheetId);
-                boolean shouldNotify = updatePoint();
                 helper.addOrUpdatePoint(point);
                 if (shouldNotify) {
                     SEND_MESSAGE(point.getMessage(), ContactType.valueOf(point.getContactType()), prefs, getContentResolver());

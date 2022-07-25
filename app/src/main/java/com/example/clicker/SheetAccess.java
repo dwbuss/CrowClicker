@@ -8,8 +8,6 @@ import android.util.Log;
 import com.example.clicker.objectbo.Point;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
@@ -26,13 +24,10 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -111,14 +106,6 @@ public class SheetAccess {
         return response.getValues();
     }
 
-    String get(List row, int id) {
-        try {
-            return (String) row.get(id);
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
     public void syncSheet() {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
@@ -127,25 +114,16 @@ public class SheetAccess {
                 try {
                     BoxStore boxStore = ((ObjectBoxApp) context).getBoxStore();
                     Box<Point> pointBox = boxStore.boxFor(Point.class);
-//TODO: delete all points where sheetid <> 0 before sync then just add all points from spreadsheet
                     List<List<Object>> spreadSheetRows = getRowsFromSpreadSheet();
                     if (spreadSheetRows == null || spreadSheetRows.isEmpty()) {
                         Log.d(TAG, "No data found.");
                     } else {
                         int counter = 0;
                         List<Point> localPoints = pointBox.query().build().find();
+                        localPoints.stream().filter(p -> p.getSheetId() != 0).forEach(p -> pointBox.remove(p.getId()));
                         for (List row : spreadSheetRows) {
                             try {
-                                Point sheetPoint = new Point(row);
-                                // Find Sheet point in local db by ID
-                                Optional<Point> localPoint = localPoints.stream().filter(p -> p.getSheetId() == sheetPoint.getSheetId()).findFirst();
-                                if (localPoint.isPresent())
-                                    // update the local point from sheet (pulls any changes to matching ID)
-                                    localPoint.get().refresh(row);
-                                else
-                                    // new Sheet point add to local DB
-                                    localPoint = Optional.of(new Point(row));
-                                pointBox.put(localPoint.get());
+                                pointBox.put( new Point(row));
                                 counter++;
                             } catch (Exception e) {
                                 Log.d(TAG, "Invalid Point Row:" + row);
@@ -168,7 +146,6 @@ public class SheetAccess {
                 String row = "";
                 if (point.getSheetId() != 0) {
                     try {
-                        // TODO: shouldn't need to search for row if sheetid is set correctly.
                         if (point.getSheetId() == 0)
                             Log.d(TAG, "No row found for ID " + point.getSheetId());
                         else {
@@ -240,54 +217,8 @@ public class SheetAccess {
         });
     }
 
-    Point findById(int id) {
-        List<Object> row = Collections.EMPTY_LIST;
-        Point point = null;
-        try {
-            List<List<Object>> values = getRowsFromSpreadSheet();
-            if (values == null || values.isEmpty()) {
-                Log.d(TAG, "No data found." + sheetName);
-                return null;
-            }
-
-            for (int i = 1; i < values.size(); i++) {
-                List<Object> currentRow = values.get(i);
-                if (currentRow.size() > 0 && Integer.parseInt(currentRow.get(0).toString()) == id) {
-                    row = currentRow;
-                    break;
-                }
-            }
-            if (!row.isEmpty())
-                point = new Point(row);
-
-        } catch (IOException | ParseException e) {
-            Log.e(TAG, "Failure looking up row by id.", e);
-            point = null;
-        }
-        return point;
-    }
-
-    Point findByIdUsingSQL(long id) {
-        String sql = String.format("select%%20*%%20where%%20A%%3D%d", id);
-        String url = String.format("https://docs.google.com/spreadsheets/d/%s/gviz/tq?gid=%d&tqx=out:csv&range=A2:AA&access_token=%s&tq=", spreadsheetId, sheetId, token) + sql;
-        Point point = null;
-        try {
-            HttpResponse response = service.getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
-            if (response.getStatusCode() == 200) {
-                String line = IOUtils.toString(response.getContent(), StandardCharsets.UTF_8).replaceAll("\"", "");
-                point = new Point(Arrays.asList(line.split(",")));
-            } else
-                throw new IOException(String.format("Failed to lookup row by id, call returned: %d", response.getStatusCode()));
-        } catch (ParseException | IOException e) {
-            Log.e(TAG, "Failure looking up row by id.", e);
-            point = null;
-        }
-        return point;
-    }
-
     private String printCollection(Collection<?> c) {
         String s = c.stream().map(Object::toString).collect(Collectors.joining(","));
         return String.format("[%s]", s);
     }
-
 }

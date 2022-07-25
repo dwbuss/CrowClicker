@@ -1,8 +1,6 @@
 package com.example.clicker;
 
-public interface VolleyCallBack {
+public interface ClickerCallback {
     void onSuccess();
-
     void onFailure();
-
 }

@@ -31,23 +31,23 @@ public class Weather {
     public String pressure;
     public String cloudCover;
 
-    public void populate(double lat, double lon, Date cal, Context context, final VolleyCallBack callback) {
+    public void populate(double lat, double lon, Date cal, Context context, final ClickerCallback callback) {
         String url = "https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + lat + "," + lon + "," + (cal.getTime() / 1000);
         populate(url, context, callback);
     }
 
-    public void populate(double lat, double lon, Context context, final VolleyCallBack callback) {
+    public void populate(double lat, double lon, Context context, final ClickerCallback callback) {
         String url = "https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + lat + "," + lon;
         populate(url, context, callback);
     }
 
-    public void populate(String url, Context context, final VolleyCallBack callback) {
+    public void populate(String url, Context context, final ClickerCallback callback) {
         RequestQueue queue = Volley.newRequestQueue(context);
         StringRequest stringRequest = pullWeather(url, callback);
         queue.add(stringRequest);
     }
 
-    public StringRequest pullWeather(String url, VolleyCallBack callback) {
+    public StringRequest pullWeather(String url, ClickerCallback callback) {
         return new StringRequest(Request.Method.GET, url,
                                  new Response.Listener<String>() {
                                      @Override

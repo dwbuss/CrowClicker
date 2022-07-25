@@ -1,6 +1,8 @@
 package com.example.clicker.report;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +49,7 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointHolder>
 
         Point point = points.get(position);
 
-        holder.txtName.setText(point.getName()+" ("+point.getSheetId()+")");
+        holder.txtName.setText(point.getName());
         String timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp());
         holder.txtType.setText(timeStamp);
 
@@ -67,6 +69,9 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointHolder>
             editPoint.putExtra("point", point);
             editPointActivity.launch(editPoint);
         });
+
+        boolean needsPush = ((point.getSheetId() == 0L) && (point.getContactType().equals(ContactType.CATCH.toString())));
+        holder.txtName.setTextColor(needsPush ? Color.RED : Color.BLACK);
     }
 
 

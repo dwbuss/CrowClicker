@@ -106,16 +106,19 @@ public class PointActivity extends AppCompatActivity {
                 if (shouldNotify) {
                     SEND_MESSAGE(point.getMessage(), ContactType.valueOf(point.getContactType()), prefs, getContentResolver());
                 }
+                lastAction = PUSH_ACTION;
+                finish();
             }
 
             @Override
             public void onFailure() {
                 helper.addOrUpdatePoint(point);
+                lastAction = PUSH_ACTION;
+                finish();
             }
         };
         sheets.storePoint(point, prefs.getString("Lake", ""), callback);
         lastAction = PUSH_ACTION;
-        finish();
     }
 
     public void weatherButton(View v) {

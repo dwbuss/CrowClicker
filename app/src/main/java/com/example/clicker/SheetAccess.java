@@ -3,12 +3,9 @@ package com.example.clicker;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.os.IResultReceiver;
 import android.util.Log;
 
-import com.example.clicker.databinding.ActivityPointBinding;
 import com.example.clicker.objectbo.Point;
-import com.example.clicker.objectbo.PointsHelper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.GenericUrl;
@@ -20,13 +17,9 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
-import com.google.api.services.sheets.v4.model.DataFilter;
 import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
-import com.google.api.services.sheets.v4.model.DeveloperMetadataLookup;
 import com.google.api.services.sheets.v4.model.DimensionRange;
 import com.google.api.services.sheets.v4.model.Request;
-import com.google.api.services.sheets.v4.model.SearchDeveloperMetadataRequest;
-import com.google.api.services.sheets.v4.model.SearchDeveloperMetadataResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import org.apache.commons.io.IOUtils;
@@ -38,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -47,7 +39,6 @@ import java.util.stream.Collectors;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
-import kotlin.Result;
 
 public class SheetAccess {
 
@@ -66,7 +57,6 @@ public class SheetAccess {
     String sheetName = "test";
     int sheetId = 1890696516;
     private String token;
-    long newSheetId;
 
     public SheetAccess(Context appContext) {
         this.context = appContext;
@@ -179,8 +169,7 @@ public class SheetAccess {
                 if (point.getSheetId() != 0) {
                     try {
                         // TODO: shouldn't need to search for row if sheetid is set correctly.
-                        row = findRowNumberFromSpreadSheetForPointBySheetId(point);
-                        if (row.isEmpty())
+                        if (point.getSheetId() == 0)
                             Log.d(TAG, "No row found for ID " + point.getSheetId());
                         else {
                             Request request = new Request()
@@ -188,8 +177,8 @@ public class SheetAccess {
                                             .setRange(new DimensionRange()
                                                     .setSheetId(sheetId)
                                                     .setDimension("ROWS")
-                                                    .setStartIndex(Integer.parseInt(row) - 1)
-                                                    .setEndIndex(Integer.parseInt(row))
+                                                    .setStartIndex((int) (point.getSheetId() - 1))
+                                                    .setEndIndex((int) point.getSheetId())
                                             )
                                     );
                             List<Request> requests = new ArrayList<Request>();
@@ -213,6 +202,7 @@ public class SheetAccess {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
+                long orgSheetId = point.getSheetId();
                 try {
                     if (point.getSheetId() == 0) {
                         if (point.getContactType().equalsIgnoreCase("CATCH")) {
@@ -226,16 +216,13 @@ public class SheetAccess {
                             ValueRange newRow = service.spreadsheets().values()
                                     .get(spreadsheetId, reponse.getUpdates().getUpdatedRange())
                                     .execute();
-                            //TODO: not storing new Sheetid in point which cause new point on edit.
-                            newSheetId = Long.parseLong((String) newRow.getValues().get(0).get(0));
+                            point.setSheetId(Long.parseLong((String) newRow.getValues().get(0).get(0)));
                             Log.d(TAG, "Created new row " + point.getSheetBody(lake));
                         } else {
                             Log.d(TAG, "Can only store catches");
                         }
                     } else {
-                        // TODO: if sheetid is set then it should match rowid and not need to query for match? safe?
-                        newSheetId = point.getSheetId();
-                        long rowNumber = findByIdUsingSQL(point.getSheetId()).getSheetId();
+                        long rowNumber = point.getSheetId();
                         ValueRange body = new ValueRange().setValues(point.getSheetBody(lake));
                         service.spreadsheets().values()
                                 .update(spreadsheetId, sheetName + "!A" + rowNumber, body)
@@ -245,39 +232,12 @@ public class SheetAccess {
                     }
                     callback.onSuccess();
                 } catch (IOException e) {
+                    point.setSheetId(orgSheetId);
                     Log.e(TAG, "Failure during store " + point.getSheetBody(lake), e);
                     callback.onFailure();
                 }
             }
         });
-    }
-
-    String findRowNumberFromSpreadSheetForPointBySheetId(Point point) throws IOException {
-        SearchDeveloperMetadataRequest context = new SearchDeveloperMetadataRequest();
-        List<DataFilter> filter = new LinkedList<>();
-        DataFilter f = new DataFilter();
-        DeveloperMetadataLookup lookup = new DeveloperMetadataLookup();
-        lookup.setMetadataValue(Long.toString(point.getSheetId()));
-        f.setDeveloperMetadataLookup(lookup);
-        filter.add(f);
-        context.setDataFilters(filter);
-        SearchDeveloperMetadataResponse result = service.spreadsheets().developerMetadata().search(spreadsheetId, context).execute();
-
-        String row = "";
-        List<List<Object>> values = getRowsFromSpreadSheet();
-        if (values == null || values.isEmpty()) {
-            Log.d(TAG, "No data found." + sheetName);
-            return null;
-        } else {
-            int index = 1;
-            for (int i = 0; i < values.size(); i++) {
-                if (values.size() > 0 && values.get(i).size() > 0 && ((String) values.get(i).get(0)).equalsIgnoreCase(Long.toString(point.getSheetId()))) {
-                    row = Integer.toString(index);
-                }
-                index++;
-            }
-        }
-        return row;
     }
 
     Point findById(int id) {

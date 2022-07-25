@@ -102,7 +102,6 @@ public class PointActivity extends AppCompatActivity {
         VolleyCallBack callback = new VolleyCallBack() {
             @Override
             public void onSuccess() {
-                point.setSheetId(sheets.newSheetId);
                 helper.addOrUpdatePoint(point);
                 if (shouldNotify) {
                     SEND_MESSAGE(point.getMessage(), ContactType.valueOf(point.getContactType()), prefs, getContentResolver());
@@ -111,6 +110,7 @@ public class PointActivity extends AppCompatActivity {
 
             @Override
             public void onFailure() {
+                helper.addOrUpdatePoint(point);
             }
         };
         sheets.storePoint(point, prefs.getString("Lake", ""), callback);

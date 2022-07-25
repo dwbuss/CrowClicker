@@ -97,26 +97,23 @@ public class PointActivity extends AppCompatActivity {
     }
 
     public void pushButton(View v) {
-        boolean shouldNotify = updatePoint();
-        helper.addOrUpdatePoint(point);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (shouldNotify) {
-            SEND_MESSAGE(point.getMessage(), ContactType.valueOf(point.getContactType()), prefs, getContentResolver());
-        }
         VolleyCallBack callback = new VolleyCallBack() {
             @Override
             public void onSuccess() {
                 point.setSheetId(sheets.newSheetId);
-
+                boolean shouldNotify = updatePoint();
                 helper.addOrUpdatePoint(point);
-                binding.invalidateAll();
+                if (shouldNotify) {
+                    SEND_MESSAGE(point.getMessage(), ContactType.valueOf(point.getContactType()), prefs, getContentResolver());
+                }
             }
 
             @Override
             public void onFailure() {
             }
         };
-        sheets.storePoint(point, prefs.getString("Lake", ""),callback);
+        sheets.storePoint(point, prefs.getString("Lake", ""), callback);
         lastAction = PUSH_ACTION;
         finish();
     }

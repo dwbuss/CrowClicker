@@ -47,7 +47,7 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointHolder>
 
         Point point = points.get(position);
 
-        holder.txtName.setText(point.getName());
+        holder.txtName.setText(point.getName()+" ("+point.getSheetId()+")");
         String timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp());
         holder.txtType.setText(timeStamp);
 

@@ -15,8 +15,6 @@ import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.clicker.report.ReportActivity;
-
 public class Flic2Service extends Service {
     @Override
     public void onCreate() {

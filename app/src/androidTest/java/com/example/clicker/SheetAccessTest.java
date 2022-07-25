@@ -45,28 +45,4 @@ public class SheetAccessTest {
         assertTrue("We should have more than 500 rows returned.", rows.size() > 500);
         assertEquals("First row should have these columns.", 27, rows.get(0).size());
     }
-
-    @Test
-    public void canFindRowByPoint() throws Exception {
-        String row = access.findRowNumberFromSpreadSheetForPointBySheetId(new Point(890, "Dan", "44", "07-27-2012 07:48 PM", -93.82745682, 49.22014097));
-        assertEquals("", row);
-    }
-
-    @Test
-    public void canFindPointById() throws Exception {
-        Point point = access.findById(890);
-        Point danIn2012 = new Point(0, "Dan", "44", "07-27-2012 07:48 PM", -93.82745682, 49.22014097);
-        danIn2012.setSheetId(890);
-        assertEquals(danIn2012.getSheetId(), point.getSheetId());
-        assertEquals(danIn2012, point);
-    }
-
-    @Test
-    public void catFindPointByIdUsingSql() throws Exception {
-        Point point = access.findByIdUsingSQL(890);
-        Point danIn2012 = new Point(0, "Dan", "44", "07-27-2012 07:48 PM", -93.82745682, 49.22014097);
-        danIn2012.setSheetId(890);
-        assertEquals(danIn2012.getSheetId(), point.getSheetId());
-        assertEquals(danIn2012, point);
-    }
 }

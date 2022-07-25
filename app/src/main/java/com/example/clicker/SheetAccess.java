@@ -174,7 +174,7 @@ public class SheetAccess {
         });
     }
 
-    public void storePoint(Point point, String lake, VolleyCallBack callback) {
+    public void storePoint(Point point, String lake, ClickerCallback callback) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
             @Override

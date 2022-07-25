@@ -74,7 +74,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     public void showWeather() {
         Location loc = (Location) getIntent().getExtras().get("LOCATION");
         final Weather weather = new Weather();
-        weather.populate(loc.getLatitude(), loc.getLongitude(), cal.getTime(), getApplicationContext(), new VolleyCallBack() {
+        weather.populate(loc.getLatitude(), loc.getLongitude(), cal.getTime(), getApplicationContext(), new ClickerCallback() {
             @Override
             public void onSuccess() {
                 ((TextView) findViewById(R.id.temperature)).setText(weather.temperature);

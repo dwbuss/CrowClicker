@@ -19,10 +19,7 @@ import androidx.preference.PreferenceManager;
 import com.example.clicker.databinding.ActivityPointBinding;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
-import com.google.api.services.sheets.v4.model.AppendValuesResponse;
-import com.google.api.services.sheets.v4.model.ValueRange;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -99,7 +96,7 @@ public class PointActivity extends AppCompatActivity {
     public void pushButton(View v) {
         boolean shouldNotify = updatePoint();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        VolleyCallBack callback = new VolleyCallBack() {
+        ClickerCallback callback = new ClickerCallback() {
             @Override
             public void onSuccess() {
                 helper.addOrUpdatePoint(point);
@@ -125,7 +122,7 @@ public class PointActivity extends AppCompatActivity {
         updatePoint();
         try {
             final Weather weather = new Weather();
-            weather.populate(point.getLat(), point.getLon(), point.getTimeStamp(), this, new VolleyCallBack() {
+            weather.populate(point.getLat(), point.getLon(), point.getTimeStamp(), this, new ClickerCallback() {
                 @Override
                 public void onSuccess() {
                     point.setAirTemp(weather.temperature);

@@ -7,7 +7,6 @@ import android.Manifest;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -29,9 +28,6 @@ import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.Button;
@@ -40,7 +36,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -49,8 +44,8 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.example.clicker.objectbo.Point;
-import com.example.clicker.objectbo.PointsHelper;
 import com.example.clicker.objectbo.Point_;
+import com.example.clicker.objectbo.PointsHelper;
 import com.example.clicker.report.ReportActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -95,20 +90,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final static int ALL_PERMISSIONS_RESULT = 101;
     private final List<Point> pointList = new ArrayList<>();
     private final float zoomLevel = 10;
+    private final GoogleMap.OnMapLongClickListener onMyMapLongClickListener = latLng -> {
+        String[] contactTypes = ContactType.asStringArray();
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("Choose an Action")
+                .setItems(contactTypes, (dialog, which) -> {
+                    Location loc = new Location(LocationManager.GPS_PROVIDER);
+                    loc.setLongitude(latLng.longitude);
+                    loc.setLatitude(latLng.latitude);
+                    addPoint(ContactType.valueOf(contactTypes[which]), loc);
+                }).show();
+    };
     SupportMapFragment mapFragment;
-    private PointsHelper pointsHelper;
-    private Map<String, Float> colors;
-    private boolean follow = false;
-    private boolean northUp = false;
-    private GoogleMap mMap;
-    private boolean visible = false;
-    private LocationManager locationManager;
-    private MyReceiver solunarReciever;
-    private List<Marker> markers;
-    private SheetAccess sheets;
-    private Point gotoPoint = null;
     TileOverlay satelliteOptions;
-
+    private PointsHelper pointsHelper;
     private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
         @Override
         public void onMarkerDragStart(Marker marker) {
@@ -126,7 +121,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             pointsHelper.addOrUpdatePoint(point);
         }
     });
-
+    private final GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener = new GoogleMap.OnInfoWindowLongClickListener() {
+        @Override
+        public void onInfoWindowLongClick(final Marker marker) {
+            Point point = (Point) marker.getTag();
+            Intent editPoint = new Intent(MainActivity.this, PointActivity.class);
+            editPoint.putExtra("point", point);
+            editPoint.putExtra("shouldNotify", true);
+            startActivity(editPoint);
+            refreshCounts();
+        }
+    };
+    private Map<String, Float> colors;
+    private boolean follow = false;
+    private boolean northUp = false;
+    private GoogleMap mMap;
     LocationListener locationListenerGPS = new LocationListener() {
         @Override
         public void onLocationChanged(android.location.Location location) {
@@ -158,7 +167,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         public void onProviderDisabled(String provider) {
         }
     };
-
     private final GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener = new GoogleMap.OnMyLocationButtonClickListener() {
         @Override
         public boolean onMyLocationButtonClick() {
@@ -177,7 +185,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return false;
         }
     };
-
     private final GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = (new GoogleMap.OnCameraMoveStartedListener() {
         @Override
         public void onCameraMoveStarted(int reason) {
@@ -190,7 +197,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     });
-
+    private boolean visible = false;
+    private LocationManager locationManager;
+    private MyReceiver solunarReciever;
+    private List<Marker> markers;
     private final GoogleMap.OnCameraMoveListener onCameraMoverListener = new GoogleMap.OnCameraMoveListener() {
         @Override
         public void onCameraMove() {
@@ -205,30 +215,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
-
-    private final GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener = new GoogleMap.OnInfoWindowLongClickListener() {
-        @Override
-        public void onInfoWindowLongClick(final Marker marker) {
-            Point point = (Point) marker.getTag();
-            Intent editPoint = new Intent(MainActivity.this, PointActivity.class);
-            editPoint.putExtra("point", point);
-            editPoint.putExtra("shouldNotify", true);
-            startActivity(editPoint);
-            refreshCounts();
-        }
-    };
-
-    private final GoogleMap.OnMapLongClickListener onMyMapLongClickListener = latLng -> {
-        String[] contactTypes = ContactType.asStringArray();
-        new AlertDialog.Builder(MainActivity.this)
-                .setTitle("Choose an Action")
-                .setItems(contactTypes, (dialog, which) -> {
-                    Location loc = new Location(LocationManager.GPS_PROVIDER);
-                    loc.setLongitude(latLng.longitude);
-                    loc.setLatitude(latLng.latitude);
-                    addPoint(ContactType.valueOf(contactTypes[which]), loc);
-                }).show();
-    };
+    private SheetAccess sheets;
+    private Point gotoPoint = null;
 
     private static String getExternalStoragePath(Context mContext, boolean is_removable) {
         StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
@@ -299,7 +287,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         sheets = new SheetAccess(getApplicationContext());
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
         getLocation();
-
         initView();
     }
 
@@ -402,30 +389,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         animator.start();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.settings:
-                Intent settings = new Intent(this, SettingsActivity.class);
-                startActivity(settings);
-                return true;
-            case R.id.about:
-                Intent forecast = new Intent(this, ForecastActivity.class);
-                forecast.putExtra("LOCATION", getLocation());
-                startActivity(forecast);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.clicker_menu, menu);
-        return true;
-    }
-
     private boolean checkPermission() {
         int result1 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         int result2 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
@@ -501,14 +464,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(point.getLat(), point.getLon()))
-                    .title("Hold to Edit")
-                    .draggable(true)
-                    .anchor(0.5f, 0.5f)
-                    .visible(false)
-                    .flat(true)
-                    .zIndex(0)
-                    .icon(getMarker(point)));
+                                              .position(new LatLng(point.getLat(), point.getLon()))
+                                              .title("Hold to Edit")
+                                              .draggable(true)
+                                              .anchor(0.5f, 0.5f)
+                                              .visible(false)
+                                              .flat(true)
+                                              .zIndex(0)
+                                              .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
                 m.setVisible(true);
@@ -720,11 +683,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this.getApplicationContext(), NOTIFICATION_CHANNEL_ID)
+        Intent stopIntent = new Intent(this, Flic2Service.class);
+        stopIntent.setAction(Constants.STOP_LISTENING);
+        PendingIntent stopPendingIntent = PendingIntent.getService(this, 1, stopIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle("Crow Clicker")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(contentIntent)
                 .setOngoing(true)
+                .addAction(R.mipmap.ic_launcher, "Stop", stopPendingIntent)
                 .setContentText(String.format("Catches: %s, Contacts: %s, Follows: %s", pointsHelper.getDailyCatch(), pointsHelper.getDailyContact(), pointsHelper.getDailyFollow()));
         NotificationManagerCompat.from(this).notify(SERVICE_NOTIFICATION_ID, notification.build());
     }

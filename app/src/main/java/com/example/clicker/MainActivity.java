@@ -486,7 +486,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void addFromButton(ContactType contactType) {
         Location loc = getLocation();
         if (loc == null) {
-            Toast.makeText(this, "Failed create point, null location", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Failed create point, could not retrieve location.", Toast.LENGTH_LONG).show();
             return;
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);

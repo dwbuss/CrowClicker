@@ -446,16 +446,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         int result1 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         int result2 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         int result3 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
-        int result4 = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
-        int result5 = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-        int result6 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
+        int result4 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+        int result5 = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
+        int result6 = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        int result7 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
 
         return (result1 == PackageManager.PERMISSION_GRANTED &&
                 result2 == PackageManager.PERMISSION_GRANTED &&
                 result3 == PackageManager.PERMISSION_GRANTED &&
                 result4 == PackageManager.PERMISSION_GRANTED &&
                 result5 == PackageManager.PERMISSION_GRANTED &&
-                result6 == PackageManager.PERMISSION_GRANTED);
+                result6 == PackageManager.PERMISSION_GRANTED &&
+                result7 == PackageManager.PERMISSION_GRANTED);
     }
 
     @Override
@@ -482,6 +484,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void addFromButton(ContactType contactType) {
+        Location loc = getLocation();
+        if (loc == null) {
+            Toast.makeText(this, "Failed create point, null location", Toast.LENGTH_LONG).show();
+            return;
+        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean friendly = prefs.getBoolean("Friendly", true);
 
@@ -491,10 +498,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         String username = prefs.getString("Username", null);
         String defaultBait = prefs.getString("CurrentBait", "");
-
-        Location loc = getLocation();
-        if (loc == null) return;
-
         final Point point = new Point(0, username, contactType.toString(), loc.getLongitude(), loc.getLatitude());
         point.setBait(defaultBait);
         point.setName(username);

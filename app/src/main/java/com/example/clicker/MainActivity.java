@@ -71,15 +71,12 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import io.flic.flic2libandroid.Flic2Button;
-import io.flic.flic2libandroid.Flic2Manager;
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
@@ -303,20 +300,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
         getLocation();
 
-        registerClickerButtons();
         initView();
-    }
-
-    private void registerClickerButtons() {
-        List<Flic2Button> buttons = Collections.EMPTY_LIST;
-        ClickerListener clucker = new ClickerListener(this);
-
-        buttons = Flic2Manager.getInstance().getButtons();
-        Log.d(TAG, String.format("Found %d Clickers!", buttons.size()));
-        for (Flic2Button button : buttons) {
-            button.connect();
-            button.addListener(clucker);
-        }
     }
 
     public void openCamera(View view) {
@@ -483,31 +467,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         addPoint(type);
     }
 
-    public void addFromButton(ContactType contactType) {
-        Location loc = getLocation();
-        if (loc == null) {
-            Toast.makeText(this, "Failed create point, could not retrieve location.", Toast.LENGTH_LONG).show();
-            return;
-        }
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean friendly = prefs.getBoolean("Friendly", true);
-
-        int soundBite = contactType.lookupSoundBite(friendly);
-        MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
-        song.start();
-
-        String username = prefs.getString("Username", null);
-        String defaultBait = prefs.getString("CurrentBait", "");
-        final Point point = new Point(0, username, contactType.toString(), loc.getLongitude(), loc.getLatitude());
-        point.setBait(defaultBait);
-        point.setName(username);
-
-        pointsHelper.addOrUpdatePoint(point);
-        addPointMarker(point);
-        refreshCounts();
-        PointActivity.SEND_MESSAGE(point.getMessage(), contactType, prefs, getContentResolver());
-    }
-
     public void addContact(View view) {
         addFromClick(ContactType.CONTACT);
     }
@@ -632,30 +591,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return BitmapDescriptorFactory.fromResource(R.drawable.gm_follow);
     }
 
-    private Location getLastKnownLocation() {
-        locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
-        List<String> providers = locationManager.getProviders(true);
-        Location bestLocation = null;
-        for (String provider : providers) {
-            @SuppressLint("MissingPermission") Location l = locationManager.getLastKnownLocation(provider);
-            if (l == null) {
-                continue;
-            }
-            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                // Found best last known location: %s", l);
-                bestLocation = l;
-            }
-        }
-        return bestLocation;
-    }
-
     private Location getLocation() {
-        try {
-            return getLastKnownLocation();//locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        } catch (SecurityException e) {
-            Log.e(TAG, "This is bad.", e);
-            return null;
-        }
+        return LocationHelper.CURRENT_LOCATION(getApplicationContext());
     }
 
     @Override

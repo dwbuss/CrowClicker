@@ -23,9 +23,7 @@
         android:id="@+id/overallStats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
         android:stretchColumns="*"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -195,51 +193,49 @@
 
     <TextView
         android:id="@+id/mostInchesTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="125dp"
+        android:layout_height="30dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="Most Inches"
+        android:gravity="left"
+        android:text="Max"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/leaderboardTitle" />
 
     <TextView
-        android:id="@+id/mostInches"
-        android:layout_width="0dp"
+        android:id="@+id/maxLen"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:gravity="left"
         android:text=""
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mostInchesTitle"/>
+        app:layout_constraintTop_toBottomOf="@id/mostInchesTitle" />
 
     <TextView
         android:id="@+id/mostCatchesTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_width="125dp"
+        android:layout_height="30dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:text="Most Catches"
+        android:gravity="right"
+        android:text="Count"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/leaderboardTitle" />
 
     <TextView
         android:id="@+id/mostCatches"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:gravity="right"
         android:text=""
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mostCatchesTitle"/>
+        app:layout_constraintTop_toBottomOf="@id/mostCatchesTitle" />
 
     <View
         android:id="@+id/divider4"
@@ -251,50 +247,74 @@
 
     <TextView
         android:id="@+id/mostLossesTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="Most Losses"
+        android:text="Losses"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider4" />
 
     <TextView
         android:id="@+id/mostLosses"
-        android:layout_width="0dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:gravity="left"
         android:text=""
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mostLossesTitle"/>
+        app:layout_constraintTop_toBottomOf="@id/mostLossesTitle" />
 
     <TextView
         android:id="@+id/mostFollowsTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:text="Most Follows"
+        android:gravity="right"
+        android:text="Follows"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider4" />
 
     <TextView
         android:id="@+id/mostFollows"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:gravity="right"
         android:text=""
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mostFollowsTitle"/>
+        app:layout_constraintTop_toBottomOf="@id/mostFollowsTitle" />
+
+    <TextView
+        android:id="@+id/averageLbl"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center_horizontal"
+        android:text="Average"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toStartOf="@+id/mostCatchesTitle"
+        app:layout_constraintStart_toEndOf="@+id/mostInchesTitle"
+        app:layout_constraintTop_toBottomOf="@+id/leaderboardTitle" />
+
+    <TextView
+        android:id="@+id/averageLen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center_horizontal"
+        android:text=""
+        app:layout_constraintEnd_toStartOf="@+id/mostCatches"
+        app:layout_constraintStart_toEndOf="@+id/maxLen"
+        app:layout_constraintTop_toBottomOf="@+id/averageLbl" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

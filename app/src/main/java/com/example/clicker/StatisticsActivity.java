@@ -11,23 +11,15 @@ import android.util.Log;
 
 import com.example.clicker.databinding.ActivityStatisticsBinding;
 import com.example.clicker.objectbo.Point;
-import com.example.clicker.objectbo.Point_;
 import com.example.clicker.objectbo.PointsHelper;
-import com.google.android.gms.common.util.MapUtils;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.IntSummaryStatistics;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import io.objectbox.Box;
-import io.objectbox.BoxStore;
-import io.objectbox.query.QueryBuilder;
 
 public class StatisticsActivity extends AppCompatActivity {
 
@@ -69,8 +61,12 @@ public class StatisticsActivity extends AppCompatActivity {
         List<Point> points = pointsHelper.getPointsForTrip(tripLength);
 
         // Top anglers by inches caught
-        String mostInches = mostInches(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
-        binding.mostInches.setText(mostInches);
+        String max = maxLen(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        binding.maxLen.setText(max);
+
+        // Top anglers by average caught
+        String averageLen = average(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        binding.averageLen.setText(averageLen);
 
         // Top anglers by catches
         String mostCatches = mostCatches(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
@@ -85,16 +81,31 @@ public class StatisticsActivity extends AppCompatActivity {
         binding.mostFollows.setText(mostFollows);
     }
 
-    private Map<String, Double> mostInches(List<Point> points) {
-        Map<String, Double> topInches = new LinkedHashMap<>();
+    private Map<String, Double> average(List<Point> points) {
+        Map<String, Double> average = new LinkedHashMap<>();
         Map<String, Double> intermediateInches = points.stream()
                 .filter(point -> point.getContactType().equals(ContactType.CATCH.toString()))
                 .collect(Collectors.groupingBy(point -> point.getName(),
-                                               Collectors.summingDouble(point -> point.getFishSizeAsDouble())));
+                        Collectors.averagingDouble(point -> point.getFishSizeAsDouble())));
         intermediateInches.entrySet().stream()
                 .sorted(Map.Entry.<String, Double>comparingByValue()
-                                .reversed()).forEachOrdered(e -> topInches.put(e.getKey(), e.getValue()));
-        return topInches;
+                        .reversed()).forEachOrdered(e -> average.put(e.getKey(), e.getValue()));
+        return average;
+    }
+
+    private Map<String, Double> maxLen(List<Point> points) {
+        Map<String, Double> maxLens = new LinkedHashMap<>();
+        Map<String, Double> finalMaxLens = new LinkedHashMap<>();
+        Map<String, Point> intermediateInches = points.stream()
+                .filter(point -> point.getContactType().equals(ContactType.CATCH.toString()))
+                .collect(Collectors.toMap(Point::getName, Function.identity(),
+                        BinaryOperator.maxBy(Comparator.comparing(Point::getFishSize))));
+        intermediateInches.keySet().stream().forEach(k -> maxLens.put(k, intermediateInches.get(k).getFishSizeAsDouble()));
+
+        maxLens.entrySet().stream()
+                .sorted(Map.Entry.<String, Double>comparingByValue()
+                        .reversed()).forEachOrdered(e -> finalMaxLens.put(e.getKey(), e.getValue()));
+        return finalMaxLens;
     }
 
     private Map<String, Long> mostCatches(List<Point> points) {
@@ -104,7 +115,7 @@ public class StatisticsActivity extends AppCompatActivity {
         Map<String, Long> topCatches = new LinkedHashMap<>();
         intermediateCatches.entrySet().stream()
                 .sorted(Map.Entry.<String, Long>comparingByValue()
-                                .reversed()).forEachOrdered(e -> topCatches.put(e.getKey(), e.getValue()));
+                        .reversed()).forEachOrdered(e -> topCatches.put(e.getKey(), e.getValue()));
         return topCatches;
     }
 
@@ -115,8 +126,8 @@ public class StatisticsActivity extends AppCompatActivity {
         Map<String, Long> topLosses = new LinkedHashMap<>();
         intermediateLosses.entrySet().stream()
                 .sorted(Map.Entry.<String, Long>comparingByValue()
-                                .reversed()).forEachOrdered(e -> topLosses.put(e.getKey(), e.getValue()));
-        Log.d(TAG, "Most losses: "+topLosses.toString());
+                        .reversed()).forEachOrdered(e -> topLosses.put(e.getKey(), e.getValue()));
+        Log.d(TAG, "Most losses: " + topLosses.toString());
         return topLosses;
     }
 
@@ -127,7 +138,7 @@ public class StatisticsActivity extends AppCompatActivity {
         Map<String, Long> topFollows = new LinkedHashMap<>();
         intermediateFollows.entrySet().stream()
                 .sorted(Map.Entry.<String, Long>comparingByValue()
-                                .reversed()).forEachOrdered(e -> topFollows.put(e.getKey(), e.getValue()));
+                        .reversed()).forEachOrdered(e -> topFollows.put(e.getKey(), e.getValue()));
         return topFollows;
     }
 }

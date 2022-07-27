@@ -30,6 +30,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -60,6 +61,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.lang.reflect.Array;
@@ -76,6 +78,7 @@ import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+    OvershootInterpolator interpolator = new OvershootInterpolator();
     private static final String TAG = "MainActivity";
     private static final String KWS_SEARCH = "wakeup";
     private static final String LOST = "lost";
@@ -217,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     };
     private SheetAccess sheets;
     private Point gotoPoint = null;
+    private boolean isMenuOpen = false;
 
     private static String getExternalStoragePath(Context mContext, boolean is_removable) {
         StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
@@ -353,6 +357,52 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             addCrowLayer();
         }
+        initFabMenu();
+    }
+
+    private void initFabMenu() {
+        FloatingActionButton cameraButton = findViewById(R.id.cameraButton);
+        FloatingActionButton tripReportButton = findViewById(R.id.tripReportButton);
+        FloatingActionButton layersButton = findViewById(R.id.layersButton);
+        FloatingActionButton settingButton = findViewById(R.id.settingButton);
+        cameraButton.setAlpha(0f);
+        cameraButton.setTranslationY(100f);
+        tripReportButton.setAlpha(0f);
+        tripReportButton.setTranslationY(100f);
+        layersButton.setAlpha(0f);
+        layersButton.setTranslationY(100f);
+        settingButton.setAlpha(0f);
+        settingButton.setTranslationY(100f);
+    }
+
+    public void handleFabMenu(View view) {
+        if (isMenuOpen) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    }
+
+    private void openMenu() {
+        isMenuOpen = !isMenuOpen;
+        FloatingActionButton fabMain = findViewById(R.id.fabMain);
+        fabMain.animate().setInterpolator(interpolator).rotation(45f).setDuration(300).start();
+
+        findViewById(R.id.cameraButton).animate().translationX(0f).alpha(1f).setInterpolator(interpolator).setDuration(300).start();
+        findViewById(R.id.tripReportButton).animate().translationX(0f).alpha(1f).setInterpolator(interpolator).setDuration(300).start();
+        findViewById(R.id.layersButton).animate().translationX(0f).alpha(1f).setInterpolator(interpolator).setDuration(300).start();
+        findViewById(R.id.settingButton).animate().translationX(0f).alpha(1f).setInterpolator(interpolator).setDuration(300).start();
+    }
+
+    private void closeMenu() {
+        isMenuOpen = !isMenuOpen;
+        FloatingActionButton fabMain = findViewById(R.id.fabMain);
+        fabMain.animate().setInterpolator(interpolator).rotation(0f).setDuration(300).start();
+
+        findViewById(R.id.cameraButton).animate().translationX(100f).alpha(0f).setInterpolator(interpolator).setDuration(300).start();
+        findViewById(R.id.tripReportButton).animate().translationX(100f).alpha(0f).setInterpolator(interpolator).setDuration(300).start();
+        findViewById(R.id.layersButton).animate().translationX(100f).alpha(0f).setInterpolator(interpolator).setDuration(300).start();
+        findViewById(R.id.settingButton).animate().translationX(100f).alpha(0f).setInterpolator(interpolator).setDuration(300).start();
     }
 
     private List<Point> filterPoints() {
@@ -464,14 +514,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                                              .position(new LatLng(point.getLat(), point.getLon()))
-                                              .title("Hold to Edit")
-                                              .draggable(true)
-                                              .anchor(0.5f, 0.5f)
-                                              .visible(false)
-                                              .flat(true)
-                                              .zIndex(0)
-                                              .icon(getMarker(point)));
+                    .position(new LatLng(point.getLat(), point.getLon()))
+                    .title("Hold to Edit")
+                    .draggable(true)
+                    .anchor(0.5f, 0.5f)
+                    .visible(false)
+                    .flat(true)
+                    .zIndex(0)
+                    .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
                 m.setVisible(true);

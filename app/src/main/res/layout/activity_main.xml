@@ -12,58 +12,13 @@
         layout="@layout/map_main"
         android:layout_width="0dp"
         android:layout_height="0dp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
         app:layout_constraintVertical_bias="0.0" />
-
-    <ImageButton
-        android:id="@+id/settingButton"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="59dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:onClick="openSettings"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        app:srcCompat="@drawable/cc_settings24" />
-
-    <ImageButton
-        android:id="@+id/layersButton"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:onClick="switchLayer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settingButton"
-        app:srcCompat="@drawable/cc_layer24" />
-
-    <ImageButton
-        android:id="@+id/tripReportButton"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:onClick="reportPoints"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layersButton"
-        app:srcCompat="@android:drawable/ic_menu_agenda" />
-
-    <ImageButton
-        android:id="@+id/cameraButton"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:onClick="openCamera"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tripReportButton"
-        app:srcCompat="@android:drawable/ic_menu_camera" />
 
     <LinearLayout
         android:id="@+id/linearLayout4"
@@ -132,7 +87,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <TableRow
-            android:layout_width="fill_parent"
+            android:layout_width="317dp"
             android:layout_height="wrap_content"
             android:gravity="center">
 
@@ -168,6 +123,7 @@
                 android:textColor="#FA0D0D"
                 android:textSize="30sp"
                 android:textStyle="bold" />
+
         </TableRow>
     </TableLayout>
 
@@ -185,8 +141,8 @@
 
     <SeekBar
         android:id="@+id/seekBar"
-        android:layout_width="205dp"
-        android:layout_height="12dp"
+        android:layout_width="177dp"
+        android:layout_height="8dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:max="100"
@@ -195,5 +151,73 @@
         app:layout_constraintStart_toEndOf="@+id/forecastButton"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
         tools:ignore="MissingConstraints" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="316dp"
+        android:layout_marginTop="65dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabMain"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:onClick="handleFabMenu"
+            android:src="@android:drawable/ic_input_add"
+            app:backgroundTint="#CFCFCF"
+            app:fabSize="mini" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/layersButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:onClick="switchLayer"
+            app:backgroundTint="#CFCFCF"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/cc_layer24" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/cameraButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:onClick="openCamera"
+            app:backgroundTint="#CFCFCF"
+            app:fabSize="mini"
+            app:srcCompat="@android:drawable/ic_menu_camera" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/settingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:onClick="openSettings"
+            app:backgroundTint="#CFCFCF"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/cc_settings24" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/tripReportButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:onClick="reportPoints"
+            app:backgroundTint="#CFCFCF"
+            app:fabSize="mini"
+            app:srcCompat="@android:drawable/ic_menu_agenda" />
+
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

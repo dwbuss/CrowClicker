@@ -5,11 +5,16 @@ import android.content.Context;
 import com.example.clicker.ContactType;
 import com.example.clicker.ObjectBoxApp;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
+import io.objectbox.query.QueryBuilder;
 
 public class PointsHelper {
     private final Box<Point> pointBox;
@@ -80,6 +85,25 @@ public class PointsHelper {
 
     public List<Point> getAll() {
         return pointBox.query().build().find();
+    }
+
+    public ArrayList<Point> getPointsForTrip(int tripLength) {
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.add(Calendar.DATE, 0 - tripLength);
+        int flags = QueryBuilder.NULLS_LAST | QueryBuilder.DESCENDING;
+
+        List<Point> tempPoints = pointBox.query()
+                .order(Point_.timeStamp, flags)
+                .greater(Point_.timeStamp, today.getTime())
+                .build().find();
+        ArrayList<Point> points = new ArrayList<>();
+        for (Point p : tempPoints) {
+            if (!p.getName().equalsIgnoreCase("Label"))
+                points.add(p);
+        }
+        return points;
     }
 
     private String retrieveDaily(ContactType type) {

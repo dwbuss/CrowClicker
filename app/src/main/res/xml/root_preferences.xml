@@ -17,7 +17,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="Counter Settings">
+    <PreferenceCategory
+        app:key="click_settings"
+        app:title="Clicker Settings">
         <EditTextPreference
             android:defaultValue="{username}"
             android:key="Username"
@@ -44,11 +46,23 @@
             android:persistent="true"
             android:title="Select current or default bait"
             app:useSimpleSummaryProvider="true" />
-        <Preference
-            android:icon="@android:drawable/ic_menu_search"
-            app:key="scan_for_buttons"
-            app:summary="Scan for new bluetooth buttons."
-            app:title="Scan for 'Clickers'"></Preference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="ViewLabels"
+            android:persistent="true"
+            android:title="View Labels"
+            app:useSimpleSummaryProvider="true" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="Friendly"
+            android:persistent="true"
+            android:title="Friendly Sound Clips"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        app:key="notifications_category"
+        app:summary="Control who gets notified on clicks."
+        app:title="Notifications">
         <ListPreference
             android:defaultValue=""
             android:key="Catch Notification"
@@ -67,28 +81,20 @@
             android:persistent="true"
             android:title="Lost Notification List"
             app:useSimpleSummaryProvider="true" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="MapLocation"
-            android:persistent="true"
-            android:title="Map on Phone"
-            app:useSimpleSummaryProvider="true" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="ViewLabels"
-            android:persistent="true"
-            android:title="View Labels"
-            app:useSimpleSummaryProvider="true" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="Friendly"
-            android:persistent="true"
-            android:title="Friendly"
-            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        app:key="advanced_category"
+        app:summary="Use these actions with CAUTION!"
+        app:title="Advanced">
+        <Preference
+            android:icon="@android:drawable/ic_menu_search"
+            app:key="scan_for_buttons"
+            app:summary="Scan for new bluetooth buttons."
+            app:title="Scan for 'Clickers'" />
         <Preference
             android:icon="@android:drawable/ic_menu_zoom"
             app:key="advanced"
-            app:summary="Advanced data transfer actions. Use with CAUTION!"
-            app:title="Transfer Data"/>
+            app:summary="Advanced data transfer actions."
+            app:title="Transfer Data" />
     </PreferenceCategory>
 </PreferenceScreen>

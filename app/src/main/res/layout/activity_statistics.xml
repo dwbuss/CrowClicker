@@ -6,15 +6,31 @@
     android:layout_height="match_parent"
     tools:context=".StatisticsActivity">
 
+    <TextView
+        android:id="@+id/overallStatsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="Overall Statistics"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TableLayout
-        android:id="@+id/tableLayout5"
+        android:id="@+id/overallStats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:stretchColumns="*"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/overallStatsTitle">
 
         <TableRow
             android:layout_width="match_parent"
@@ -51,9 +67,7 @@
 
         </TableRow>
 
-        <TableRow
-
-            android:padding="10dp">
+        <TableRow android:padding="10dp">
 
             <TextView
                 android:id="@+id/dailyLabel"
@@ -61,7 +75,6 @@
                 android:layout_height="wrap_content"
                 android:layout_column="1"
                 android:layout_gravity="center"
-                android:clickable="true"
                 android:text="Daily Count" />
 
             <TextView
@@ -158,5 +171,25 @@
         </TableRow>
 
     </TableLayout>
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@+id/overallStats" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="Trip Leaderboard"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

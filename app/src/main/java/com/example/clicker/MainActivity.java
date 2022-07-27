@@ -362,18 +362,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void initFabMenu() {
-        FloatingActionButton cameraButton = findViewById(R.id.cameraButton);
-        FloatingActionButton tripReportButton = findViewById(R.id.tripReportButton);
-        FloatingActionButton layersButton = findViewById(R.id.layersButton);
-        FloatingActionButton settingButton = findViewById(R.id.settingButton);
-        cameraButton.setAlpha(0f);
-        cameraButton.setTranslationY(100f);
-        tripReportButton.setAlpha(0f);
-        tripReportButton.setTranslationY(100f);
-        layersButton.setAlpha(0f);
-        layersButton.setTranslationY(100f);
-        settingButton.setAlpha(0f);
-        settingButton.setTranslationY(100f);
+
+        ((FloatingActionButton) findViewById(R.id.settingButton)).hide();
+        ((FloatingActionButton) findViewById(R.id.layersButton)).hide();
+        ((FloatingActionButton) findViewById(R.id.tripReportButton)).hide();
+        ((FloatingActionButton) findViewById(R.id.cameraButton)).hide();
     }
 
     public void handleFabMenu(View view) {
@@ -389,10 +382,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         FloatingActionButton fabMain = findViewById(R.id.fabMain);
         fabMain.animate().setInterpolator(interpolator).rotation(45f).setDuration(300).start();
 
-        findViewById(R.id.cameraButton).animate().translationX(0f).alpha(1f).setInterpolator(interpolator).setDuration(300).start();
-        findViewById(R.id.tripReportButton).animate().translationX(0f).alpha(1f).setInterpolator(interpolator).setDuration(300).start();
-        findViewById(R.id.layersButton).animate().translationX(0f).alpha(1f).setInterpolator(interpolator).setDuration(300).start();
-        findViewById(R.id.settingButton).animate().translationX(0f).alpha(1f).setInterpolator(interpolator).setDuration(300).start();
+
+        ((FloatingActionButton) findViewById(R.id.settingButton)).show();
+        ((FloatingActionButton) findViewById(R.id.layersButton)).show();
+        ((FloatingActionButton) findViewById(R.id.tripReportButton)).show();
+        ((FloatingActionButton) findViewById(R.id.cameraButton)).show();
     }
 
     private void closeMenu() {
@@ -400,10 +394,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         FloatingActionButton fabMain = findViewById(R.id.fabMain);
         fabMain.animate().setInterpolator(interpolator).rotation(0f).setDuration(300).start();
 
-        findViewById(R.id.cameraButton).animate().translationX(100f).alpha(0f).setInterpolator(interpolator).setDuration(300).start();
-        findViewById(R.id.tripReportButton).animate().translationX(100f).alpha(0f).setInterpolator(interpolator).setDuration(300).start();
-        findViewById(R.id.layersButton).animate().translationX(100f).alpha(0f).setInterpolator(interpolator).setDuration(300).start();
-        findViewById(R.id.settingButton).animate().translationX(100f).alpha(0f).setInterpolator(interpolator).setDuration(300).start();
+        ((FloatingActionButton) findViewById(R.id.settingButton)).hide();
+        ((FloatingActionButton) findViewById(R.id.layersButton)).hide();
+        ((FloatingActionButton) findViewById(R.id.tripReportButton)).hide();
+        ((FloatingActionButton) findViewById(R.id.cameraButton)).hide();
     }
 
     private List<Point> filterPoints() {
@@ -718,6 +712,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent forecast = new Intent(this, StatisticsActivity.class);
         startActivity(forecast);
     }
+
     public void reportPoints(View view) {
         closeMenu();
         Intent report = new Intent(this, ReportActivity.class);

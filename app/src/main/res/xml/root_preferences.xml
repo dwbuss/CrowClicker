@@ -47,6 +47,7 @@
         <Preference
             android:icon="@android:drawable/ic_menu_search"
             app:key="scan_for_buttons"
+            app:summary="Scan for new bluetooth buttons."
             app:title="Scan for 'Clickers'"></Preference>
         <ListPreference
             android:defaultValue=""
@@ -84,5 +85,10 @@
             android:persistent="true"
             android:title="Friendly"
             app:useSimpleSummaryProvider="true" />
+        <Preference
+            android:icon="@android:drawable/ic_menu_zoom"
+            app:key="advanced"
+            app:summary="Advanced data transfer actions. Use with CAUTION!"
+            app:title="Transfer Data"/>
     </PreferenceCategory>
 </PreferenceScreen>

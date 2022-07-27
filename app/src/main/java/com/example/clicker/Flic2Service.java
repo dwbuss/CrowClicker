@@ -35,12 +35,16 @@ public class Flic2Service extends Service {
         stopIntent.setAction(Constants.STOP_LISTENING);
         PendingIntent stopPendingIntent = PendingIntent.getService(this, 1, stopIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
+        Intent statsIntent = new Intent(getApplicationContext(), StatisticsActivity.class);
+        PendingIntent statsPendingIntent = PendingIntent.getActivity(this, 1, statsIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
         Notification notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle("Crow Clicker")
                 .setContentText("Listening for Clickers and Cluckers.")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(contentIntent)
                 .setOngoing(true)
+                .addAction(R.mipmap.ic_launcher, "Statistics", statsPendingIntent)
                 .addAction(R.mipmap.ic_launcher, "Stop", stopPendingIntent)
                 .build();
         startForeground(SERVICE_NOTIFICATION_ID, notification);

@@ -73,7 +73,7 @@ public class StatisticsActivity extends AppCompatActivity {
         binding.mostInches.setText(mostInches);
 
         // Top anglers by catches
-        String mostCatches = mostCatches(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %d\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        String mostCatches = mostCatches(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
         binding.mostCatches.setText(mostCatches);
 
         // Top anglers who lost fish

@@ -60,7 +60,7 @@ public class ReportActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int tripLength = Integer.parseInt(prefs.getString("TripLength", "0"));
-        ArrayList<Point> dataModels = new PointsHelper(this).getPointsForTrip(tripLength);
+        dataModels = new PointsHelper(this).getPointsForTrip(tripLength);
 
         adapter = new PointAdapter(dataModels, editPointActivity);
         layoutManager = new LinearLayoutManager(this);

@@ -1,5 +1,7 @@
 package com.example.clicker;
 
+import static java.util.stream.Collectors.joining;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -21,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -66,17 +69,20 @@ public class StatisticsActivity extends AppCompatActivity {
         List<Point> points = pointsHelper.getPointsForTrip(tripLength);
 
         // Top anglers by inches caught
-        Map<String, Double> mostInches = mostInches(points);
+        String mostInches = mostInches(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        binding.mostInches.setText(mostInches);
 
         // Top anglers by catches
-        Map<String, Long> mostCatches = mostCatches(points);
+        String mostCatches = mostCatches(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %d\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        binding.mostCatches.setText(mostCatches);
 
         // Top anglers who lost fish
-        Map<String, Long> mostLosses = mostLosses(points);
+        String mostLosses = mostLosses(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        binding.mostLosses.setText(mostLosses);
 
         // Top anglers by follows
-        Map<String, Long> mostFollows = mostFollows(points);
-
+        String mostFollows = mostFollows(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        binding.mostFollows.setText(mostFollows);
     }
 
     private Map<String, Double> mostInches(List<Point> points) {

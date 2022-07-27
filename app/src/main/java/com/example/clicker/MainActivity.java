@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Point point = (Point) marker.getTag();
             Intent editPoint = new Intent(MainActivity.this, PointActivity.class);
             editPoint.putExtra("point", point);
-            editPoint.putExtra("shouldNotify", true);
+            editPoint.putExtra("shouldNotify", false);
             startActivity(editPoint);
             refreshCounts();
         }

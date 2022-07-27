@@ -24,6 +24,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".StatisticsActivity"
+            android:exported="false" />
+        <activity
             android:name=".PointActivity"
             android:exported="false" />
 

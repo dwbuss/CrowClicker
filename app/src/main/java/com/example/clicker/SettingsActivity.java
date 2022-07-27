@@ -76,7 +76,6 @@ public class SettingsActivity extends AppCompatActivity {
                             Log.d(TAG, line);
                             helper.addOrUpdatePoint(new Point(line));
                         }
-                        updateCounts();
                         Toast.makeText(getApplicationContext(), String.format("Imported %d points", lines.size()), Toast.LENGTH_SHORT).show();
                     } catch (IOException | ParseException e) {
                         Toast.makeText(getApplicationContext(), "File Import " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -185,27 +184,6 @@ public class SettingsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        updateCounts();
-    }
-
-    private void updateCounts() {
-        PointsHelper pointsHelper;
-        pointsHelper = new PointsHelper(this.getApplicationContext());
-
-        ((TextView) findViewById(R.id.dailyCatch)).setText(pointsHelper.getDailyCatch());
-        ((TextView) findViewById(R.id.dailyContact)).setText(pointsHelper.getDailyContact());
-        ((TextView) findViewById(R.id.dailyFollow)).setText(pointsHelper.getDailyFollow());
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int tripLength = Integer.parseInt(prefs.getString("TripLength", "0"));
-
-        ((TextView) findViewById(R.id.tripCatch)).setText(pointsHelper.getTripCatch(tripLength));
-        ((TextView) findViewById(R.id.tripContact)).setText(pointsHelper.getTripContact(tripLength));
-        ((TextView) findViewById(R.id.tripFollow)).setText(pointsHelper.getTripFollow(tripLength));
-
-        ((TextView) findViewById(R.id.totalCatch)).setText(pointsHelper.getTotalCatch());
-        ((TextView) findViewById(R.id.totalContact)).setText(pointsHelper.getTotalContact());
-        ((TextView) findViewById(R.id.totalFollow)).setText(pointsHelper.getTotalFollow());
     }
 
     public void clearPoints(View view) {
@@ -216,7 +194,6 @@ public class SettingsActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", (dialogInterface, i) -> {
                     PointsHelper helper = new PointsHelper(getApplicationContext());
                     helper.clearPoints();
-                    updateCounts();
                     Toast.makeText(getApplicationContext(), "Delete successfully", Toast.LENGTH_SHORT).show();
                     dialogInterface.dismiss();
                 })

@@ -662,6 +662,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startActivity(forecast);
     }
 
+    public void stats(View view) {
+        Intent forecast = new Intent(this, StatisticsActivity.class);
+        startActivity(forecast);
+    }
     public void reportPoints(View view) {
         Intent report = new Intent(this, ReportActivity.class);
         startActivity(report);
@@ -687,11 +691,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         stopIntent.setAction(Constants.STOP_LISTENING);
         PendingIntent stopPendingIntent = PendingIntent.getService(this, 1, stopIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
+        Intent statsIntent = new Intent(this, StatisticsActivity.class);
+        PendingIntent statsPendingIntent = PendingIntent.getService(this, 1, statsIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle("Crow Clicker")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(contentIntent)
                 .setOngoing(true)
+                .addAction(R.mipmap.ic_launcher, "Statistics", statsPendingIntent)
                 .addAction(R.mipmap.ic_launcher, "Stop", stopPendingIntent)
                 .setContentText(String.format("Catches: %s, Contacts: %s, Follows: %s", pointsHelper.getDailyCatch(), pointsHelper.getDailyContact(), pointsHelper.getDailyFollow()));
         NotificationManagerCompat.from(this).notify(SERVICE_NOTIFICATION_ID, notification.build());

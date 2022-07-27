@@ -9,4 +9,6 @@ public class Constants {
     public static final int DELETE_ACTION = 102;
     public static final int CANCEL_ACTION = 103;
     public static final int PUSH_ACTION = 104;
+    public static final String STOP_LISTENING = "STOP_LISTENING";
+    public static final String START_LISTENING = "START_LISTENING";
 }

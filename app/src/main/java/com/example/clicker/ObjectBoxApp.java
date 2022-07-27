@@ -33,6 +33,7 @@ public class ObjectBoxApp extends Application {
         boxStore = MyObjectBox.builder().androidContext(ObjectBoxApp.this).build();
         // To prevent the application process from being killed while the app is running in the background, start a Foreground Service
         intent = new Intent(getApplicationContext(), Flic2Service.class);
+        intent.setAction(Constants.START_LISTENING);
         ContextCompat.startForegroundService(getApplicationContext(), intent);
 
         // Initialize the Flic2 manager to run on the same thread as the current thread (the main thread)

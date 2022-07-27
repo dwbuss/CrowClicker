@@ -55,7 +55,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
 
     public void showSolunar() {
         Solunar solunar = new Solunar();
-        solunar.populate((Location) getIntent().getExtras().get("LOCATION"), cal);
+        solunar.populate(LocationHelper.CURRENT_LOCATION(this), cal);
         ((TextView) findViewById(R.id.lon)).setText(solunar.longitude);
         ((TextView) findViewById(R.id.lat)).setText(solunar.latitude);
         ((TextView) findViewById(R.id.offset)).setText(solunar.offset);
@@ -72,7 +72,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void showWeather() {
-        Location loc = (Location) getIntent().getExtras().get("LOCATION");
+        Location loc = LocationHelper.CURRENT_LOCATION(this);
         final Weather weather = new Weather();
         weather.populate(loc.getLatitude(), loc.getLongitude(), cal.getTime(), getApplicationContext(), new ClickerCallback() {
             @Override

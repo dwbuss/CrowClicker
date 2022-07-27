@@ -216,9 +216,4 @@ public class SheetAccess {
             }
         });
     }
-
-    private String printCollection(Collection<?> c) {
-        String s = c.stream().map(Object::toString).collect(Collectors.joining(","));
-        return String.format("[%s]", s);
-    }
 }

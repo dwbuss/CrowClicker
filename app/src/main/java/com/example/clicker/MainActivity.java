@@ -704,7 +704,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void forcast(View view) {
         Intent forecast = new Intent(this, ForecastActivity.class);
-        forecast.putExtra("LOCATION", getLocation());
         startActivity(forecast);
     }
 

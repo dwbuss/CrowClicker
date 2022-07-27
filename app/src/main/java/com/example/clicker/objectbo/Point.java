@@ -462,4 +462,9 @@ public final class Point implements Parcelable {
                 Arrays.asList("=ROW()", "", name, fishSize, "", lake, day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor)));
 
     }
+
+    public double getFishSizeAsDouble() {
+        if (fishSize.isEmpty()) return 0;
+        return Double.parseDouble(fishSize);
+    }
 }

@@ -156,6 +156,7 @@
         android:layout_width="wrap_content"
         android:layout_height="316dp"
         android:layout_marginTop="65dp"
+        android:layout_marginEnd="8dp"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -168,7 +169,7 @@
             android:layout_gravity="center"
             android:layout_margin="4dp"
             android:onClick="handleFabMenu"
-            android:src="@android:drawable/ic_input_add"
+            android:src="@android:drawable/ic_menu_rotate"
             app:backgroundTint="#CFCFCF"
             app:fabSize="mini" />
 

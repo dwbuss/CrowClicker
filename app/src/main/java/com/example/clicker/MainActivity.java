@@ -295,6 +295,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void openCamera(View view) {
+        closeMenu();
         PackageManager packman = getPackageManager();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         String pack = intent.resolveActivity(packman).getPackageName();
@@ -702,6 +703,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void openSettings(View view) {
+        closeMenu();
         Intent settings = new Intent(this, SettingsActivity.class);
         startActivity(settings);
     }
@@ -717,11 +719,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startActivity(forecast);
     }
     public void reportPoints(View view) {
+        closeMenu();
         Intent report = new Intent(this, ReportActivity.class);
         startActivity(report);
     }
 
     public void switchLayer(View view) {
+        closeMenu();
         final CharSequence[] items = {"None", "Normal", "Satellite", "TERRAIN", "Hybrid",};
         AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
         dialog.setTitle("Select Layer");

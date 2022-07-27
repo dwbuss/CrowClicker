@@ -123,7 +123,7 @@ public class SheetAccess {
                         localPoints.stream().filter(p -> p.getSheetId() != 0).forEach(p -> pointBox.remove(p.getId()));
                         for (List row : spreadSheetRows) {
                             try {
-                                pointBox.put( new Point(row));
+                                pointBox.put(new Point(row));
                                 counter++;
                             } catch (Exception e) {
                                 Log.d(TAG, "Invalid Point Row:" + row);
@@ -151,12 +151,12 @@ public class SheetAccess {
                         else {
                             Request request = new Request()
                                     .setDeleteDimension(new DeleteDimensionRequest()
-                                            .setRange(new DimensionRange()
-                                                    .setSheetId(sheetId)
-                                                    .setDimension("ROWS")
-                                                    .setStartIndex((int) (point.getSheetId() - 1))
-                                                    .setEndIndex((int) point.getSheetId())
-                                            )
+                                                                .setRange(new DimensionRange()
+                                                                                  .setSheetId(sheetId)
+                                                                                  .setDimension("ROWS")
+                                                                                  .setStartIndex((int) (point.getSheetId() - 1))
+                                                                                  .setEndIndex((int) point.getSheetId())
+                                                                )
                                     );
                             List<Request> requests = new ArrayList<Request>();
                             requests.add(request);

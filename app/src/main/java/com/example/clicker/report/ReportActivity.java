@@ -2,11 +2,9 @@ package com.example.clicker.report;
 
 import static com.example.clicker.Constants.DELETE_ACTION;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -16,8 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.clicker.ObjectBoxApp;
-import com.example.clicker.R;
-import com.example.clicker.databinding.ActivityPointBinding;
 import com.example.clicker.databinding.ActivityReportBinding;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.Point_;
@@ -37,6 +33,22 @@ public class ReportActivity extends AppCompatActivity {
     private LinearLayoutManager layoutManager;
     private PointAdapter adapter;
     private ArrayList<Point> dataModels;
+    ActivityResultLauncher<Intent> editPointActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                Intent data = result.getData();
+                Point point = data.getParcelableExtra("point");
+                if (point != null && dataModels.contains(point)) {
+                    int position = dataModels.indexOf(point);
+                    if (result.getResultCode() == DELETE_ACTION) {
+                        dataModels.remove(position);
+                        adapter.notifyItemRemoved(position);
+                    } else {
+                        dataModels.set(position, point);
+                        adapter.notifyItemChanged(position);
+                    }
+                }
+            });
     private ActivityReportBinding binding;
 
     @Override
@@ -71,21 +83,4 @@ public class ReportActivity extends AppCompatActivity {
         pointsView.setLayoutManager(layoutManager);
         pointsView.setAdapter(adapter);
     }
-
-    ActivityResultLauncher<Intent> editPointActivity = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                Intent data = result.getData();
-                Point point = data.getParcelableExtra("point");
-                if ( point != null && dataModels.contains(point) ) {
-                    int position = dataModels.indexOf(point);
-                    if (result.getResultCode() == DELETE_ACTION) {
-                        dataModels.remove(position);
-                        adapter.notifyItemRemoved(position);
-                    } else {
-                        dataModels.set(position, point);
-                        adapter.notifyItemChanged(position);
-                    }
-                }
-            });
 }

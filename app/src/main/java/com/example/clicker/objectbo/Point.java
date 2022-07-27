@@ -84,43 +84,6 @@ public final class Point implements Parcelable {
         humidity = in.readString();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Point point = (Point) o;
-        return getId() == point.getId();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeLong(id);
-        parcel.writeLong(sheetId);
-        parcel.writeString(name);
-        parcel.writeDouble(lon);
-        parcel.writeDouble(lat);
-        parcel.writeLong(timeStamp.getTime());
-        parcel.writeString(contactType);
-        parcel.writeString(airTemp);
-        parcel.writeString(waterTemp);
-        parcel.writeString(bait);
-        parcel.writeString(fishSize);
-        parcel.writeString(notes);
-        parcel.writeString(windSpeed);
-        parcel.writeString(windDir);
-        parcel.writeString(windGust);
-        parcel.writeString(precipProbability);
-        parcel.writeString(cloudCover);
-        parcel.writeString(dewPoint);
-        parcel.writeString(pressure);
-        parcel.writeString(humidity);
-    }
-
     public Point(JSONObject jsonObject) throws ParseException, JSONException {
         // id =jsonObject.getLong("id");
         name = jsonObject.optString("name");
@@ -187,6 +150,47 @@ public final class Point implements Parcelable {
 //  [Row, Verified, Angler, Length, Girth, Lake, Date, Time, Bait, Anglers, Coordinates, Latitude, Longitude, Notes, Temperature, Feels Like, Wind Speed, Wind Gust, Wind Dir, Pressure, Humidity, Dew Point, Cloud Cover, Precip %, Moon Phase, Is Major, Is Minor]
 //  [2, , Tony, 35.75, , Crow, 9/17/2021, 9:25 AM, blade blade, 4, -10447030.528943,6306926.152734499, 49.18861458, -93.84727198,   , 54, 54, 14, 27, NW, 1013, 0.64, 42, 0.11, 0, 4 - Waxing Gibbous, FALSE, FALSE]
         populatePoint(row);
+    }
+
+    public static final String CSV_HEADER() {
+        return "id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\n";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Point point = (Point) o;
+        return getId() == point.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeLong(id);
+        parcel.writeLong(sheetId);
+        parcel.writeString(name);
+        parcel.writeDouble(lon);
+        parcel.writeDouble(lat);
+        parcel.writeLong(timeStamp.getTime());
+        parcel.writeString(contactType);
+        parcel.writeString(airTemp);
+        parcel.writeString(waterTemp);
+        parcel.writeString(bait);
+        parcel.writeString(fishSize);
+        parcel.writeString(notes);
+        parcel.writeString(windSpeed);
+        parcel.writeString(windDir);
+        parcel.writeString(windGust);
+        parcel.writeString(precipProbability);
+        parcel.writeString(cloudCover);
+        parcel.writeString(dewPoint);
+        parcel.writeString(pressure);
+        parcel.writeString(humidity);
     }
 
     private void populatePoint(List row) throws InvalidObjectException {
@@ -395,10 +399,6 @@ public final class Point implements Parcelable {
 
     public void setPrecipProbability(String precipProbability) {
         this.precipProbability = precipProbability;
-    }
-
-    public static final String CSV_HEADER() {
-        return "id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\n";
     }
 
     @Override

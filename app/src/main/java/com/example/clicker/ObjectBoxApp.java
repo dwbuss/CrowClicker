@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat;
 
 import com.example.clicker.objectbo.MyObjectBox;
 
-import java.util.Collections;
 import java.util.List;
 
 import io.flic.flic2libandroid.Flic2Button;

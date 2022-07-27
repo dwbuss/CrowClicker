@@ -35,7 +35,6 @@ import androidx.preference.PreferenceManager;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,9 +45,7 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
@@ -62,7 +59,6 @@ import io.flic.flic2libandroid.Flic2Button;
 import io.flic.flic2libandroid.Flic2Manager;
 import io.flic.flic2libandroid.Flic2ScanCallback;
 import io.objectbox.Box;
-import io.objectbox.BoxStore;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -73,8 +69,7 @@ public class SettingsActivity extends AppCompatActivity {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent data = result.getData();
                     PointsHelper helper = new PointsHelper(getApplicationContext());
-                    try ( Reader reader = new InputStreamReader(getContentResolver().openInputStream(data.getData())))
-                    {
+                    try (Reader reader = new InputStreamReader(getContentResolver().openInputStream(data.getData()))) {
                         List<String> lines = IOUtils.readLines(reader);
                         lines.remove(0);
                         for (String line : lines) {
@@ -107,12 +102,10 @@ public class SettingsActivity extends AppCompatActivity {
                                     counter++;
                                 }
                             }
-                        }
-                        catch (IOException e) {
+                        } catch (IOException e) {
                             Log.e(TAG, "Failure writing out file of applications.", e);
                             Toast.makeText(SettingsActivity.this, "Failure exporting applications.", Toast.LENGTH_LONG).show();
-                        }
-                        finally {
+                        } finally {
                             Toast.makeText(SettingsActivity.this, String.format("Exported %d points.", counter), Toast.LENGTH_LONG).show();
                         }
                     }

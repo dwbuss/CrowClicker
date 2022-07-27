@@ -38,10 +38,10 @@
             app:useSimpleSummaryProvider="true" />
         <ListPreference
             android:defaultValue="0"
+            android:entries="@array/bait_array"
+            android:entryValues="@array/bait_array"
             android:key="CurrentBait"
             android:persistent="true"
-            android:entryValues="@array/bait_array"
-            android:entries="@array/bait_array"
             android:title="Select current or default bait"
             app:useSimpleSummaryProvider="true" />
         <Preference

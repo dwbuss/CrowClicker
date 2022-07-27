@@ -1,6 +1,9 @@
 package com.example.clicker;
 
-import static com.example.clicker.Constants.*;
+import static com.example.clicker.Constants.CANCEL_ACTION;
+import static com.example.clicker.Constants.DELETE_ACTION;
+import static com.example.clicker.Constants.PUSH_ACTION;
+import static com.example.clicker.Constants.SAVE_ACTION;
 
 import android.app.AlertDialog;
 import android.content.ContentResolver;
@@ -37,6 +40,32 @@ public class PointActivity extends AppCompatActivity {
     private boolean shouldNotifyDefault;
     private int lastAction;
 
+    public static void SEND_MESSAGE(String message, ContactType action, SharedPreferences prefs, ContentResolver resolver) {
+        String notification;
+        switch (action) {
+            case CATCH:
+                notification = prefs.getString("Catch Notification", "");
+                break;
+            case FOLLOW:
+                notification = prefs.getString("Follow Notification", "");
+                break;
+            case CONTACT:
+                notification = prefs.getString("Lost Notification", "");
+                break;
+            default:
+                notification = "";
+        }
+        if (!notification.trim().isEmpty()) {
+            SmsManager smgr = SmsManager.getDefault();
+            Map<String, String> contacts = SettingsActivity.GET_CONTACT_LIST(Integer.parseInt(notification), resolver);
+            contacts.forEach((name, number) -> {
+                smgr.sendTextMessage(number, null, message, null, null);
+                Log.d(TAG, String.format("%s message sent to %s ( %s )", action, name, number));
+            });
+        } else
+            Log.d(TAG, "No notifications found.");
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,9 +99,9 @@ public class PointActivity extends AppCompatActivity {
         if (shouldNotify) {
             ContentResolver contentResolver = getContentResolver();
             SEND_MESSAGE(point.getMessage(),
-                    ContactType.valueOf(point.getContactType()),
-                    PreferenceManager.getDefaultSharedPreferences(this),
-                    contentResolver);
+                         ContactType.valueOf(point.getContactType()),
+                         PreferenceManager.getDefaultSharedPreferences(this),
+                         contentResolver);
         }
         lastAction = SAVE_ACTION;
         finish();
@@ -190,31 +219,5 @@ public class PointActivity extends AppCompatActivity {
         point.setHumidity(binding.humidity.getText().toString().trim());
         point.setNotes(binding.notes.getText().toString().trim());
         return binding.notify.isChecked();
-    }
-
-    public static void SEND_MESSAGE(String message, ContactType action, SharedPreferences prefs, ContentResolver resolver) {
-        String notification;
-        switch (action) {
-            case CATCH:
-                notification = prefs.getString("Catch Notification", "");
-                break;
-            case FOLLOW:
-                notification = prefs.getString("Follow Notification", "");
-                break;
-            case CONTACT:
-                notification = prefs.getString("Lost Notification", "");
-                break;
-            default:
-                notification = "";
-        }
-        if (!notification.trim().isEmpty()) {
-            SmsManager smgr = SmsManager.getDefault();
-            Map<String, String> contacts = SettingsActivity.GET_CONTACT_LIST(Integer.parseInt(notification), resolver);
-            contacts.forEach((name, number) -> {
-                smgr.sendTextMessage(number, null, message, null, null);
-                Log.d(TAG, String.format("%s message sent to %s ( %s )", action, name, number));
-            });
-        } else
-            Log.d(TAG, "No notifications found.");
     }
 }

@@ -4,12 +4,14 @@
     tools:context=".PointActivity">
 
     <data>
+
         <variable
             name="point"
             type="com.example.clicker.objectbo.Point" />
+
         <variable
             name="contactType"
-            type="com.example.clicker.ContactType"/>
+            type="com.example.clicker.ContactType" />
     </data>
 
     <LinearLayout
@@ -102,7 +104,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_weight="45"
                 android:entries="@{contactType.asStringArray()}"
-                android:spinnerMode="dialog"/>
+                android:spinnerMode="dialog" />
 
             <CheckBox
                 android:id="@+id/notify"
@@ -139,7 +141,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="40"
-                android:spinnerMode="dialog"/>
+                android:spinnerMode="dialog" />
 
             <TextView
                 android:id="@+id/fishSizeLbl"
@@ -187,7 +189,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="30"
-                android:text="@{point.airTemp}"/>
+                android:text="@{point.airTemp}" />
 
             <TextView
                 android:id="@+id/watertempLbl"
@@ -207,8 +209,8 @@
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
                 android:inputType="numberDecimal"
-                android:text="@{point.waterTemp}"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:text="@{point.waterTemp}" />
         </LinearLayout>
 
         <LinearLayout
@@ -234,7 +236,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="30"
-                android:text="@{point.windSpeed}"/>
+                android:text="@{point.windSpeed}" />
 
             <TextView
                 android:id="@+id/windDirLbl"
@@ -253,7 +255,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
-                android:text="@{point.windDir}"/>
+                android:text="@{point.windDir}" />
         </LinearLayout>
 
         <LinearLayout
@@ -279,7 +281,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="30"
-                android:text="@{point.cloudCover}"/>
+                android:text="@{point.cloudCover}" />
 
             <TextView
                 android:id="@+id/dewPointLbl"
@@ -298,7 +300,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
-                android:text="@{point.dewPoint}"/>
+                android:text="@{point.dewPoint}" />
         </LinearLayout>
 
         <LinearLayout
@@ -324,7 +326,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="30"
-                android:text="@{point.pressure}"/>
+                android:text="@{point.pressure}" />
 
             <TextView
                 android:id="@+id/humidityLbl"
@@ -343,7 +345,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
-                android:text="@{point.humidity}"/>
+                android:text="@{point.humidity}" />
         </LinearLayout>
 
         <LinearLayout

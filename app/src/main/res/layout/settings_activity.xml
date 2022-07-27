@@ -65,11 +65,11 @@
 
             <TextView
                 android:id="@+id/dailyLabel"
-                android:clickable="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
                 android:layout_gravity="center"
+                android:clickable="true"
                 android:text="Daily Count" />
 
             <TextView

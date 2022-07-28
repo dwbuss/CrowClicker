@@ -6,52 +6,121 @@
     android:layout_height="match_parent"
     tools:context=".TransferActivity">
 
-    <TableLayout
-        android:id="@+id/tableLayout4"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:stretchColumns="*"
-        app:layout_constraintEnd_toEndOf="parent"
+    <TextView
+        android:id="@+id/clearButtonView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Use this to remove ALL points from the device.  There is no UNDO!"
+        app:layout_constraintEnd_toStartOf="@+id/clearButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <Button
+        android:id="@+id/clearButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:onClick="clearPoints"
+        android:text="Clear"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/button4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="clearPoints"
-                android:text="Clear" />
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@id/clearButton" />
 
-            <Button
-                android:id="@+id/button3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="importPoints"
-                android:text="Pull" />
+    <TextView
+        android:id="@+id/pullButtonView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Use this to pull down and refresh all points stored in the cloud to this device.  Points not present in the cloud will remain on the device."
+        app:layout_constraintEnd_toStartOf="@+id/pullButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider3" />
 
-            <Button
-                android:id="@+id/exportBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="exportPointsToTSV"
-                android:text="Export TSV" />
+    <Button
+        android:id="@+id/pullButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:onClick="importPoints"
+        android:text="Pull"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider3" />
 
-            <Button
-                android:id="@+id/importBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="importFromTSV"
-                android:text="Import TSV" />
+    <View
+        android:id="@+id/divider4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@id/pullButtonView" />
 
-        </TableRow>
+    <TextView
+        android:id="@+id/exportView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Use this to export all points on this device to a tab delimited file."
+        app:layout_constraintEnd_toStartOf="@+id/exportBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider4" />
 
-    </TableLayout>
+    <Button
+        android:id="@+id/exportBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider4"
+        android:onClick="exportPointsToTSV"
+        android:text="Export" />
+
+    <TextView
+        android:id="@+id/importView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Use this to import points from a tab delimited file onto this device."
+        app:layout_constraintEnd_toStartOf="@+id/importBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/exportBtn" />
+
+    <Button
+        android:id="@+id/importBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/exportBtn"
+        android:onClick="importFromTSV"
+        android:text="Import"/>
+    <View
+        android:id="@+id/divider5"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@id/importBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

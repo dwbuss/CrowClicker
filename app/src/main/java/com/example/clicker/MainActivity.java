@@ -367,6 +367,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((FloatingActionButton) findViewById(R.id.layersButton)).hide();
         ((FloatingActionButton) findViewById(R.id.tripReportButton)).hide();
         ((FloatingActionButton) findViewById(R.id.cameraButton)).hide();
+        ((FloatingActionButton) findViewById(R.id.statsButton)).hide();
     }
 
     public void handleFabMenu(View view) {
@@ -387,6 +388,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((FloatingActionButton) findViewById(R.id.layersButton)).show();
         ((FloatingActionButton) findViewById(R.id.tripReportButton)).show();
         ((FloatingActionButton) findViewById(R.id.cameraButton)).show();
+        ((FloatingActionButton) findViewById(R.id.statsButton)).show();
     }
 
     private void closeMenu() {
@@ -398,6 +400,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((FloatingActionButton) findViewById(R.id.layersButton)).hide();
         ((FloatingActionButton) findViewById(R.id.tripReportButton)).hide();
         ((FloatingActionButton) findViewById(R.id.cameraButton)).hide();
+        ((FloatingActionButton) findViewById(R.id.statsButton)).hide();
     }
 
     private List<Point> filterPoints() {
@@ -708,8 +711,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void stats(View view) {
-        Intent forecast = new Intent(this, StatisticsActivity.class);
-        startActivity(forecast);
+        closeMenu();
+        Intent statsIntent = new Intent(this, StatisticsActivity.class);
+        startActivity(statsIntent);
     }
 
     public void reportPoints(View view) {

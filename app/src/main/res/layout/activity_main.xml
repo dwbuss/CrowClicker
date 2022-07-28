@@ -214,6 +214,17 @@
             app:srcCompat="@drawable/cc_settings24" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/statsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:onClick="stats"
+            app:backgroundTint="#CFCFCF"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/cc_beer" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/tripReportButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

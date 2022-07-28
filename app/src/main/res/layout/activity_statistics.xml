@@ -37,12 +37,15 @@
             android:layout_height="match_parent"
             android:padding="1dp">
 
-            <TextView
+            <ImageView
                 android:id="@+id/blank"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="134dp"
                 android:layout_column="1"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                android:cropToPadding="true"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/cc_beer" />
 
             <ImageView
                 android:id="@+id/catchImage"

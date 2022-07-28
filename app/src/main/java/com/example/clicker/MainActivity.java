@@ -381,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void openMenu() {
         isMenuOpen = !isMenuOpen;
         FloatingActionButton fabMain = findViewById(R.id.fabMain);
-        fabMain.animate().setInterpolator(interpolator).rotation(45f).setDuration(300).start();
+        fabMain.animate().setInterpolator(interpolator).rotation(120f).setDuration(300).start();
 
 
         ((FloatingActionButton) findViewById(R.id.settingButton)).show();

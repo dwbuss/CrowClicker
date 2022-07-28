@@ -175,7 +175,6 @@
             android:layout_margin="4dp"
             android:onClick="handleFabMenu"
             android:src="@drawable/cc_beer"
-            android:tint="#5C5F61"
             app:backgroundTint="#CFCFCF"
             app:fabSize="mini" />
 
@@ -222,7 +221,7 @@
             android:onClick="stats"
             app:backgroundTint="#CFCFCF"
             app:fabSize="mini"
-            app:srcCompat="@drawable/cc_beer" />
+            app:srcCompat="@android:drawable/ic_menu_sort_by_size" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/tripReportButton"

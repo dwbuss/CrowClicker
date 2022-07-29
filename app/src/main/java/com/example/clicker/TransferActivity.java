@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.text.ParseException;
 import java.util.List;
@@ -78,8 +79,39 @@ public class TransferActivity extends AppCompatActivity {
                                 }
                             }
                         } catch (IOException e) {
-                            Log.e(TAG, "Failure writing out file of applications.", e);
-                            Toast.makeText(TransferActivity.this, "Failure exporting applications.", Toast.LENGTH_LONG).show();
+                            Log.e(TAG, "Failure writing out file of points.", e);
+                            Toast.makeText(TransferActivity.this, "Failure exporting points.", Toast.LENGTH_LONG).show();
+                        } finally {
+                            Toast.makeText(TransferActivity.this, String.format("Exported %d points.", counter), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+            });
+
+    ActivityResultLauncher<Intent> exportToGPXActivity = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        List<Point> points = new PointsHelper(TransferActivity.this.getApplicationContext()).getAll();
+                        int counter = 0;
+
+                        try (PrintWriter os = new PrintWriter(new OutputStreamWriter(TransferActivity.this.getContentResolver().openOutputStream(result.getData().getData())))) {
+                            os.println("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>");
+                            os.println("<gpx version=\"1.1\" creator=\"Crow Clicker\" xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\" xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:h=\"http://www.humminbird.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+                            String waypoint = "<wpt lat=\"%f\" lon=\"%f\"><ele>0.0</ele><time>%s</time><name>%s-%s</name><desc>%s</desc><sym>Waypoint</sym></wpt>";
+                            for (Point point : points) {
+                                if (!point.getName().trim().equals("label")) {
+
+                                    os.println(String.format(waypoint,point.getLat(), point.getLon(), point.getTimeStamp().toInstant().toString(), point.getName(), point.getFishSize(), point.getNotes()));
+                                    counter++;
+                                }
+                            }
+                            os.println("</gpx>");
+                        } catch (IOException e) {
+                            Log.e(TAG, "Failure writing out GPX of waypoints.", e);
+                            Toast.makeText(TransferActivity.this, "Failure exporting points as GPX.", Toast.LENGTH_LONG).show();
                         } finally {
                             Toast.makeText(TransferActivity.this, String.format("Exported %d points.", counter), Toast.LENGTH_LONG).show();
                         }
@@ -120,5 +152,13 @@ public class TransferActivity extends AppCompatActivity {
         chooseFile.putExtra(Intent.EXTRA_TITLE, "points.tsv");
         chooseFile = Intent.createChooser(chooseFile, "Select Export TSV File");
         exportToTSVActivity.launch(chooseFile);
+    }
+
+    public void exportToGPX(View view) {
+        Intent chooseFile = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        chooseFile.setType("application/gpx+xml");
+        chooseFile.putExtra(Intent.EXTRA_TITLE, "clicker_points.gpx");
+        chooseFile = Intent.createChooser(chooseFile, "Select Export GPX File");
+        exportToGPXActivity.launch(chooseFile);
     }
 }

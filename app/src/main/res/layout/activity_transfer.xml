@@ -114,6 +114,7 @@
         app:layout_constraintTop_toBottomOf="@id/exportBtn"
         android:onClick="importFromTSV"
         android:text="Import"/>
+
     <View
         android:id="@+id/divider5"
         android:layout_width="match_parent"
@@ -122,5 +123,37 @@
         android:layout_marginBottom="16dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintTop_toBottomOf="@id/importBtn" />
+
+    <TextView
+        android:id="@+id/gpxButtonView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Use this to export points in GPX format for importing into fish locator units."
+        app:layout_constraintEnd_toStartOf="@+id/gpxButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider5" />
+
+    <Button
+        android:id="@+id/gpxButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:onClick="exportToGPX"
+        android:text="GPX EXPORT"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider5" />
+
+    <View
+        android:id="@+id/divider6"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@id/gpxButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -220,13 +220,12 @@ public class SheetAccess {
             Log.d(TAG, "No data found." + sheetName);
             return null;
         } else {
-            int index = 1;
-            for (int i = 0; i < values.size(); i++) {
-                if (values.size() > 0 && values.get(i).size() > 0 && ((String) values.get(i).get(0)).equalsIgnoreCase(Long.toString(point.getSheetId()))) {
-                    row = Integer.toString(index);
+            for (int i = values.size()-1; i >= 0; i--) {
+                Log.d(TAG, "Checking "+i);
+                if (values.get(i).size() > 0 && ((String) values.get(i).get(0)).equalsIgnoreCase(Long.toString(point.getSheetId()))) {
+                    row = Integer.toString(i+1);
                     break;
                 }
-                index++;
             }
         }
         return row;

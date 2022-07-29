@@ -6,6 +6,8 @@ import static com.example.clicker.Constants.PUSH_ACTION;
 import static com.example.clicker.Constants.SAVE_ACTION;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +16,8 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +31,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -71,8 +76,51 @@ public class PointActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityPointBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        helper = new PointsHelper(this);
         point = getIntent().getParcelableExtra("point");
+
+        binding.btnDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(point.getTimeStamp());
+                DatePickerDialog datePickerDialog = new DatePickerDialog(PointActivity.this,
+                                                                         new DatePickerDialog.OnDateSetListener() {
+
+                                                                             @Override
+                                                                             public void onDateSet(DatePicker view, int year,
+                                                                                                   int monthOfYear, int dayOfMonth) {
+                                                                                 cal.set(year, monthOfYear, dayOfMonth);
+                                                                                 point.setTimeStamp(cal.getTime());
+                                                                                 binding.timeStamp.setText(point.timeStampAsString());
+                                                                             }
+                                                                         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.show();
+            }
+        });
+        binding.btnTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(point.getTimeStamp());
+                TimePickerDialog timePickerDialog = new TimePickerDialog(PointActivity.this,
+                                                                         new TimePickerDialog.OnTimeSetListener() {
+
+                                                                             @Override
+                                                                             public void onTimeSet(TimePicker view, int hourOfDay,
+                                                                                                   int minute) {
+
+                                                                                 cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                                                                 cal.set(Calendar.MINUTE, minute);
+                                                                                 point.setTimeStamp(cal.getTime());
+                                                                                 binding.timeStamp.setText(point.timeStampAsString());
+                                                                             }
+                                                                         }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true);
+                timePickerDialog.show();
+            }
+        });
+
+        helper = new PointsHelper(this);
+
         shouldNotifyDefault = getIntent().getBooleanExtra("shouldNotify", false);
         binding.setPoint(point);
         sheets = new SheetAccess(this);

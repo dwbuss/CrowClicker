@@ -51,6 +51,6 @@ public class SheetAccessTest {
         Point paulIn2022 = new Point(0, "Paul", "48", "07-08-2022 07:48 PM", -93.82745682, 49.22014097);
         paulIn2022.setSheetId(1618);
         String row = access.findRowNumberFromSpreadSheetForPointBySheetId(paulIn2022);
-        assertEquals("17", row);
+        assertEquals("1060", row);
     }
 }

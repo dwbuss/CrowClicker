@@ -25,12 +25,10 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -146,26 +144,24 @@ public class SheetAccess {
                 String row = "";
                 if (point.getSheetId() != 0) {
                     try {
-                        if (point.getSheetId() == 0)
-                            Log.d(TAG, "No row found for ID " + point.getSheetId());
-                        else {
-                            Request request = new Request()
-                                    .setDeleteDimension(new DeleteDimensionRequest()
-                                                                .setRange(new DimensionRange()
-                                                                                  .setSheetId(sheetId)
-                                                                                  .setDimension("ROWS")
-                                                                                  .setStartIndex((int) (point.getSheetId() - 1))
-                                                                                  .setEndIndex((int) point.getSheetId())
-                                                                )
-                                    );
-                            List<Request> requests = new ArrayList<Request>();
-                            requests.add(request);
-                            BatchUpdateSpreadsheetRequest content = new BatchUpdateSpreadsheetRequest();
-                            content.setRequests(requests);
-                            Sheets.Spreadsheets.BatchUpdate update = service.spreadsheets().batchUpdate(spreadsheetId, content);
-                            update.execute();
-                            Log.d(TAG, "Deleted point from row " + row);
-                        }
+                        int rowNumber = Integer.parseInt(findRowNumberFromSpreadSheetForPointBySheetId(point));
+                        Request request = new Request()
+                                .setDeleteDimension(new DeleteDimensionRequest()
+                                        .setRange(new DimensionRange()
+                                                .setSheetId(sheetId)
+                                                .setDimension("ROWS")
+                                                .setStartIndex((int) (rowNumber - 1))
+                                                .setEndIndex((int) rowNumber)
+                                        )
+                                );
+                        List<Request> requests = new ArrayList<Request>();
+                        requests.add(request);
+                        BatchUpdateSpreadsheetRequest content = new BatchUpdateSpreadsheetRequest();
+                        content.setRequests(requests);
+                        Sheets.Spreadsheets.BatchUpdate update = service.spreadsheets().batchUpdate(spreadsheetId, content);
+                        update.execute();
+                        Log.d(TAG, "Deleted point from row " + row);
+
                     } catch (IOException e) {
                         Log.e(TAG, "Failure during deleting row " + row, e);
                     }
@@ -199,7 +195,7 @@ public class SheetAccess {
                             Log.d(TAG, "Can only store catches");
                         }
                     } else {
-                        long rowNumber = point.getSheetId();
+                        String rowNumber = findRowNumberFromSpreadSheetForPointBySheetId(point);
                         ValueRange body = new ValueRange().setValues(point.getSheetBody(lake));
                         service.spreadsheets().values()
                                 .update(spreadsheetId, sheetName + "!A" + rowNumber, body)
@@ -215,5 +211,23 @@ public class SheetAccess {
                 }
             }
         });
+    }
+
+    String findRowNumberFromSpreadSheetForPointBySheetId(Point point) throws IOException {
+        String row = "";
+        List<List<Object>> values = getRowsFromSpreadSheet();
+        if (values == null || values.isEmpty()) {
+            Log.d(TAG, "No data found." + sheetName);
+            return null;
+        } else {
+            int index = 1;
+            for (int i = 0; i < values.size(); i++) {
+                if (values.size() > 0 && values.get(i).size() > 0 && ((String) values.get(i).get(0)).equalsIgnoreCase(Long.toString(point.getSheetId()))) {
+                    row = Integer.toString(index);
+                }
+                index++;
+            }
+        }
+        return row;
     }
 }

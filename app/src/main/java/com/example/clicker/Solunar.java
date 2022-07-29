@@ -127,9 +127,10 @@ public class Solunar {
             prev = alt;
         }
 
-        int phase = getPhase(cal);
+        double phase = getPhase(cal);
         moonPhase = getMoonPhaseText(phase);
-        moonPhaseIcon = IMAGE_LOOKUP[phase];
+        int phase2= ((int) Math.floor(phase)) % 30;
+        moonPhaseIcon = IMAGE_LOOKUP[phase2];
         longitude = Double.toString(lon);
         latitude = Double.toString(lat);
         sunRise = parseTime(times.getRise());
@@ -149,8 +150,8 @@ public class Solunar {
         return "N/A";
     }
 
-    private int getPhase(Calendar cal) {
-        double MOON_PHASE_LENGTH = 29.530588853;
+    double getPhase(Calendar cal) {
+        double MOON_PHASE_LENGTH = 29.530588853;//3.691323606625     1.8456618033125
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH) + 1;
         int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -181,29 +182,30 @@ public class Solunar {
         }
 
         // Return the result as a value between 0 and MOON_PHASE_LENGTH
-        double phase = normalizedPhase * MOON_PHASE_LENGTH;
-
-        return ((int) Math.floor(phase)) % 30;
+        return normalizedPhase * MOON_PHASE_LENGTH;
     }
 
-    String getMoonPhaseText(int phaseValue) {
-        if (phaseValue == 0) {
+    String getMoonPhaseText(double phaseValue) {
+        phaseValue = phaseValue + .5; // adjusting for location?
+        System.err.println("  " + phaseValue);
+        if (phaseValue >= 27.6849270496875 || phaseValue < 1.8456618033125) {
             return "1 - New";
-        } else if (phaseValue > 0 && phaseValue < 7) {
+        } else if (phaseValue >= 1.8456618033125 && phaseValue < 5.5369854099375) {
             return "2 - Waxing Crescent";
-        } else if (phaseValue == 7) {
+        } else if (phaseValue >= 5.5369854099375 && phaseValue < 9.2283090165625 ) {
             return "3 - First Quarter";
-        } else if (phaseValue > 7 && phaseValue < 15) {
+        } else if (phaseValue >= 9.2283090165625 && phaseValue < 12.9196326231875) {
             return "4 - Waxing Gibbous";
-        } else if (phaseValue == 15) {
+        } else if (phaseValue >= 12.9196326231875 && phaseValue < 16.6109562298125) {
             return "5 - Full Moon";
-        } else if (phaseValue > 15 && phaseValue < 23) {
+        } else if (phaseValue >= 16.6109562298125 && phaseValue < 20.3022798364375) {
             return "6 - Waning Gibbous";
-        } else if (phaseValue == 23) {
+        } else if (phaseValue >= 20.3022798364375 && phaseValue < 23.9936034430625) {
             return "7 - Third Quarter";
-        } else {
+        } else if (phaseValue >= 23.9936034430625 && phaseValue < 27.6849270496875) {
             return "8 - Waning Crescent";
         }
+        return "No matching moon phase for " + phaseValue;
     }
 
     private String addMajor(Calendar cal, Date moonOverHead, Date moonUnderFoot) {

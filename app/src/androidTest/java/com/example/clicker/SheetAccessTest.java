@@ -9,6 +9,8 @@ import android.content.Context;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.example.clicker.objectbo.Point;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,5 +44,13 @@ public class SheetAccessTest {
         List<List<Object>> rows = access.getRowsFromSpreadSheet();
         assertTrue("We should have more than 500 rows returned.", rows.size() > 500);
         assertEquals("First row should have these columns.", 27, rows.get(0).size());
+    }
+
+    @Test
+    public void canRowGivenSheetId() throws Exception {
+        Point paulIn2022 = new Point(0, "Paul", "48", "07-08-2022 07:48 PM", -93.82745682, 49.22014097);
+        paulIn2022.setSheetId(1618);
+        String row = access.findRowNumberFromSpreadSheetForPointBySheetId(paulIn2022);
+        assertEquals("17", row);
     }
 }

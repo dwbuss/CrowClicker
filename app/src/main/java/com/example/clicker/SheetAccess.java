@@ -224,6 +224,7 @@ public class SheetAccess {
             for (int i = 0; i < values.size(); i++) {
                 if (values.size() > 0 && values.get(i).size() > 0 && ((String) values.get(i).get(0)).equalsIgnoreCase(Long.toString(point.getSheetId()))) {
                     row = Integer.toString(index);
+                    break;
                 }
                 index++;
             }

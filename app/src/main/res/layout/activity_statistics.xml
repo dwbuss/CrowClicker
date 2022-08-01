@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:text="Overall Statistics"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -39,8 +39,8 @@
 
             <ImageView
                 android:id="@+id/blank"
-                android:layout_width="32dp"
-                android:layout_height="134dp"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
                 android:layout_column="1"
                 android:layout_gravity="center"
                 android:cropToPadding="true"
@@ -70,7 +70,7 @@
 
         </TableRow>
 
-        <TableRow android:padding="10dp">
+        <TableRow android:padding="4dp">
 
             <TextView
                 android:id="@+id/dailyLabel"
@@ -105,7 +105,7 @@
 
         <TableRow
 
-            android:padding="10dp">
+            android:padding="4dp">
 
             <TextView
                 android:id="@+id/tripLabel"
@@ -140,7 +140,7 @@
 
         <TableRow
 
-            android:padding="10dp">
+            android:padding="4dp">
 
             <TextView
                 android:id="@+id/totalLabel"
@@ -179,7 +179,7 @@
         android:id="@+id/divider2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintTop_toBottomOf="@+id/overallStats" />
 
@@ -188,7 +188,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:text="Trip Leaderboard"
         android:gravity="center"
@@ -202,7 +202,7 @@
         android:layout_width="125dp"
         android:layout_height="30dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:gravity="center"
         android:text="Max"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -214,95 +214,18 @@
         android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:gravity="center"
-        android:text=""
+        android:text="1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mostInchesTitle" />
-
-    <TextView
-        android:id="@+id/mostCatchesTitle"
-        android:layout_width="125dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:text="Count"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/leaderboardTitle" />
-
-    <TextView
-        android:id="@+id/mostCatches"
-        android:layout_width="125dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:text=""
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mostCatchesTitle" />
-
-    <View
-        android:id="@+id/divider4"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintTop_toBottomOf="@+id/mostCatches" />
-
-    <TextView
-        android:id="@+id/mostLossesTitle"
-        android:layout_width="150dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="Losses"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider4" />
-
-    <TextView
-        android:id="@+id/mostLosses"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text=""
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mostLossesTitle" />
-
-    <TextView
-        android:id="@+id/mostFollowsTitle"
-        android:layout_width="150dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:text="Follows"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider4" />
-
-    <TextView
-        android:id="@+id/mostFollows"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:text=""
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mostFollowsTitle" />
 
     <TextView
         android:id="@+id/averageLbl"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:gravity="center"
         android:text="Average"
@@ -316,12 +239,89 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:gravity="center"
-        android:text=""
+        android:text="1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"
         app:layout_constraintEnd_toStartOf="@+id/mostCatches"
         app:layout_constraintStart_toEndOf="@+id/maxLen"
         app:layout_constraintTop_toBottomOf="@+id/averageLbl" />
+
+    <TextView
+        android:id="@+id/mostCatchesTitle"
+        android:layout_width="125dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="Count"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/leaderboardTitle" />
+
+    <TextView
+        android:id="@+id/mostCatches"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mostCatchesTitle" />
+
+    <View
+        android:id="@+id/divider4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@+id/mostCatches" />
+
+    <TextView
+        android:id="@+id/mostLossesTitle"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:text="Losses"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider4" />
+
+    <TextView
+        android:id="@+id/mostLosses"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:text="1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mostLossesTitle" />
+
+    <TextView
+        android:id="@+id/mostFollowsTitle"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="Follows"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider4" />
+
+    <TextView
+        android:id="@+id/mostFollows"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mostFollowsTitle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

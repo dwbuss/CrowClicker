@@ -61,23 +61,23 @@ public class StatisticsActivity extends AppCompatActivity {
         List<Point> points = pointsHelper.getPointsForTrip(tripLength);
 
         // Top anglers by inches caught
-        String max = maxLen(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        String max = maxLen(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
         binding.maxLen.setText(max);
 
         // Top anglers by average caught
-        String averageLen = average(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        String averageLen = average(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
         binding.averageLen.setText(averageLen);
 
         // Top anglers by catches
-        String mostCatches = mostCatches(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        String mostCatches = mostCatches(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
         binding.mostCatches.setText(mostCatches);
 
         // Top anglers who lost fish
-        String mostLosses = mostLosses(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        String mostLosses = mostLosses(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
         binding.mostLosses.setText(mostLosses);
 
         // Top anglers by follows
-        String mostFollows = mostFollows(points).entrySet().stream().limit(3).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        String mostFollows = mostFollows(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
         binding.mostFollows.setText(mostFollows);
     }
 

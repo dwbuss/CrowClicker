@@ -203,8 +203,10 @@ public final class Point implements Parcelable {
                 name.equalsIgnoreCase("fblair") ||
                 name.equalsIgnoreCase("fchris"))
             throw new InvalidObjectException("Invalid point " + name);
-        lat = Double.parseDouble(get(row, 11));
-        lon = Double.parseDouble(get(row, 12));
+        if (!get(row, 11).isEmpty())
+            lat = Double.parseDouble(get(row, 11));
+        if (!get(row, 12).isEmpty())
+            lon = Double.parseDouble(get(row, 12));
         try {
             if (((String) row.get(7)).trim().isEmpty()) {
                 DateFormat osLocalizedDateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.clicker.objectbo.Point;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -25,6 +26,8 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -104,6 +107,66 @@ public class SheetAccess {
         return response.getValues();
     }
 
+    //used to fix moon phase logic on all data.
+    public void updateMoonOnAllRows() {
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    List<List<Object>> rows = getRowsFromSpreadSheet();
+                    Calendar cal = Calendar.getInstance();
+                    Solunar solunar = new Solunar();
+                    int updatedRows = 0;
+                    for (int i = 0; i < rows.size(); i++) {
+                        List<Object> row = rows.get(i);
+                        int updateRow = i + 1;
+                        try {
+                            if (updatedRows > 59) {
+                                Log.i(TAG, "Update limit exceeded, sleeping ");
+                                Thread.sleep(60000);
+                                updatedRows = 0;
+                            }
+                            if (!((String) row.get(0)).equalsIgnoreCase("Row") && !((String) row.get(2)).equalsIgnoreCase("label") && !((String) row.get(2)).isEmpty()) {
+
+                                String stringLat = (String) row.get(11);
+                                String stringLon = (String) row.get(12);
+                                if (stringLat.isEmpty() || stringLon.isEmpty()) {
+                                    row.set(12, -93.863248);
+                                    row.set(11, 49.217314);
+                                }
+                                Point point = new Point(row);
+                                cal.setTime(point.getTimeStamp());
+                                String orgPhase = (String) row.get(24);
+                                solunar.populate(point.getLon(), point.getLat(), cal);
+                                row.set(24, solunar.moonPhase);
+                                if (row.size() > 25) {
+                                    row.set(25, Boolean.toString(solunar.isMajor));
+                                    row.set(26, Boolean.toString(solunar.isMinor));
+                                }
+                                if (!orgPhase.equalsIgnoreCase(solunar.moonPhase)) {
+                                    ValueRange body = new ValueRange().setValues(Arrays.asList(row));
+                                    service.spreadsheets().values()
+                                            .update(spreadsheetId, sheetName + "!A" + updateRow, body)
+                                            .setValueInputOption("USER_ENTERED")
+                                            .execute();
+                                    Log.i(TAG, "Updated row " + updateRow);
+                                    updatedRows++;
+                                } else {
+                                    Log.i(TAG, "No change in moon for row " + updateRow);
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Failed to update row " + updateRow, e);
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Failure during update.", e);
+                }
+            }
+        });
+    }
+
     public void syncSheet() {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
@@ -121,8 +184,10 @@ public class SheetAccess {
                         localPoints.stream().filter(p -> p.getSheetId() != 0).forEach(p -> pointBox.remove(p.getId()));
                         for (List row : spreadSheetRows) {
                             try {
-                                pointBox.put(new Point(row));
-                                counter++;
+                                if (((String) row.get(5)).equalsIgnoreCase("Crow")) {
+                                    pointBox.put(new Point(row));
+                                    counter++;
+                                }
                             } catch (Exception e) {
                                 Log.d(TAG, "Invalid Point Row:" + row);
                             }
@@ -220,10 +285,10 @@ public class SheetAccess {
             Log.d(TAG, "No data found." + sheetName);
             return null;
         } else {
-            for (int i = values.size()-1; i >= 0; i--) {
-                Log.d(TAG, "Checking "+i);
+            for (int i = values.size() - 1; i >= 0; i--) {
+                Log.d(TAG, "Checking " + i);
                 if (values.get(i).size() > 0 && ((String) values.get(i).get(0)).equalsIgnoreCase(Long.toString(point.getSheetId()))) {
-                    row = Integer.toString(i+1);
+                    row = Integer.toString(i + 1);
                     break;
                 }
             }

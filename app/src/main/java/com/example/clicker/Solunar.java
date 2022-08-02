@@ -129,7 +129,7 @@ public class Solunar {
 
         double phase = getPhase(cal);
         moonPhase = getMoonPhaseText(phase);
-        int phase2= ((int) Math.floor(phase)) % 30;
+        int phase2 = ((int) Math.floor(phase)) % 30;
         moonPhaseIcon = IMAGE_LOOKUP[phase2];
         longitude = Double.toString(lon);
         latitude = Double.toString(lat);
@@ -192,7 +192,7 @@ public class Solunar {
             return "1 - New";
         } else if (phaseValue >= 1.8456618033125 && phaseValue < 5.5369854099375) {
             return "2 - Waxing Crescent";
-        } else if (phaseValue >= 5.5369854099375 && phaseValue < 9.2283090165625 ) {
+        } else if (phaseValue >= 5.5369854099375 && phaseValue < 9.2283090165625) {
             return "3 - First Quarter";
         } else if (phaseValue >= 9.2283090165625 && phaseValue < 12.9196326231875) {
             return "4 - Waxing Gibbous";

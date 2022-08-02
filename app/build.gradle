@@ -20,9 +20,9 @@ android {
         applicationId "com.example.clicker"
         minSdkVersion 26
         compileSdkVersion 32
-        targetSdkVersion 29 // LEAVE THIS AT 29 UNTIL WE FIGURE OUT HOW TO READ MBTILES ON ANDROID 11+
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 32
+        versionCode 2
+        versionName "2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [mapApiKey: mapProperties['google_maps_api_key'], googleCreds: mapProperties['google_creds']]
     }

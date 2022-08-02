@@ -37,6 +37,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -73,12 +75,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
-    OvershootInterpolator interpolator = new OvershootInterpolator();
     private static final String TAG = "MainActivity";
     private static final String KWS_SEARCH = "wakeup";
     private static final String LOST = "lost";
@@ -104,6 +106,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     addPoint(ContactType.valueOf(contactTypes[which]), loc);
                 }).show();
     };
+    private final ActivityResultLauncher<String[]> permissionRequest =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                result.entrySet().stream()
+                        .forEach(stringBooleanEntry -> Log.i(TAG, String.format("Permission request %s was %s.",
+                                                                                stringBooleanEntry.getKey(),
+                                                                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
+            });
+    OvershootInterpolator interpolator = new OvershootInterpolator();
     SupportMapFragment mapFragment;
     TileOverlay satelliteOptions;
     private PointsHelper pointsHelper;
@@ -249,10 +259,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onResume() {
         super.onResume();
+
         initView();
         if (getIntent().hasExtra("gotoPoint")) {
             gotoPoint = getIntent().getParcelableExtra("gotoPoint");
         }
+    }
+
+    private void requestPermissions() {
+        ArrayList<String> permissions = new ArrayList<>();
+        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        permissions.add(Manifest.permission.CAMERA);
+        permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        permissions.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+        permissions.add(Manifest.permission.INTERNET);
+        permissions.add(Manifest.permission.SEND_SMS);
+        permissions.add(Manifest.permission.READ_CONTACTS);
+
+        if (!checkPermission(permissions)) {
+            permissionRequest.launch(permissions.toArray(new String[permissions.size()]));
+        }
+    }
+
+    private boolean checkPermission(List<String> permissions) {
+        return permissions.stream()
+                .map(permission -> ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED)
+                .collect(Collectors.reducing(Boolean.FALSE, Boolean::logicalAnd));
     }
 
     @Override
@@ -263,19 +296,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         colors.put("FOLLOW", BitmapDescriptorFactory.HUE_BLUE);
         colors.put("CONTACT", BitmapDescriptorFactory.HUE_YELLOW);
         setContentView(R.layout.activity_main);
-        ArrayList<String> permissions = new ArrayList<>();
-        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        permissions.add(Manifest.permission.CAMERA);
-        permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-        permissions.add(Manifest.permission.INTERNET);
-        permissions.add(Manifest.permission.SEND_SMS);
-        permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        permissions.add(Manifest.permission.READ_CONTACTS);
 
-        if (!checkPermission()) {
-            requestPermissions(permissions.toArray(new String[permissions.size()]), ALL_PERMISSIONS_RESULT);
-        }
+        requestPermissions();
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -314,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void initView() {
-        SeekBar volumeControl = (SeekBar) findViewById(R.id.seekBar);
+        SeekBar volumeControl = findViewById(R.id.seekBar);
         volumeControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int pval = 0;
 
@@ -437,38 +459,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         animator.start();
     }
 
-    private boolean checkPermission() {
-        int result1 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        int result2 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        int result3 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
-        int result4 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-        int result5 = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
-        int result6 = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-        int result7 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
-
-        return (result1 == PackageManager.PERMISSION_GRANTED &&
-                result2 == PackageManager.PERMISSION_GRANTED &&
-                result3 == PackageManager.PERMISSION_GRANTED &&
-                result4 == PackageManager.PERMISSION_GRANTED &&
-                result5 == PackageManager.PERMISSION_GRANTED &&
-                result6 == PackageManager.PERMISSION_GRANTED &&
-                result7 == PackageManager.PERMISSION_GRANTED);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.e("value", "Permission Granted .");
-                } else {
-                    Log.e("value", "Permission Denied.");
-                }
-                break;
-        }
-    }
-
     private void addFromClick(ContactType type) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean friendly = prefs.getBoolean("Friendly", true);
@@ -512,14 +502,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(point.getLat(), point.getLon()))
-                    .title("Hold to Edit")
-                    .draggable(true)
-                    .anchor(0.5f, 0.5f)
-                    .visible(false)
-                    .flat(true)
-                    .zIndex(0)
-                    .icon(getMarker(point)));
+                                              .position(new LatLng(point.getLat(), point.getLon()))
+                                              .title("Hold to Edit")
+                                              .draggable(true)
+                                              .anchor(0.5f, 0.5f)
+                                              .visible(false)
+                                              .flat(true)
+                                              .zIndex(0)
+                                              .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
                 m.setVisible(true);

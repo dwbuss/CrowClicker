@@ -58,6 +58,12 @@
             android:persistent="true"
             android:title="Friendly Sound Clips"
             app:useSimpleSummaryProvider="true" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="MapLocation"
+            android:persistent="true"
+            android:title="Map on Phone"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
     <PreferenceCategory
         app:key="notifications_category"

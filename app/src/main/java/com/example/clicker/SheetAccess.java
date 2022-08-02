@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.clicker.objectbo.Point;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -212,12 +211,12 @@ public class SheetAccess {
                         int rowNumber = Integer.parseInt(findRowNumberFromSpreadSheetForPointBySheetId(point));
                         Request request = new Request()
                                 .setDeleteDimension(new DeleteDimensionRequest()
-                                        .setRange(new DimensionRange()
-                                                .setSheetId(sheetId)
-                                                .setDimension("ROWS")
-                                                .setStartIndex((int) (rowNumber - 1))
-                                                .setEndIndex((int) rowNumber)
-                                        )
+                                                            .setRange(new DimensionRange()
+                                                                              .setSheetId(sheetId)
+                                                                              .setDimension("ROWS")
+                                                                              .setStartIndex(rowNumber - 1)
+                                                                              .setEndIndex(rowNumber)
+                                                            )
                                 );
                         List<Request> requests = new ArrayList<Request>();
                         requests.add(request);

@@ -87,10 +87,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider4"
         android:onClick="exportPointsToTSV"
-        android:text="Export" />
+        android:text="Export"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider4" />
 
     <TextView
         android:id="@+id/importView"
@@ -110,10 +110,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/exportBtn"
         android:onClick="importFromTSV"
-        android:text="Import"/>
+        android:text="Import"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/exportBtn" />
 
     <View
         android:id="@+id/divider5"

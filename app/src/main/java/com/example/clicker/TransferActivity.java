@@ -100,11 +100,20 @@ public class TransferActivity extends AppCompatActivity {
                         try (PrintWriter os = new PrintWriter(new OutputStreamWriter(TransferActivity.this.getContentResolver().openOutputStream(result.getData().getData())))) {
                             os.println("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>");
                             os.println("<gpx version=\"1.1\" creator=\"Crow Clicker\" xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\" xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:h=\"http://www.humminbird.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
-                            String waypoint = "<wpt lat=\"%f\" lon=\"%f\"><ele>0.0</ele><time>%s</time><name>%s-%s</name><desc>%s</desc><sym>Waypoint</sym></wpt>";
+                            String waypoint = "<wpt lat=\"%f\" lon=\"%f\"><ele>0.0</ele><time>%s</time><name>%s-%s</name><desc>%s</desc><sym>%s</sym></wpt>";
                             for (Point point : points) {
                                 if (!point.getName().trim().equals("label")) {
-
-                                    os.println(String.format(waypoint,point.getLat(), point.getLon(), point.getTimeStamp().toInstant().toString(), point.getName(), point.getFishSize(), point.getNotes()));
+                                    String icon = "Fish";
+                                    String suffix = point.getFishSize();
+                                    if ( point.getContactType().equals(ContactType.CONTACT.toString())) {
+                                        icon = "Redfish";
+                                        suffix = "C";
+                                    }
+                                    if ( point.getContactType().equals(ContactType.FOLLOW.toString())) {
+                                        icon = "Flag";
+                                        suffix = "F";
+                                    }
+                                    os.println(String.format(waypoint,point.getLat(), point.getLon(), point.getTimeStamp().toInstant().toString(), point.getName(), suffix, point.getNotes(), icon));
                                     counter++;
                                 }
                             }

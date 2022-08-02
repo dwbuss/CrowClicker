@@ -2,12 +2,12 @@ package com.example.clicker;
 
 import static java.util.stream.Collectors.joining;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.example.clicker.databinding.ActivityStatisticsBinding;
 import com.example.clicker.objectbo.Point;
@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 public class StatisticsActivity extends AppCompatActivity {
 
-    private ActivityStatisticsBinding binding;
     private static final String TAG = "StatisticsActivity";
+    private ActivityStatisticsBinding binding;
     private PointsHelper pointsHelper;
 
     @Override
@@ -86,10 +86,10 @@ public class StatisticsActivity extends AppCompatActivity {
         Map<String, Double> intermediateInches = points.stream()
                 .filter(point -> point.getContactType().equals(ContactType.CATCH.toString()))
                 .collect(Collectors.groupingBy(point -> point.getName(),
-                        Collectors.averagingDouble(point -> point.getFishSizeAsDouble())));
+                                               Collectors.averagingDouble(point -> point.getFishSizeAsDouble())));
         intermediateInches.entrySet().stream()
                 .sorted(Map.Entry.<String, Double>comparingByValue()
-                        .reversed()).forEachOrdered(e -> average.put(e.getKey(), e.getValue()));
+                                .reversed()).forEachOrdered(e -> average.put(e.getKey(), e.getValue()));
         return average;
     }
 
@@ -99,12 +99,12 @@ public class StatisticsActivity extends AppCompatActivity {
         Map<String, Point> intermediateInches = points.stream()
                 .filter(point -> point.getContactType().equals(ContactType.CATCH.toString()))
                 .collect(Collectors.toMap(Point::getName, Function.identity(),
-                        BinaryOperator.maxBy(Comparator.comparing(Point::getFishSize))));
+                                          BinaryOperator.maxBy(Comparator.comparing(Point::getFishSize))));
         intermediateInches.keySet().stream().forEach(k -> maxLens.put(k, intermediateInches.get(k).getFishSizeAsDouble()));
 
         maxLens.entrySet().stream()
                 .sorted(Map.Entry.<String, Double>comparingByValue()
-                        .reversed()).forEachOrdered(e -> finalMaxLens.put(e.getKey(), e.getValue()));
+                                .reversed()).forEachOrdered(e -> finalMaxLens.put(e.getKey(), e.getValue()));
         return finalMaxLens;
     }
 
@@ -115,7 +115,7 @@ public class StatisticsActivity extends AppCompatActivity {
         Map<String, Long> topCatches = new LinkedHashMap<>();
         intermediateCatches.entrySet().stream()
                 .sorted(Map.Entry.<String, Long>comparingByValue()
-                        .reversed()).forEachOrdered(e -> topCatches.put(e.getKey(), e.getValue()));
+                                .reversed()).forEachOrdered(e -> topCatches.put(e.getKey(), e.getValue()));
         return topCatches;
     }
 
@@ -126,8 +126,8 @@ public class StatisticsActivity extends AppCompatActivity {
         Map<String, Long> topLosses = new LinkedHashMap<>();
         intermediateLosses.entrySet().stream()
                 .sorted(Map.Entry.<String, Long>comparingByValue()
-                        .reversed()).forEachOrdered(e -> topLosses.put(e.getKey(), e.getValue()));
-        Log.d(TAG, "Most losses: " + topLosses.toString());
+                                .reversed()).forEachOrdered(e -> topLosses.put(e.getKey(), e.getValue()));
+        Log.d(TAG, "Most losses: " + topLosses);
         return topLosses;
     }
 
@@ -138,7 +138,7 @@ public class StatisticsActivity extends AppCompatActivity {
         Map<String, Long> topFollows = new LinkedHashMap<>();
         intermediateFollows.entrySet().stream()
                 .sorted(Map.Entry.<String, Long>comparingByValue()
-                        .reversed()).forEachOrdered(e -> topFollows.put(e.getKey(), e.getValue()));
+                                .reversed()).forEachOrdered(e -> topFollows.put(e.getKey(), e.getValue()));
         return topFollows;
     }
 }

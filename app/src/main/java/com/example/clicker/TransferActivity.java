@@ -1,11 +1,5 @@
 package com.example.clicker;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -13,6 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.clicker.databinding.ActivityTransferBinding;
 import com.example.clicker.objectbo.Point;
@@ -31,15 +31,6 @@ import java.util.List;
 public class TransferActivity extends AppCompatActivity {
 
     private static final String TAG = "TransferActivity";
-    private ActivityTransferBinding binding;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityTransferBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-    }
-
     ActivityResultLauncher<Intent> importFromTSVActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -60,7 +51,6 @@ public class TransferActivity extends AppCompatActivity {
                     }
                 }
             });
-
     ActivityResultLauncher<Intent> exportToTSVActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -87,7 +77,6 @@ public class TransferActivity extends AppCompatActivity {
                     }
                 }
             });
-
     ActivityResultLauncher<Intent> exportToGPXActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -105,15 +94,15 @@ public class TransferActivity extends AppCompatActivity {
                                 if (!point.getName().trim().equals("label")) {
                                     String icon = "Fish";
                                     String suffix = point.getFishSize();
-                                    if ( point.getContactType().equals(ContactType.CONTACT.toString())) {
+                                    if (point.getContactType().equals(ContactType.CONTACT.toString())) {
                                         icon = "Redfish";
                                         suffix = "C";
                                     }
-                                    if ( point.getContactType().equals(ContactType.FOLLOW.toString())) {
+                                    if (point.getContactType().equals(ContactType.FOLLOW.toString())) {
                                         icon = "Flag";
                                         suffix = "F";
                                     }
-                                    os.println(String.format(waypoint,point.getLat(), point.getLon(), point.getTimeStamp().toInstant().toString(), point.getName(), suffix, point.getNotes(), icon));
+                                    os.println(String.format(waypoint, point.getLat(), point.getLon(), point.getTimeStamp().toInstant().toString(), point.getName(), suffix, point.getNotes(), icon));
                                     counter++;
                                 }
                             }
@@ -127,6 +116,14 @@ public class TransferActivity extends AppCompatActivity {
                     }
                 }
             });
+    private ActivityTransferBinding binding;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = ActivityTransferBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+    }
 
     public void clearPoints(View view) {
         AlertDialog dialogDelete = new AlertDialog.Builder(view.getContext())
@@ -147,6 +144,7 @@ public class TransferActivity extends AppCompatActivity {
         sheet.syncSheet();
         Toast.makeText(this, "Background sync started.", Toast.LENGTH_LONG).show();
     }
+
     public void importFromTSV(View view) {
         Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
         chooseFile.setType("*/*");

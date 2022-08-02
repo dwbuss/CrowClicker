@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -114,7 +115,7 @@ public class PointActivity extends AppCompatActivity {
                                                                                  point.setTimeStamp(cal.getTime());
                                                                                  binding.timeStamp.setText(point.timeStampAsString());
                                                                              }
-                                                                         }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true);
+                                                                         }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(PointActivity.this));
                 timePickerDialog.show();
             }
         });

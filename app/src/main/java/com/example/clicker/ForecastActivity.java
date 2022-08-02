@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -135,7 +136,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
                                                                              cal.set(Calendar.MINUTE, minute);
                                                                              setDate();
                                                                          }
-                                                                     }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true);
+                                                                     }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(ForecastActivity.this));
             timePickerDialog.show();
         }
     }

@@ -317,16 +317,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void openCamera(View view) {
-        closeMenu();
-        PackageManager packman = getPackageManager();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        String pack = intent.resolveActivity(packman).getPackageName();
-        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(pack);
-        if (launchIntent != null) {
-            startActivity(launchIntent);
-        } else {
-            Toast.makeText(MainActivity.this, "There is no package available in android", Toast.LENGTH_LONG).show();
-        }
+        startActivity(intent);
     }
 
     @Override

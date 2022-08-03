@@ -152,7 +152,6 @@
         android:progressTint="#3F51B5"
         android:secondaryProgressTint="#3F51B5"
         android:thumbTint="#3F51B5"
-        app:layout_constraintEnd_toStartOf="@+id/settingButton"
         app:layout_constraintStart_toEndOf="@+id/forecastButton"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
         tools:ignore="MissingConstraints" />

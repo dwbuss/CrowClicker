@@ -270,7 +270,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ArrayList<String> permissions = new ArrayList<>();
         permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        permissions.add(Manifest.permission.CAMERA);
         permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         permissions.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
         permissions.add(Manifest.permission.INTERNET);
@@ -380,7 +379,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((FloatingActionButton) findViewById(R.id.settingButton)).hide();
         ((FloatingActionButton) findViewById(R.id.layersButton)).hide();
         ((FloatingActionButton) findViewById(R.id.tripReportButton)).hide();
-        ((FloatingActionButton) findViewById(R.id.cameraButton)).hide();
         ((FloatingActionButton) findViewById(R.id.statsButton)).hide();
     }
 
@@ -401,7 +399,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((FloatingActionButton) findViewById(R.id.settingButton)).show();
         ((FloatingActionButton) findViewById(R.id.layersButton)).show();
         ((FloatingActionButton) findViewById(R.id.tripReportButton)).show();
-        ((FloatingActionButton) findViewById(R.id.cameraButton)).show();
         ((FloatingActionButton) findViewById(R.id.statsButton)).show();
     }
 
@@ -413,7 +410,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((FloatingActionButton) findViewById(R.id.settingButton)).hide();
         ((FloatingActionButton) findViewById(R.id.layersButton)).hide();
         ((FloatingActionButton) findViewById(R.id.tripReportButton)).hide();
-        ((FloatingActionButton) findViewById(R.id.cameraButton)).hide();
         ((FloatingActionButton) findViewById(R.id.statsButton)).hide();
     }
 

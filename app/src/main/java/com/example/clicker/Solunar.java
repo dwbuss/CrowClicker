@@ -187,7 +187,7 @@ public class Solunar {
 
     String getMoonPhaseText(double phaseValue) {
         phaseValue = phaseValue + .5; // adjusting for location?
-        System.err.println("  " + phaseValue);
+        //System.err.println("  " + phaseValue);
         if (phaseValue >= 27.6849270496875 || phaseValue < 1.8456618033125) {
             return "1 - New";
         } else if (phaseValue >= 1.8456618033125 && phaseValue < 5.5369854099375) {

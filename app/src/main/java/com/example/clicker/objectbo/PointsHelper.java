@@ -25,16 +25,24 @@ public class PointsHelper {
         this.pointBox = pointBox;
     }
 
-    public String getDailyCatch() {
-        return retrieveDaily(ContactType.CATCH);
-    }
+    public String getDailyCatch() { return retrieveDaily(ContactType.CATCH, null); }
 
     public String getDailyContact() {
-        return retrieveDaily(ContactType.CONTACT);
+        return retrieveDaily(ContactType.CONTACT, null);
     }
 
     public String getDailyFollow() {
-        return retrieveDaily(ContactType.FOLLOW);
+        return retrieveDaily(ContactType.FOLLOW, null);
+    }
+
+    public String getDailyCatch(String angler) { return retrieveDaily(ContactType.CATCH, angler); }
+
+    public String getDailyContact(String angler) {
+        return retrieveDaily(ContactType.CONTACT, angler);
+    }
+
+    public String getDailyFollow(String angler) {
+        return retrieveDaily(ContactType.FOLLOW, angler);
     }
 
     public String getTripCatch(int tripLength) {
@@ -103,11 +111,11 @@ public class PointsHelper {
         return points;
     }
 
-    private String retrieveDaily(ContactType type) {
+    private String retrieveDaily(ContactType type, String angler) {
         Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
-        return retrieveFor(today, type);
+        return retrieveFor(today, type, angler);
     }
 
     private String retrieveTrip(int tripLength, ContactType type) {
@@ -115,10 +123,13 @@ public class PointsHelper {
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
         today.add(Calendar.DATE, 0 - tripLength);
-        return retrieveFor(today, type);
+        return retrieveFor(today, type, null);
     }
 
-    private String retrieveFor(Calendar date, ContactType type) {
-        return Long.toString(pointBox.query().equal(Point_.contactType, type.toString()).greater(Point_.timeStamp, date.getTime()).build().count());
+    private String retrieveFor(Calendar date, ContactType type, String angler) {
+        QueryBuilder<Point> q = pointBox.query().equal(Point_.contactType, type.toString()).greater(Point_.timeStamp, date.getTime());
+        if (angler != null && !angler.trim().isEmpty())
+            q.and().equal(Point_.name, angler);
+        return Long.toString(q.build().count());
     }
 }

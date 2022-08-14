@@ -710,9 +710,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void refreshCounts() {
-        ((Button) findViewById(R.id.catchBtn)).setText(pointsHelper.getDailyCatch());
-        ((Button) findViewById(R.id.contactBtn)).setText(pointsHelper.getDailyContact());
-        ((Button) findViewById(R.id.followBtn)).setText(pointsHelper.getDailyFollow());
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String username = prefs.getString("Username", null);
+
+        ((Button) findViewById(R.id.catchBtn)).setText(pointsHelper.getDailyCatch(username));
+        ((Button) findViewById(R.id.contactBtn)).setText(pointsHelper.getDailyContact(username));
+        ((Button) findViewById(R.id.followBtn)).setText(pointsHelper.getDailyFollow(username));
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);

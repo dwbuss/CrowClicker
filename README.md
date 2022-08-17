@@ -6,13 +6,16 @@
 * ./gradlew test
 
 ## Future Ideas/ToDos:
-* Sync with Google Sheets
-* Pull all records from Spreadsheet
-  * add sliders for dates and filters for anglers and type (catch/follow/lost)
+* Change to Fused location implementation
+  * Check on battery usage
+* Better place for PUSH button
 * Add dirty flag for new/changed records
-* Push changes to Spreadsheet
-  * Individual Sheets or main sheet?
-  * How to sync unique ids?
-  * How to pull/merge new changes?
-  * Only want Crow points going to spreadsheet (need to select which points to push)
-  * add check box to catch to push?
+* Store different lakes on different tabs
+* Support pushing follows and contacts
+* Multi-select on report view with action chooser ( export, push, delete, etc )
+* Integrate with share chooser to transfer points via text, email, etc.
+
+* ~~Sync with Google Sheets~~
+* ~~Pull all records from Spreadsheet~~
+* ~~Push changes to Spreadsheet~~
+

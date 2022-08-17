@@ -10,7 +10,7 @@
             type="com.example.clicker.objectbo.Point" />
 
         <variable
-            name="contactType"
+            name="contact_type"
             type="com.example.clicker.ContactType" />
     </data>
 
@@ -127,7 +127,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="45"
-                android:entries="@{contactType.asStringArray()}"
+                android:entries="@{contact_type.asStringArray()}"
                 android:spinnerMode="dialog" />
 
             <CheckBox

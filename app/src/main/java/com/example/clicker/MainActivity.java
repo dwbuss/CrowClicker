@@ -425,16 +425,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Box<Point> pointBox = boxStore.boxFor(Point.class);
 
         if (prefs.getBoolean("ViewLabels", true))
-            return pointBox.query()
-                    .greater(Point_.timeStamp, today.getTime())
-                    .or()
-                    .equal(Point_.name, label)
+            return pointBox.query(Point_.timeStamp.greater(today.getTime())
+                    .or(Point_.name.equal(label)))
                     .build().find();
         else
-            return pointBox.query()
-                    .greater(Point_.timeStamp, today.getTime())
-                    .and()
-                    .notEqual(Point_.name, label)
+            return pointBox.query(Point_.timeStamp.greater(today.getTime())
+                    .and(Point_.name.notEqual(label)))
                     .build().find();
     }
 

@@ -12,6 +12,7 @@ import java.util.List;
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
 import io.objectbox.query.QueryBuilder;
+import io.objectbox.query.QueryCondition;
 
 public class PointsHelper {
     private final Box<Point> pointBox;
@@ -58,15 +59,15 @@ public class PointsHelper {
     }
 
     public String getTotalCatch() {
-        return Long.toString(pointBox.query().equal(Point_.contactType, ContactType.CATCH.toString()).build().count());
+        return Long.toString(pointBox.query(Point_.contactType.equal(ContactType.CATCH.toString())).build().count());
     }
 
     public String getTotalContact() {
-        return Long.toString(pointBox.query().equal(Point_.contactType, ContactType.CONTACT.toString()).build().count());
+        return Long.toString(pointBox.query(Point_.contactType.equal(ContactType.CONTACT.toString())).build().count());
     }
 
     public String getTotalFollow() {
-        return Long.toString(pointBox.query().equal(Point_.contactType, ContactType.FOLLOW.toString()).build().count());
+        return Long.toString(pointBox.query(Point_.contactType.equal(ContactType.FOLLOW.toString())).build().count());
     }
 
     public Point getPointById(long id) {
@@ -127,9 +128,10 @@ public class PointsHelper {
     }
 
     private String retrieveFor(Calendar date, ContactType type, String angler) {
-        QueryBuilder<Point> q = pointBox.query().equal(Point_.contactType, type.toString()).greater(Point_.timeStamp, date.getTime());
-        if (angler != null && !angler.trim().isEmpty())
-            q.and().equal(Point_.name, angler);
-        return Long.toString(q.build().count());
+        boolean haveAngler = (angler != null && !angler.trim().isEmpty());
+        QueryCondition<Point> baseQuery = Point_.contactType.equal(type.toString()).and(Point_.timeStamp.greater(date.getTime()));
+        if (haveAngler)
+            baseQuery.and(Point_.name.equal(angler));
+        return Long.toString(pointBox.query().build().count());
     }
 }

@@ -60,6 +60,29 @@ public final class Point implements Parcelable {
     private String pressure = "";
     private String humidity = "";
 
+    public Point(long id, long sheetId, String name, double lon, double lat, Date timeStamp, String contactType, String airTemp, String waterTemp, String bait, String fishSize, String notes, String windSpeed, String windGust, String windDir, String precipProbability, String cloudCover, String dewPoint, String pressure, String humidity) {
+        this.id = id;
+        this.sheetId = sheetId;
+        this.name = name;
+        this.lon = lon;
+        this.lat = lat;
+        this.timeStamp = timeStamp;
+        this.contactType = contactType;
+        this.airTemp = airTemp;
+        this.waterTemp = waterTemp;
+        this.bait = bait;
+        this.fishSize = fishSize;
+        this.notes = notes;
+        this.windSpeed = windSpeed;
+        this.windGust = windGust;
+        this.windDir = windDir;
+        this.precipProbability = precipProbability;
+        this.cloudCover = cloudCover;
+        this.dewPoint = dewPoint;
+        this.pressure = pressure;
+        this.humidity = humidity;
+    }
+
     protected Point(Parcel in) {
         id = in.readLong();
         sheetId = in.readLong();

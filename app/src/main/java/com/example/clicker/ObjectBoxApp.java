@@ -29,7 +29,7 @@ public class ObjectBoxApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        boxStore = MyObjectBox.builder().androidContext(ObjectBoxApp.this).build();
+        boxStore = MyObjectBox.builder().androidContext(this).build();
         // To prevent the application process from being killed while the app is running in the background, start a Foreground Service
         intent = new Intent(getApplicationContext(), Flic2Service.class);
         intent.setAction(Constants.START_LISTENING);

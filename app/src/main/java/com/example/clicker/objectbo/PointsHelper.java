@@ -131,7 +131,7 @@ public class PointsHelper {
         boolean haveAngler = (angler != null && !angler.trim().isEmpty());
         QueryCondition<Point> baseQuery = Point_.contactType.equal(type.toString()).and(Point_.timeStamp.greater(date.getTime()));
         if (haveAngler)
-            baseQuery.and(Point_.name.equal(angler));
-        return Long.toString(pointBox.query().build().count());
+            baseQuery = baseQuery.and(Point_.name.equal(angler));
+        return Long.toString(pointBox.query(baseQuery).build().count());
     }
 }

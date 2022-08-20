@@ -3,6 +3,8 @@ package com.example.clicker.objectbo;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import com.example.clicker.Solunar;
 
 import org.json.JSONException;
@@ -15,7 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -25,7 +26,7 @@ import io.objectbox.annotation.Id;
 
 @Entity
 public final class Point implements Parcelable {
-    public static final Creator<Point> CREATOR = new Creator<Point>() {
+    public static final Creator<Point> CREATOR = new Creator<>() {
         @Override
         public Point createFromParcel(Parcel in) {
             return new Point(in);
@@ -37,6 +38,8 @@ public final class Point implements Parcelable {
         }
     };
     public static final String CSV_TIMESTAMP_FORMAT = "MM-dd-yyyy h:mm a";
+    public static final String SHEET_DATETIME_FORMAT = "MM/dd/yyyy h:mm a";
+    public static final String SHEET_DATE_FORMAT = "MM/dd/yyyy";
 
     @Id
     private long id;
@@ -152,7 +155,7 @@ public final class Point implements Parcelable {
     public Point(long id, String name, String contactType, double lon, double lat) {
         this.id = id;
         this.name = name;
-        this.timeStamp = Calendar.getInstance().getTime();
+        this.timeStamp = Calendar.getInstance(Locale.US).getTime();
         this.lat = lat;
         this.lon = lon;
         this.contactType = contactType;
@@ -175,7 +178,7 @@ public final class Point implements Parcelable {
         populatePoint(row);
     }
 
-    public static final String CSV_HEADER() {
+    public static String CSV_HEADER() {
         return "id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\n";
     }
 
@@ -232,14 +235,14 @@ public final class Point implements Parcelable {
             lon = Double.parseDouble(get(row, 12));
         try {
             if (((String) row.get(7)).trim().isEmpty()) {
-                DateFormat osLocalizedDateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+                DateFormat osLocalizedDateFormat = new SimpleDateFormat(SHEET_DATE_FORMAT, Locale.US);
                 timeStamp = osLocalizedDateFormat.parse(((String) row.get(6)).trim());
             } else {
-                DateFormat osLocalizedDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.US);
+                DateFormat osLocalizedDateFormat = new SimpleDateFormat(SHEET_DATETIME_FORMAT, Locale.US);
                 timeStamp = osLocalizedDateFormat.parse(((String) row.get(6)).trim() + " " + ((String) row.get(7)).trim());
             }
         } catch (Exception e) {
-            timeStamp = GregorianCalendar.getInstance().getTime();
+            timeStamp = Calendar.getInstance(Locale.US).getTime();
         }
         if (!name.equalsIgnoreCase("label"))
             contactType = "CATCH";
@@ -426,6 +429,7 @@ public final class Point implements Parcelable {
         this.precipProbability = precipProbability;
     }
 
+    @NonNull
     @Override
     public String toString() {
         DateFormat osLocalizedDateFormat = new SimpleDateFormat(CSV_TIMESTAMP_FORMAT, Locale.US);
@@ -445,14 +449,14 @@ public final class Point implements Parcelable {
     }
 
     public List<List<Object>> getSheetBody(String lake) {
-        DateFormat dayFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-        DateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.US);
+        DateFormat dayFormat = new SimpleDateFormat(SHEET_DATE_FORMAT, Locale.US);
+        DateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.US);
         String day = dayFormat.format(getTimeStamp());
         String time = timeFormat.format(getTimeStamp());
         if (sheetId <= 0)
             sheetId = getId();
         Solunar solunar = new Solunar();
-        Calendar cal = GregorianCalendar.getInstance();
+        Calendar cal = Calendar.getInstance(Locale.US);
         cal.setTime(getTimeStamp());
         solunar.populate(lon, lat, cal);
         return Arrays.asList(
@@ -473,14 +477,14 @@ public final class Point implements Parcelable {
     }
 
     public List<List<Object>> getSheetBodyWithOutId(String lake) {
-        DateFormat dayFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        DateFormat dayFormat = new SimpleDateFormat(SHEET_DATE_FORMAT, Locale.US);
         DateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.US);
         String day = dayFormat.format(getTimeStamp());
         String time = timeFormat.format(getTimeStamp());
         if (sheetId <= 0)
             sheetId = getId();
         Solunar solunar = new Solunar();
-        Calendar cal = GregorianCalendar.getInstance();
+        Calendar cal = Calendar.getInstance(Locale.US).getInstance();
         cal.setTime(getTimeStamp());
         solunar.populate(lon, lat, cal);
         return Arrays.asList(

@@ -70,10 +70,10 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -347,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
         Solunar solunar = new Solunar();
-        solunar.populate(getLocation(), GregorianCalendar.getInstance());
+        solunar.populate(getLocation(), Calendar.getInstance(Locale.US));
         TextView majorText = findViewById(R.id.majorLbl);
         TextView minorText = findViewById(R.id.minorLbl);
         majorText.setText(solunar.major);
@@ -417,7 +417,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         String label = "label";
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int tripLength = Integer.parseInt(prefs.getString("TripLength", "0"));
-        Calendar today = GregorianCalendar.getInstance();
+        Calendar today = Calendar.getInstance(Locale.US);
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
         today.add(Calendar.DATE, 0 - tripLength);

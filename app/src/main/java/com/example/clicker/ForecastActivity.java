@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class ForecastActivity extends AppCompatActivity implements View.OnClickListener {
     private Calendar cal;
@@ -35,7 +35,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
                 finish();
             }
         });
-        cal = GregorianCalendar.getInstance();
+        cal = Calendar.getInstance(Locale.US);
 
         btnDatePicker = findViewById(R.id.btn_date);
         btnTimePicker = findViewById(R.id.btn_time);

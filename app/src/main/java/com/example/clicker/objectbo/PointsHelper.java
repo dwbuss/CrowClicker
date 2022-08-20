@@ -8,6 +8,7 @@ import com.example.clicker.ObjectBoxApp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -94,7 +95,7 @@ public class PointsHelper {
     }
 
     public ArrayList<Point> getPointsForTrip(int tripLength) {
-        Calendar today = Calendar.getInstance();
+        Calendar today = Calendar.getInstance(Locale.US);
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
         today.add(Calendar.DATE, 0 - tripLength);
@@ -113,14 +114,14 @@ public class PointsHelper {
     }
 
     private String retrieveDaily(ContactType type, String angler) {
-        Calendar today = Calendar.getInstance();
+        Calendar today = Calendar.getInstance(Locale.US);
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
         return retrieveFor(today, type, angler);
     }
 
     private String retrieveTrip(int tripLength, ContactType type) {
-        Calendar today = Calendar.getInstance();
+        Calendar today = Calendar.getInstance(Locale.US);
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
         today.add(Calendar.DATE, 0 - tripLength);

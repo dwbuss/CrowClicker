@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -114,7 +115,7 @@ public class SheetAccess {
             public void run() {
                 try {
                     List<List<Object>> rows = getRowsFromSpreadSheet();
-                    Calendar cal = Calendar.getInstance();
+                    Calendar cal = Calendar.getInstance(Locale.US);
                     Solunar solunar = new Solunar();
                     int updatedRows = 0;
                     for (int i = 0; i < rows.size(); i++) {

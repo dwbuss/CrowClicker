@@ -13,7 +13,7 @@ import android.location.Location;
 import androidx.core.app.NotificationCompat;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class MyReceiver extends BroadcastReceiver {
     private final Location loc;
@@ -26,7 +26,7 @@ public class MyReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
             Solunar solunar = new Solunar();
-            Calendar cal = GregorianCalendar.getInstance();
+            Calendar cal = Calendar.getInstance(Locale.US);
             solunar.populate(loc, cal);
             String event = solunar.getEventNotification(solunar.parseTime(cal.getTime())).trim();
             if (!event.isEmpty()) {

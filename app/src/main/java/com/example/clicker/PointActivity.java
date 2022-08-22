@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 public class PointActivity extends AppCompatActivity {
@@ -82,7 +83,7 @@ public class PointActivity extends AppCompatActivity {
         binding.btnDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Calendar cal = Calendar.getInstance();
+                Calendar cal = Calendar.getInstance(Locale.US);
                 cal.setTime(point.getTimeStamp());
                 DatePickerDialog datePickerDialog = new DatePickerDialog(PointActivity.this,
                                                                          new DatePickerDialog.OnDateSetListener() {
@@ -101,7 +102,7 @@ public class PointActivity extends AppCompatActivity {
         binding.btnTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Calendar cal = Calendar.getInstance();
+                Calendar cal = Calendar.getInstance(Locale.US);
                 cal.setTime(point.getTimeStamp());
                 TimePickerDialog timePickerDialog = new TimePickerDialog(PointActivity.this,
                                                                          new TimePickerDialog.OnTimeSetListener() {

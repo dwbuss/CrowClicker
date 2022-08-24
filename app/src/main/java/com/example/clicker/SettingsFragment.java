@@ -104,7 +104,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     isScanning = false;
 
                     if (result == Flic2ScanCallback.RESULT_SUCCESS) {
-                        Toast.makeText(getActivity(), "Scan success!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Scan success!  You will need to stop and restart the application.", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(getActivity(), "Scan failed with code " + Flic2Manager.errorCodeToString(result), Toast.LENGTH_LONG).show();
                     }

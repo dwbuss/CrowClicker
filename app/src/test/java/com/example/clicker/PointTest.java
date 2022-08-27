@@ -1,6 +1,7 @@
 package com.example.clicker;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import com.example.clicker.objectbo.Point;
 
@@ -54,6 +55,23 @@ public class PointTest {
         String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tFOLLOW\t61.5°\t\tdusa\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77";
         Point point = new Point(csvRecord);
         assertEquals("Dan", point.getName());
+    }
+
+    @Test
+    public void testReadTSVWeather() throws Exception {
+        String tsvRecord = "44938\tMatt\t-93.90544229\t49.22708605\t08-09-2022 9:12 AM\tCONTACT\t69\t\tRubber\t\t\t13\tSW\t0.25\t65\t1012\t0.89";
+        Point p = new Point(tsvRecord);
+        assertEquals("Matt", p.getName());
+        assertEquals("", p.getFishSize());
+    }
+
+    @Test
+    public void testReadTSVNoWeather() throws Exception {
+        //                 "44938\tMatt\t-93.90544229\t49.22708605\t08-09-2022 9:12 AM\tCONTACT\t69\t\tRubber\t\t\t13\tSW\t0.25\t65\t1012\t0.89";
+        String tsvRecord = "35145\tJeff\t-93.95221551\t49.21974587\t08-07-2022 2:26 PM\tCONTACT\t\t\tBlades\t\t\t\t\t\t\t\t ";
+        Point p = new Point(tsvRecord);
+        assertEquals("Jeff", p.getName());
+        assertEquals("", p.getFishSize());
     }
 
     @Test

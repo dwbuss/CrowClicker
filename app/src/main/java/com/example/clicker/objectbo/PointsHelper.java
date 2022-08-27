@@ -135,4 +135,12 @@ public class PointsHelper {
             baseQuery = baseQuery.and(Point_.name.equal(angler));
         return Long.toString(pointBox.query(baseQuery).build().count());
     }
+
+    public List<Point> getAllLabels() {
+        return pointBox.query(Point_.name.equal("label")).build().find();
+    }
+
+    public List<Point> getAllPointsOf(ContactType type) {
+        return pointBox.query(Point_.contactType.equal(type.toString())).build().find();
+    }
 }

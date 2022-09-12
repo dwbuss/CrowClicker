@@ -160,6 +160,20 @@ public class TransferActivity extends AppCompatActivity {
                 .setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss()).show();
     }
 
+    public void clearCatches(View view) {
+        new AlertDialog.Builder(view.getContext())
+                .setTitle("Warning!!")
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setMessage("Are you sure to delete all CATCHES?")
+                .setPositiveButton("Yes", (dialogInterface, i) -> {
+                    PointsHelper helper = new PointsHelper(getApplicationContext());
+                    long total = helper.clearAllPointsOf(ContactType.CATCH);
+                    Toast.makeText(getApplicationContext(), String.format("Successfully deleted %d catches", total), Toast.LENGTH_SHORT).show();
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss()).show();
+    }
+
     public void importPoints(View view) {
         SheetAccess sheet = new SheetAccess(getApplicationContext());
         sheet.syncSheet();

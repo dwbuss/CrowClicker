@@ -83,6 +83,10 @@ public class PointsHelper {
         pointBox.removeAll();
     }
 
+    public long clearAllPointsOf(ContactType type) {
+        return pointBox.query(Point_.contactType.equal(type.toString()).and(Point_.sheetId.notEqual(0))).build().remove();
+    }
+
     public void deletePoint(long id) {
         Point point = getPointById(id);
         if (point != null) {

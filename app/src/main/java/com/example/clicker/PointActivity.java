@@ -193,7 +193,7 @@ public class PointActivity extends AppCompatActivity {
                 finish();
             }
         };
-        sheets.storePoint(point, prefs.getString("Lake", ""), callback);
+        sheets.storePoint(point, prefs.getString("Lake", "").trim(), callback);
         lastAction = PUSH_ACTION;
     }
 

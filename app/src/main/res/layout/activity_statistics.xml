@@ -73,6 +73,39 @@
         <TableRow android:padding="4dp">
 
             <TextView
+                android:id="@+id/userDailyLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_gravity="center"
+                android:text="Angler's Daily Count" />
+
+            <TextView
+                android:id="@+id/userDailyCatch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/userDailyContact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/userDailyFollow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="0" />
+
+        </TableRow>
+
+        <TableRow android:padding="4dp">
+
+            <TextView
                 android:id="@+id/dailyLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

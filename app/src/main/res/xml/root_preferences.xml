@@ -21,7 +21,7 @@
         app:key="click_settings"
         app:title="Clicker Settings">
         <EditTextPreference
-            android:defaultValue="{username}"
+            android:defaultValue="Angler"
             android:key="Username"
             android:persistent="true"
             android:title="Name"

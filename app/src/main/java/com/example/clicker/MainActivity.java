@@ -708,7 +708,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void refreshCounts() {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String username = prefs.getString("Username", null);
+        String username = prefs.getString("Username", "Angler");
 
         ((Button) findViewById(R.id.catchBtn)).setText(pointsHelper.getDailyCatch(username));
         ((Button) findViewById(R.id.contactBtn)).setText(pointsHelper.getDailyContact(username));
@@ -725,13 +725,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         PendingIntent statsPendingIntent = PendingIntent.getActivity(this, 1, statsIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle("Crow Clicker")
+                .setContentTitle(String.format("%s's Daily Count", username))
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(contentIntent)
                 .setOngoing(true)
                 .addAction(R.mipmap.ic_launcher, "Statistics", statsPendingIntent)
                 .addAction(R.mipmap.ic_launcher, "Stop", stopPendingIntent)
-                .setContentText(String.format("Catches: %s, Contacts: %s, Follows: %s", pointsHelper.getDailyCatch(), pointsHelper.getDailyContact(), pointsHelper.getDailyFollow()));
+                .setContentText(String.format("Catches: %s, Contacts: %s, Follows: %s", pointsHelper.getDailyCatch(username), pointsHelper.getDailyContact(username), pointsHelper.getDailyFollow(username)));
         NotificationManagerCompat.from(this).notify(SERVICE_NOTIFICATION_ID, notification.build());
     }
 }

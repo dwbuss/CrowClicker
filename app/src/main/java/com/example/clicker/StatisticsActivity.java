@@ -38,11 +38,18 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void updateCounts() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String username = prefs.getString("Username", "Angler");
+
+        binding.userDailyLabel.setText( String.format("%s's Daily Count", username) );
+        binding.userDailyCatch.setText(pointsHelper.getDailyCatch(username));
+        binding.userDailyContact.setText(pointsHelper.getDailyContact(username));
+        binding.userDailyFollow.setText(pointsHelper.getDailyFollow(username));
+
         binding.dailyCatch.setText(pointsHelper.getDailyCatch());
         binding.dailyContact.setText(pointsHelper.getDailyContact());
         binding.dailyFollow.setText(pointsHelper.getDailyFollow());
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int tripLength = Integer.parseInt(prefs.getString("TripLength", "0"));
 
         binding.tripCatch.setText(pointsHelper.getTripCatch(tripLength));

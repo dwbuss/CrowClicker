@@ -488,7 +488,7 @@ public final class Point implements Parcelable {
         cal.setTime(getTimeStamp());
         solunar.populate(lon, lat, cal);
         return Arrays.asList(
-                Arrays.asList("=ROW()", "", name, fishSize, "", lake, day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor)));
+                Arrays.asList(cal.getTime().getTime(), "", name, fishSize, "", lake, day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor)));
 
     }
 

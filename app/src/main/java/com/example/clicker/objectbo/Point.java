@@ -460,7 +460,7 @@ public final class Point implements Parcelable {
         cal.setTime(getTimeStamp());
         solunar.populate(lon, lat, cal);
         return Arrays.asList(
-                Arrays.asList(sheetId, "", name, fishSize, "", lake, day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor)));
+                Arrays.asList(sheetId, "", name, fishSize, "", lake, day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor), solunar.moonDegree));
     }
 
     public void refresh(List row) throws InvalidObjectException {
@@ -488,12 +488,27 @@ public final class Point implements Parcelable {
         cal.setTime(getTimeStamp());
         solunar.populate(lon, lat, cal);
         return Arrays.asList(
-                Arrays.asList(cal.getTime().getTime(), "", name, fishSize, "", lake, day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor)));
-
+                Arrays.asList(cal.getTime().getTime(), "", name, fishSize, "", lake, day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor), solunar.moonDegree, solunar.moonState));
     }
 
     public double getFishSizeAsDouble() {
         if (fishSize.isEmpty()) return 0;
         return Double.parseDouble(fishSize);
+    }
+
+    public List<List<Object>> getSheetBody(List row) {
+        DateFormat dayFormat = new SimpleDateFormat(SHEET_DATE_FORMAT, Locale.US);
+        DateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.US);
+        String day = dayFormat.format(getTimeStamp());
+        String time = timeFormat.format(getTimeStamp());
+        if (sheetId <= 0)
+            sheetId = getId();
+        Solunar solunar = new Solunar();
+        Calendar cal = Calendar.getInstance(Locale.US);
+        cal.setTime(getTimeStamp());
+        solunar.populate(lon, lat, cal);
+        return Arrays.asList(
+                Arrays.asList(sheetId, (String) row.get(1), name, fishSize, (String) row.get(4), (String) row.get(5), day, time, bait, (String) row.get(9), (String) row.get(10), lat, lon, notes, airTemp, (String) row.get(15), windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor), solunar.moonDegree, solunar.moonState));
+
     }
 }

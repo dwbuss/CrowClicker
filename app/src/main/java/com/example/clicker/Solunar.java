@@ -6,13 +6,16 @@ import org.shredzone.commons.suncalc.MoonPosition;
 import org.shredzone.commons.suncalc.MoonTimes;
 import org.shredzone.commons.suncalc.SunTimes;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
 public class Solunar {
 
@@ -63,6 +66,8 @@ public class Solunar {
     public String major;
     public boolean isMajor;
     public boolean isMinor;
+    public String moonDegree;
+    public String moonState;
 
     public void populate(Location loc, Calendar cal) {
         if (loc != null) {
@@ -77,6 +82,8 @@ public class Solunar {
     }
 
     public void populate(double lon, double lat, Calendar cal) {
+        moonDegree = "";
+        moonState = "";
         int offsetInMillis = cal.getTimeZone().getOffset(cal.getTimeInMillis());
         offset = String.format("%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
         offset = (offsetInMillis >= 0 ? "+" : "-") + Integer.parseInt(offset.split(":")[0]);
@@ -105,6 +112,7 @@ public class Solunar {
         boolean decreasing = false;
         Date moonOverHeadDt = null;
         Date moonUnderFootDt = null;
+
         Date afterAddingMins = startOfDay.getTime();
         for (int i = 0; i < 1440; i++) {
             long curTimeInMs = afterAddingMins.getTime();
@@ -128,7 +136,6 @@ public class Solunar {
             }
             prev = alt;
         }
-
         double phase = getPhase(cal);
         moonPhase = getMoonPhaseText(phase);
         int phase2 = ((int) Math.floor(phase)) % 30;
@@ -141,9 +148,20 @@ public class Solunar {
         moonSet = parseTime(moon.getSet());
         moonOverHead = parseTime(moonOverHeadDt);
         moonUnderFoot = parseTime(moonUnderFootDt);
+        major = addMajor(cal, moonOverHeadDt, moonUnderFootDt, moon);
         minor = addMinor(cal, moon);
-        major = addMajor(cal, moonOverHeadDt, moonUnderFootDt);
-
+        if (!isMajor && !isMinor) {
+            if (Integer.parseInt(moonDegree) > 0) {
+                // convert times - Date.from(moon.getRise().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(cal.getTime()) < 0
+                if (moonOverHeadDt.compareTo(cal.getTime()) > 0)
+                    moonState = "M1";
+                else
+                    moonState = "M2";
+            } else {
+                if (moonUnderFootDt.compareTo(cal.getTime()) > 0) moonState = "M3";
+                else moonState = "M4";
+            }
+        }
     }
 
     String parseTime(Date time) {
@@ -210,19 +228,27 @@ public class Solunar {
         return "No matching moon phase for " + phaseValue;
     }
 
-    private String addMajor(Calendar cal, Date moonOverHead, Date moonUnderFoot) {
+    private String addMajor(Calendar cal, Date moonOverHead, Date moonUnderFoot, MoonTimes moon) {
         isMajor = false;
         Date curTime = cal.getTime();
         long overHead = moonOverHead == null ? 0 : moonOverHead.getTime();
         long underFoot = moonUnderFoot == null ? 0 : moonUnderFoot.getTime();
-        Date date1 = new Date(underFoot - 3600000);
-        Date date2 = new Date(underFoot + 3600000);
-        Date date3 = new Date(overHead - 3600000);
-        Date date4 = new Date(overHead + 3600000);
+        Date underFootMajorStart = new Date(underFoot - 3600000);
+        Date underFootMajorEnd = new Date(underFoot + 3600000);
+        Date overHeadMajorStart = new Date(overHead - 3600000);
+        Date overHeadMajorEnd = new Date(overHead + 3600000);
+
+        moonDegree = Integer.toString((int) Math.toDegrees(SunCalc4JavaUtils.getMoonPosition(curTime, Double.parseDouble(latitude), Double.parseDouble(longitude)).get("altitude")));
+
         if (moonOverHead != null && moonUnderFoot != null && overHead > underFoot) {
-            if (((date1.compareTo(curTime) < 0) && (date2.compareTo(curTime) > 0)) ||
-                    ((date3.compareTo(curTime) < 0) && (date4.compareTo(curTime) > 0)))
+            if (((underFootMajorStart.compareTo(curTime) < 0) && (underFootMajorEnd.compareTo(curTime) > 0))) {
                 isMajor = true;
+                moonState = "MU";
+            }
+            if (((overHeadMajorStart.compareTo(curTime) < 0) && (overHeadMajorEnd.compareTo(curTime) > 0))) {
+                isMajor = true;
+                moonState = "MO";
+            }
 
             return parseTime(new Date(underFoot - 3600000)) + " - " +
                     parseTime(new Date(underFoot + 3600000)) + "    " +
@@ -233,15 +259,19 @@ public class Solunar {
             if (moonOverHead != null) {
                 range = parseTime(new Date(overHead - 3600000)) + " - " +
                         parseTime(new Date(overHead + 3600000)) + "    ";
-                if ((date3.compareTo(curTime) < 0) && (date4.compareTo(curTime) > 0))
+                if ((overHeadMajorStart.compareTo(curTime) < 0) && (overHeadMajorEnd.compareTo(curTime) > 0)) {
                     isMajor = true;
+                    moonState = "MO";
+                }
             } else
                 range = "N/A    ";
             if (moonUnderFoot != null) {
                 range += parseTime(new Date(underFoot - 3600000)) + " - " +
                         parseTime(new Date(underFoot + 3600000));
-                if ((date1.compareTo(curTime) < 0) && (date2.compareTo(curTime) > 0))
+                if ((underFootMajorStart.compareTo(curTime) < 0) && (underFootMajorEnd.compareTo(curTime) > 0)) {
                     isMajor = true;
+                    moonState = "MU";
+                }
             } else
                 range += "N/A";
             return range;
@@ -253,14 +283,19 @@ public class Solunar {
         Date curTime = cal.getTime();
         long moonSet = (moon.getSet() == null) ? 0 : moon.getSet().toEpochSecond() * 1000;
         long moonRise = (moon.getRise() == null) ? 0 : moon.getRise().toEpochSecond() * 1000;
-        Date date1 = new Date(moonRise - 1800000);
-        Date date2 = new Date(moonRise + 1800000);
-        Date date3 = new Date(moonSet - 1800000);
-        Date date4 = new Date(moonSet + 1800000);
+        Date riseMinorStart = new Date(moonRise - 1800000);
+        Date riseMinorEnd = new Date(moonRise + 1800000);
+        Date setMinorStart = new Date(moonSet - 1800000);
+        Date setMinorEnd = new Date(moonSet + 1800000);
         if (moon.getSet() != null && moon.getRise() != null && moonSet < moonRise) {
-            if (((date1.compareTo(curTime) < 0) && (date2.compareTo(curTime) > 0)) ||
-                    ((date3.compareTo(curTime) < 0) && (date4.compareTo(curTime) > 0)))
+            if (((riseMinorStart.compareTo(curTime) < 0) && (riseMinorEnd.compareTo(curTime) > 0))) {
                 isMinor = true;
+                moonState = "MR";
+            }
+            if (((setMinorStart.compareTo(curTime) < 0) && (setMinorEnd.compareTo(curTime) > 0))) {
+                isMinor = true;
+                moonState = "MS";
+            }
             return parseTime(new Date(moonSet - 1800000)) + " - " +
                     parseTime(new Date(moonSet + 1800000)) + "    " +
                     parseTime(new Date(moonRise - 1800000)) + " - " +
@@ -270,15 +305,19 @@ public class Solunar {
             if (moon.getRise() != null) {
                 range = parseTime(new Date(moonRise - 1800000)) + " - " +
                         parseTime(new Date(moonRise + 1800000)) + "    ";
-                if ((date1.compareTo(curTime) < 0) && (date2.compareTo(curTime) > 0))
+                if ((riseMinorStart.compareTo(curTime) < 0) && (riseMinorEnd.compareTo(curTime) > 0)) {
                     isMinor = true;
+                    moonState = "MR";
+                }
             } else
                 range = "N/A    ";
             if (moon.getSet() != null) {
                 range += parseTime(new Date(moonSet - 1800000)) + " - " +
                         parseTime(new Date(moonSet + 1800000));
-                if ((date3.compareTo(curTime) < 0) && (date4.compareTo(curTime) > 0))
+                if ((setMinorStart.compareTo(curTime) < 0) && (setMinorEnd.compareTo(curTime) > 0)) {
                     isMinor = true;
+                    moonState = "MS";
+                }
             } else
                 range += "N/A";
             return range;

@@ -35,7 +35,7 @@ public class SolunarTest {
         solunar.populate(loc, goodDay);
         assertFalse(solunar.isMinor);
         assertTrue(solunar.isMajor);
-        assertEquals("MO", solunar.moonDegree);
+        assertEquals("-64", solunar.moonDegree);
         //MINOR: 11:34 PM - 12:34 AM    4:50 PM - 5:50 PM
         //MAJOR: 7:45 AM - 9:45 AM    8:17 PM - 10:17 PM
 

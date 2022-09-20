@@ -157,9 +157,15 @@ public class Solunar {
                     moonState = "M1";
                 else
                     moonState = "M2";
+                if (Date.from(moon.getRise().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(cal.getTime()) < 0 &&
+                        Date.from(moon.getRise().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(moonOverHeadDt) > 0)
+                    moonState = "M1";
             } else {
                 if (moonUnderFootDt.compareTo(cal.getTime()) > 0) moonState = "M3";
                 else moonState = "M4";
+                if (Date.from(moon.getSet().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(cal.getTime()) < 0 &&
+                        Date.from(moon.getSet().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(moonUnderFootDt) > 0)
+                    moonState = "M3";
             }
         }
     }

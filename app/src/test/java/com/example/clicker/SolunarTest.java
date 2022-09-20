@@ -147,7 +147,7 @@ public class SolunarTest {
         assertFalse(solunar.isMinor);
         assertFalse(solunar.isMajor);
         assertEquals("16", solunar.moonDegree);
-        //assertEquals("M1", solunar.moonState);
+        assertEquals("M1", solunar.moonState);
 
         goodDay.set(2022, 8, 6, 18, 28, 00);
         solunar.populate(loc, goodDay);
@@ -203,6 +203,63 @@ public class SolunarTest {
         assertFalse(solunar.isMinor);
         assertFalse(solunar.isMajor);
         assertEquals("-51", solunar.moonDegree);
+        assertEquals("M4", solunar.moonState);
+
+
+        goodDay.set(2022, 8, 29, 11, 43, 00);
+        solunar.populate(loc, goodDay);
+        assertTrue(solunar.isMinor);
+        assertFalse(solunar.isMajor);
+        assertEquals("1", solunar.moonDegree);
+        assertEquals("MR", solunar.moonState);
+
+        goodDay.set(2022, 8, 29, 14, 00, 00);
+        solunar.populate(loc, goodDay);
+        assertFalse(solunar.isMinor);
+        assertFalse(solunar.isMajor);
+        assertEquals("15", solunar.moonDegree);
+        assertEquals("M1", solunar.moonState);
+
+        goodDay.set(2022, 8, 29, 16, 25, 00);
+        solunar.populate(loc, goodDay);
+        assertFalse(solunar.isMinor);
+        assertTrue(solunar.isMajor);
+        assertEquals("20", solunar.moonDegree);
+        assertEquals("MO", solunar.moonState);
+
+        goodDay.set(2022, 8, 29, 19, 00, 00);
+        solunar.populate(loc, goodDay);
+        assertFalse(solunar.isMinor);
+        assertFalse(solunar.isMajor);
+        assertEquals("11", solunar.moonDegree);
+        assertEquals("M2", solunar.moonState);
+
+        goodDay.set(2022, 8, 29, 20, 37, 00);
+        solunar.populate(loc, goodDay);
+        assertTrue(solunar.isMinor);
+        assertFalse(solunar.isMajor);
+        assertEquals("0", solunar.moonDegree);
+        assertEquals("MS", solunar.moonState);
+
+        goodDay.set(2022, 8, 29, 23, 30, 00);
+        solunar.populate(loc, goodDay);
+        assertFalse(solunar.isMinor);
+        assertFalse(solunar.isMajor);
+        assertEquals("-25", solunar.moonDegree);
+        assertEquals("M3", solunar.moonState);
+
+        goodDay.set(2022, 8, 29, 3, 33, 00);
+        solunar.populate(loc, goodDay);
+        assertFalse(solunar.isMinor);
+        assertTrue(solunar.isMajor);
+        assertEquals("-57", solunar.moonDegree);
+        assertEquals("MU", solunar.moonState);
+
+        goodDay.set(2022, 8, 29, 7, 00, 00);
+        solunar.populate(loc, goodDay);
+        assertFalse(solunar.isMinor);
+        assertFalse(solunar.isMajor);
+        assertEquals("-40", solunar.moonDegree);
         assertEquals("M4", solunar.moonState);
     }
 }

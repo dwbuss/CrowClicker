@@ -118,19 +118,19 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
                 LimitLine limit = new LimitLine(point);
                 if (new SimpleDateFormat("a").format(new Date(point)).equalsIgnoreCase("PM")) {
                     limit.setLineColor(Color.BLACK);
-                    limit.setLabel("Sun Set " + new SimpleDateFormat("MM/dd").format(new Date(point)));
+                    limit.setLabel("Set " + new SimpleDateFormat("E").format(new Date(point)));
                 } else {
                     limit.setLineColor(Color.RED);
-                    limit.setLabel("Sun Rise" + new SimpleDateFormat("MM/dd").format(new Date(point)));
+                    limit.setLabel("Rise " + new SimpleDateFormat("E").format(new Date(point)));
                 }
                 limit.setLineWidth(2);
                 xAxis.addLimitLine(limit);
             });
         }
         ArrayList<BarEntry> windValues = weather.windPoints;
-        Collections.sort(windValues, new Comparator<Entry>() {
+        Collections.sort(windValues, new Comparator<BarEntry>() {
             @Override
-            public int compare(Entry entry, Entry t1) {
+            public int compare(BarEntry entry, BarEntry t1) {
                 if (entry.getX() > t1.getX())
                     return 1;
                 else
@@ -138,9 +138,9 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
             }
         });
         ArrayList<BarEntry> guestValues = weather.gustPoints;
-        Collections.sort(guestValues, new Comparator<Entry>() {
+        Collections.sort(guestValues, new Comparator<BarEntry>() {
             @Override
-            public int compare(Entry entry, Entry t1) {
+            public int compare(BarEntry entry, BarEntry t1) {
                 if (entry.getX() > t1.getX())
                     return 1;
                 else
@@ -167,85 +167,62 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
                     return -1;
             }
         });
-        CandleDataSet pressuerSet;
-        LineDataSet moonSet;
-        BarDataSet windSet;
-        BarDataSet gustSet;
-        if (mChart.getData() != null &&
-                mChart.getData().getDataSetCount() > 0) {
-            pressuerSet = (CandleDataSet) mChart.getData().getCandleData().getDataSetByIndex(0);
-            pressuerSet.setValues(pressureValues);
-            moonSet = (LineDataSet) mChart.getData().getLineData().getDataSetByIndex(0);
-            moonSet.setValues(moonValues);
-            windSet = (BarDataSet) mChart.getData().getBarData().getDataSetByIndex(0);
-            windSet.setValues(windValues);
-            gustSet = (BarDataSet) mChart.getData().getBarData().getDataSetByIndex(1);
-            gustSet.setValues(guestValues);
+        CandleDataSet pressuerSet = new CandleDataSet(pressureValues, "Pressure");
+        pressuerSet.setDrawIcons(false);
+        pressuerSet.enableDashedHighlightLine(10f, 5f, 0f);
+        pressuerSet.setColor(Color.DKGRAY);
+        pressuerSet.setValueTextSize(9f);
+        pressuerSet.setColor(Color.rgb(80, 80, 80));
+        pressuerSet.setShadowColor(Color.RED);
+        pressuerSet.setIncreasingColor(Color.RED);
+        pressuerSet.setDecreasingColor(Color.BLUE);
+        pressuerSet.setNeutralColor(Color.LTGRAY);
+        pressuerSet.setShadowWidth(5f);
+        pressuerSet.setFormLineWidth(1f);
+        pressuerSet.setFormSize(15.0f);
+        pressuerSet.setDrawValues(false);
 
-            mChart.getData().notifyDataChanged();
-            mChart.notifyDataSetChanged();
+        LineDataSet moonSet = new LineDataSet(moonValues, "Moon Data");
+        moonSet.setDrawIcons(false);
+        moonSet.setColor(Color.BLACK);
+        moonSet.setLineWidth(1f);
+        moonSet.setValueTextSize(9f);
+        moonSet.setDrawFilled(true);
+        moonSet.setFormLineWidth(1f);
+        moonSet.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
+        moonSet.setFormSize(15.f);
+        moonSet.setDrawValues(false);
+        moonSet.setDrawCircles(false);
+        if (Utils.getSDKInt() >= 18) {
+            Drawable drawable = ContextCompat.getDrawable(this, R.drawable.fade_blue);
+            moonSet.setFillDrawable(drawable);
         } else {
-            pressuerSet = new CandleDataSet(pressureValues, "Pressure");
-            pressuerSet.setDrawIcons(false);
-            pressuerSet.enableDashedHighlightLine(10f, 5f, 0f);
-            pressuerSet.setColor(Color.DKGRAY);
-            pressuerSet.setValueTextSize(9f);
-            pressuerSet.setColor(Color.rgb(80, 80, 80));
-            pressuerSet.setShadowColor(Color.RED);
-            pressuerSet.setIncreasingColor(Color.RED);
-            pressuerSet.setDecreasingColor(Color.BLUE);
-            pressuerSet.setNeutralColor(Color.LTGRAY);
-            pressuerSet.setShadowWidth(5f);
-            pressuerSet.setFormLineWidth(1f);
-            pressuerSet.setFormSize(15.0f);
-            pressuerSet.setDrawValues(false);
-
-            moonSet = new LineDataSet(moonValues, "Moon Data");
-            moonSet.setDrawIcons(false);
-            moonSet.setColor(Color.BLACK);
-            moonSet.setLineWidth(1f);
-            moonSet.setValueTextSize(9f);
-            moonSet.setDrawFilled(true);
-            moonSet.setFormLineWidth(1f);
-            moonSet.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
-            moonSet.setFormSize(15.f);
-            moonSet.setDrawValues(false);
-            moonSet.setDrawCircles(false);
-            if (Utils.getSDKInt() >= 18) {
-                Drawable drawable = ContextCompat.getDrawable(this, R.drawable.fade_blue);
-                moonSet.setFillDrawable(drawable);
-            } else {
-                moonSet.setFillColor(Color.DKGRAY);
-            }
-            windSet = new BarDataSet(windValues, "Bar 1");
-            windSet.setColor(Color.rgb(60, 220, 78));
-            windSet.setValueTextColor(Color.rgb(60, 220, 78));
-            windSet.setValueTextSize(10f);
-            windSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
-
-            gustSet = new BarDataSet(guestValues, "");
-            gustSet.setStackLabels(new String[]{"Stack 1", "Stack 2"});
-            gustSet.setColors(Color.rgb(61, 165, 255), Color.rgb(23, 197, 255));
-            gustSet.setValueTextColor(Color.rgb(61, 165, 255));
-            gustSet.setValueTextSize(10f);
-            gustSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
-
-            CandleData candleData = new CandleData();
-            pressuerSet.setAxisDependency(YAxis.AxisDependency.LEFT);
-            candleData.addDataSet(pressuerSet);
-
-            BarData barData = new BarData(windSet, gustSet);
-            barData.setBarWidth(5.45f);
-            barData.groupBars(0, 0.06f, 0.02f); // start at x = 0
-            LineData moonData = new LineData();
-            moonSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            moonData.addDataSet(moonSet);
-            CombinedData data = new CombinedData();
-            data.setData(candleData);
-            data.setData(moonData);
-            data.setData(barData);
-            mChart.setData(data);
+            moonSet.setFillColor(Color.DKGRAY);
         }
+        BarDataSet windSet = new BarDataSet(windValues, "Wind");
+        windSet.setValueTextColor(Color.rgb(60, 220, 78));
+        windSet.setValueTextSize(20f);
+        windSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+
+        BarDataSet gustSet = new BarDataSet(guestValues, "Gust");
+        gustSet.setValueTextColor(Color.rgb(61, 165, 255));
+        gustSet.setValueTextSize(20f);
+        gustSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+
+        CandleData candleData = new CandleData();
+        pressuerSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        candleData.addDataSet(pressuerSet);
+
+        BarData barData = new BarData(windSet, gustSet);
+        barData.setBarWidth(5.45f);
+        LineData moonData = new LineData();
+        moonSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+        moonData.addDataSet(moonSet);
+        CombinedData data = new CombinedData();
+        data.setData(candleData);
+        data.setData(moonData);
+        data.setData(barData);
+        mChart.setData(data);
 
         mChart.setVisibleXRangeMaximum(43206209);
         mChart.moveViewToX((float) cal.getTime().getTime() - 21603104);

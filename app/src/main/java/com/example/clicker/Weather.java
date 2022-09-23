@@ -5,11 +5,8 @@ import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
 
@@ -57,35 +54,27 @@ public class Weather {
 
     public StringRequest pullWeather(String url, ClickerCallback callback) {
         return new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject reader = new JSONObject(response);
-                            JSONObject main = reader.getJSONObject("currently");
-                            temperature = ((int) Double.parseDouble(main.getString("temperature"))) + "";
-                            feelsLike = ((int) Double.parseDouble(main.getString("apparentTemperature"))) + "";
-                            dewPoint = ((int) Double.parseDouble(main.getString("dewPoint"))) + "";
-                            windSpeed = ((int) Double.parseDouble(main.getString("windSpeed"))) + "";
-                            windDir = getCardinalDirection(main.getDouble("windBearing"));
-                            windGust = ((int) Double.parseDouble(main.getString("windGust"))) + "";
-                            date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("time"))));
-                            precipProbability = main.getString("precipProbability");
-                            humidity = main.getString("humidity");
-                            pressure = ((int) Double.parseDouble(main.getString("pressure"))) + "";
-                            cloudCover = main.getString("cloudCover");
-                        } catch (JSONException e) {
-                            Log.e(TAG, "Failure to create SheetAccess", e);
-                        }
+                                 response -> {
+                                     try {
+                                         JSONObject reader = new JSONObject(response);
+                                         JSONObject main = reader.getJSONObject("currently");
+                                         temperature = ((int) Double.parseDouble(main.getString("temperature"))) + "";
+                                         feelsLike = ((int) Double.parseDouble(main.getString("apparentTemperature"))) + "";
+                                         dewPoint = ((int) Double.parseDouble(main.getString("dewPoint"))) + "";
+                                         windSpeed = ((int) Double.parseDouble(main.getString("windSpeed"))) + "";
+                                         windDir = getCardinalDirection(main.getDouble("windBearing"));
+                                         windGust = ((int) Double.parseDouble(main.getString("windGust"))) + "";
+                                         date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("time"))));
+                                         precipProbability = main.getString("precipProbability");
+                                         humidity = main.getString("humidity");
+                                         pressure = ((int) Double.parseDouble(main.getString("pressure"))) + "";
+                                         cloudCover = main.getString("cloudCover");
+                                     } catch (JSONException e) {
+                                         Log.e(TAG, "Failure to create SheetAccess", e);
+                                     }
 
-                        callback.onSuccess();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                callback.onFailure();
-            }
-        });
+                                     callback.onSuccess();
+                                 }, error -> callback.onFailure());
     }
 
     String getCardinalDirection(double input) {
@@ -103,6 +92,16 @@ public class Weather {
         RequestQueue queue = Volley.newRequestQueue(context);
         Date yesterday = new Date(today.getTime() - Duration.ofDays(1).toMillis());
         Date tomorrow = new Date(today.getTime() + Duration.ofDays(1).toMillis());
+
+        AtomicInteger totalRequests = new AtomicInteger(3);
+        queue.addRequestEventListener((request, event) -> {
+            if (event == RequestQueue.RequestEvent.REQUEST_FINISHED) {
+                if (totalRequests.decrementAndGet() == 0) {
+                    callback.onSuccess();
+                }
+            }
+        });
+
         queue.add(pullPressure("https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + lat + "," + lon + "," + (yesterday.getTime() / 1000), callback, lat, lon));
         queue.add(pullPressure("https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + lat + "," + lon + "," + (today.getTime() / 1000), callback, lat, lon));
         queue.add(pullPressure("https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + lat + "," + lon + "," + (tomorrow.getTime() / 1000), callback, lat, lon));
@@ -110,43 +109,33 @@ public class Weather {
 
     private StringRequest pullPressure(String url, ClickerCallback callback, double lat, double lon) {
         return new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject reader = new JSONObject(response);
-                            JSONObject daily = reader.getJSONObject("daily");
-                            JSONArray dailyData = daily.getJSONArray("data");
+                                 response -> {
+                                     try {
+                                         JSONObject reader = new JSONObject(response);
+                                         JSONObject daily = reader.getJSONObject("daily");
+                                         JSONArray dailyData = daily.getJSONArray("data");
 
-                            sunPoints.add(new Date(1000 * Long.parseLong(dailyData.getJSONObject(0).getString("sunriseTime"))).getTime());
-                            sunPoints.add(new Date(1000 * Long.parseLong(dailyData.getJSONObject(0).getString("sunsetTime"))).getTime());
-                            JSONObject hourly = reader.getJSONObject("hourly");
-                            JSONArray data = hourly.getJSONArray("data");
-                            for (int i = 0; i < data.length(); i++) {
-                                Date d = new Date(1000 * Long.parseLong(data.getJSONObject(i).getString("time")));
-                                pressurePoints.add(new CandleEntry(d.getTime(), (float) data.getJSONObject(i).getDouble("pressure") + 0.5f,
-                                        (float) data.getJSONObject(i).getDouble("pressure") - 0.5f,
-                                        (float) data.getJSONObject(i).getDouble("pressure") + 0.001f,
-                                        (float) data.getJSONObject(i).getDouble("pressure") - 0.001f));
-                                moonDegrees.add(new Entry(d.getTime(), (float) Math.toDegrees(SunCalc4JavaUtils.getMoonPosition(d, lat, lon).get("altitude"))/10));
+                                         sunPoints.add(new Date(1000 * Long.parseLong(dailyData.getJSONObject(0).getString("sunriseTime"))).getTime());
+                                         sunPoints.add(new Date(1000 * Long.parseLong(dailyData.getJSONObject(0).getString("sunsetTime"))).getTime());
+                                         JSONObject hourly = reader.getJSONObject("hourly");
+                                         JSONArray data = hourly.getJSONArray("data");
+                                         for (int i = 0; i < data.length(); i++) {
+                                             Date d = new Date(1000 * Long.parseLong(data.getJSONObject(i).getString("time")));
+                                             pressurePoints.add(new CandleEntry(d.getTime(), (float) data.getJSONObject(i).getDouble("pressure") + 0.5f,
+                                                                                (float) data.getJSONObject(i).getDouble("pressure") - 0.5f,
+                                                                                (float) data.getJSONObject(i).getDouble("pressure") + 0.001f,
+                                                                                (float) data.getJSONObject(i).getDouble("pressure") - 0.001f));
+                                             moonDegrees.add(new Entry(d.getTime(), (float) Math.toDegrees(SunCalc4JavaUtils.getMoonPosition(d, lat, lon).get("altitude"))/10));
                                 windPoints.add(new BarEntry(((Long)d.getTime()).floatValue(), ((Double) data.getJSONObject(i).getDouble("windSpeed")).floatValue()));
 
                              BarEntry b = new BarEntry(((Long)d.getTime()).floatValue(), ((Double) data.getJSONObject(i).getDouble("windGust")).floatValue());
 
                                 System.err.println("WTF "+((Long)d.getTime()).floatValue() + "    "+b.getX());
                                 gustPoints.add(b);
-                            }
-                        } catch (JSONException e) {
-                            Log.e(TAG, "Failure to create SheetAccess", e);
-                        }
-
-                        callback.onSuccess();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                callback.onFailure();
-            }
-        });
+                                         }
+                                     } catch (JSONException e) {
+                                         Log.e(TAG, "Failure to create SheetAccess", e);
+                                     }
+                                 }, error -> callback.onFailure());
     }
 }

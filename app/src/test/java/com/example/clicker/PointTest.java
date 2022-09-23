@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.example.clicker.objectbo.Point;
+import com.github.mikephil.charting.data.Entry;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -21,6 +23,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -111,78 +114,51 @@ public class PointTest {
     }
 
     @Test
-    @Ignore
     public void testWeather() {
         try {
-            File file = new File("C:\\Users\\Buss\\Downloads\\missing2.csv");    //creates a new file instance
-            File ofile = new File("C:\\Users\\Buss\\Downloads\\output.csv");    //creates a new file instance
-            BufferedWriter bw = new BufferedWriter(new FileWriter(ofile));
-            BufferedReader br = new BufferedReader(new FileReader(file));  //creates a buffering character input stream
-            String line;
-            while ((line = br.readLine()) != null) {
-                try {
-                    String[] fields = line.split("\t");
-                    String dateS = fields[2];
-                    String time = "";
-                    if (fields.length == 3) {
-                        time = "12:00 PM";
-                    } else {
-                        time = fields[3];
-                        if (time.trim().equals(""))
-                            time = "12:00 PM";
-                    }
-                    String latStr = "";
-                    String lonStr = "";
-                    if (fields.length < 5) {
-                        latStr = "49.202587191134256";
-                        lonStr = "-93.95591373128072";
-                    } else if (fields[4] == null || fields[5].trim().equals("")) {
-                        latStr = "49.202587191134256";
-                        lonStr = "-93.95591373128072";
-                    } else {
-                        latStr = fields[4];
-                        lonStr = fields[5];
-                    }
+            String time = "12:00 PM";
+            String latStr = "49.202587191134256";
+            String lonStr = "-93.95591373128072";
 
-                    //  latStr = "48.59691460358734";
-                    //  lonStr = "-93.3763311889763";
-                    latStr = "49.53751341665286";
-                    lonStr = "-94.06379027359617";
-                    double lat = Double.parseDouble(latStr);
-                    double lon = Double.parseDouble(lonStr);
-                    Date dateD = new SimpleDateFormat("MM/dd/yyyy h:mm a").parse(dateS + " " + time);
+            double lat = Double.parseDouble(latStr);
+            double lon = Double.parseDouble(lonStr);
+            Date dateD = new SimpleDateFormat("MM/dd/yyyy h:mm a").parse("09/20/2022" + " " + time);
 
-                    long date = (dateD.getTime() / 1000);
-                    URL url = new URL("https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + lat + "," + lon + "," + date);
-                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                    con.setRequestMethod("GET");
-                    int responseCode = con.getResponseCode();
-                    if (responseCode != 200) {
-                        System.err.println(con.getResponseMessage());
-                    }
-                    String text = new BufferedReader(
-                            new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))
-                            .lines()
-                            .collect(Collectors.joining("\n"));
-                    JSONObject reader = new JSONObject(text);
-                    JSONObject currently = reader.getJSONObject("currently");
-                    String temperature = getDouble(currently, "temperature");
-                    String feelsLike = getDouble(currently, "apparentTemperature");
-                    String dewPoint = getDouble(currently, "dewPoint");
-                    String windSpeed = getDouble(currently, "windSpeed");
-                    String windDir = getCardinalDirection(getDouble(currently, "windBearing"));
-                    String windGust = getDouble(currently, "windGust");
-                    String precipProbability = getDouble(currently, "precipProbability");
-                    String humidity = getDouble(currently, "humidity");
-                    String pressure = getDouble(currently, "pressure");
-                    String cloudCover = getDouble(currently, "cloudCover");
-                    String outputStr = line + "\t" + temperature + "\t" + feelsLike + "\t" + windSpeed + "\t" + windGust + "\t" + windDir + "\t" + pressure + "\t" + humidity + "\t" + dewPoint + "\t" + cloudCover + "\t" + precipProbability + "\r\n";
-                    bw.write(outputStr);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            long date = (dateD.getTime() / 1000);
+            URL url = new URL("https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + lat + "," + lon + "," + date);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+            if (responseCode != 200) {
+                System.err.println(con.getResponseMessage());
             }
-            bw.close();
+            String text = new BufferedReader(
+                    new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))
+                    .lines()
+                    .collect(Collectors.joining("\n"));
+            JSONObject reader = new JSONObject(text);
+            JSONObject currently = reader.getJSONObject("currently");
+            String temperature = getDouble(currently, "temperature");
+            String feelsLike = getDouble(currently, "apparentTemperature");
+            String dewPoint = getDouble(currently, "dewPoint");
+            String windSpeed = getDouble(currently, "windSpeed");
+            String windDir = getCardinalDirection(getDouble(currently, "windBearing"));
+            String windGust = getDouble(currently, "windGust");
+            String precipProbability = getDouble(currently, "precipProbability");
+            String humidity = getDouble(currently, "humidity");
+            String pressure = getDouble(currently, "pressure");
+            String cloudCover = getDouble(currently, "cloudCover");
+
+            JSONObject hourly = reader.getJSONObject("hourly");
+            JSONArray data = hourly.getJSONArray("data");
+
+            ArrayList<Entry> values = new ArrayList<>();
+
+            for (int i=0; i < data.length(); i++){
+                values.add(new Entry(data.getJSONObject(i).getInt("time"), (float) data.getJSONObject(i).getDouble("pressure")));
+            }
+            pressure = ((int) Double.parseDouble(hourly.getString("pressure"))) + "";
+            String outputStr = "\t" + temperature + "\t" + feelsLike + "\t" + windSpeed + "\t" + windGust + "\t" + windDir + "\t" + pressure + "\t" + humidity + "\t" + dewPoint + "\t" + cloudCover + "\t" + precipProbability + "\r\n";
         } catch (Exception e) {
             e.printStackTrace();
         }

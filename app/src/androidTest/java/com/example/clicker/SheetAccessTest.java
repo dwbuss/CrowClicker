@@ -55,7 +55,6 @@ public class SheetAccessTest {
     }
 
     @Test
-    @Ignore
     public void canGetAllRows() throws IOException {
         String TAG = "SheetAccess";
         String APPLICATION_NAME = "crowapp-257113";

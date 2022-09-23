@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Locale;
 
 public class ForecastActivity extends AppCompatActivity implements View.OnClickListener {
@@ -70,7 +72,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         mChart.setDrawBarShadow(false);
         mChart.setHighlightFullBarEnabled(false);
         mChart.setDrawOrder(new CombinedChart.DrawOrder[]{
-                CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.CANDLE, CombinedChart.DrawOrder.LINE
+                CombinedChart.DrawOrder.LINE, CombinedChart.DrawOrder.CANDLE
         });
         renderData();
         btnDatePicker = findViewById(R.id.btn_date);
@@ -87,32 +89,44 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(new xFormatter());
         xAxis.setLabelRotationAngle(90f);
+        xAxis.setDrawGridLines(false);
+        LimitLine line = new LimitLine(cal.getTime().getTime());
+        line.setLineColor(Color.BLUE);
+        line.setLineWidth(2);
+        xAxis.addLimitLine(line);
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.removeAllLimitLines();
         leftAxis.setDrawZeroLine(false);
         leftAxis.setDrawLimitLinesBehindData(false);
+        leftAxis.setAxisMinimum(990f);
+        leftAxis.setAxisMaximum(1035f);
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.removeAllLimitLines();
         rightAxis.setDrawZeroLine(false);
         rightAxis.setDrawLimitLinesBehindData(false);
-        rightAxis.setAxisMinimum(-70f);
+        rightAxis.setAxisMinimum(-100f);
+        rightAxis.setAxisMaximum(100f);
+        rightAxis.setDrawLabels(false);
+        rightAxis.setDrawGridLines(false);
 
     }
 
     private void setData() {
+        XAxis xAxis = mChart.getXAxis();
+        if (weather.sunPoints != null) {
+            weather.sunPoints.stream().forEach(point -> {
+                LimitLine limit = new LimitLine(point);
+                if (new SimpleDateFormat("a").format(new Date(point)).equalsIgnoreCase("PM"))
+                    limit.setLineColor(Color.BLACK);
+                else limit.setLineColor(Color.RED);
+                limit.setLineWidth(2);
+                xAxis.addLimitLine(limit);
+            });
+        }
+
         ArrayList<CandleEntry> pressureValues = weather.pressurePoints;
-        Collections.sort(pressureValues, new Comparator<Entry>() {
-            @Override
-            public int compare(Entry entry, Entry t1) {
-                if (entry.getX() > t1.getX())
-                    return 1;
-                else
-                    return -1;
-            }
-        });
-        ArrayList<BarEntry> sunValues = weather.sunPoints;
         Collections.sort(pressureValues, new Comparator<Entry>() {
             @Override
             public int compare(Entry entry, Entry t1) {
@@ -134,15 +148,12 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         });
         CandleDataSet pressuerSet;
         LineDataSet moonSet;
-        BarDataSet sunSet;
         if (mChart.getData() != null &&
                 mChart.getData().getDataSetCount() > 0) {
             pressuerSet = (CandleDataSet) mChart.getData().getCandleData().getDataSetByIndex(0);
             pressuerSet.setValues(pressureValues);
             moonSet = (LineDataSet) mChart.getData().getLineData().getDataSetByIndex(0);
             moonSet.setValues(moonValues);
-            sunSet = (BarDataSet) mChart.getData().getBarData().getDataSetByIndex(0);
-            sunSet.setValues(sunValues);
             mChart.getData().notifyDataChanged();
             mChart.notifyDataSetChanged();
         } else {
@@ -156,20 +167,15 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
             pressuerSet.setIncreasingColor(Color.RED);
             pressuerSet.setDecreasingColor(Color.BLUE);
             pressuerSet.setNeutralColor(Color.LTGRAY);
-            pressuerSet.setShadowWidth(0.8f);
+            pressuerSet.setShadowWidth(5f);
             pressuerSet.setFormLineWidth(1f);
-            pressuerSet.setFormSize(15.f);
+            pressuerSet.setFormSize(15.0f);
             pressuerSet.setDrawValues(false);
 
             moonSet = new LineDataSet(moonValues, "Moon Data");
             moonSet.setDrawIcons(false);
-            moonSet.enableDashedLine(10f, 5f, 0f);
-            moonSet.enableDashedHighlightLine(10f, 5f, 0f);
             moonSet.setColor(Color.BLACK);
-            moonSet.setCircleColor(Color.BLACK);
             moonSet.setLineWidth(1f);
-            moonSet.setCircleRadius(3f);
-            moonSet.setDrawCircleHole(false);
             moonSet.setValueTextSize(9f);
             moonSet.setDrawFilled(true);
             moonSet.setFormLineWidth(1f);
@@ -184,15 +190,6 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
                 moonSet.setFillColor(Color.DKGRAY);
             }
 
-            sunSet = new BarDataSet(sunValues, "Sun");
-            sunSet.setColor(Color.YELLOW);
-            sunSet.setBarBorderColor(Color.BLACK);
-
-            BarData barData = new BarData();
-            barData.setBarWidth(0.45f);
-            sunSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            barData.addDataSet(sunSet);
-
             CandleData candleData = new CandleData();
             pressuerSet.setAxisDependency(YAxis.AxisDependency.LEFT);
             candleData.addDataSet(pressuerSet);
@@ -201,11 +198,13 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
             moonSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
             moonData.addDataSet(moonSet);
             CombinedData data = new CombinedData();
-            data.setData(barData);
             data.setData(candleData);
             data.setData(moonData);
             mChart.setData(data);
         }
+
+        mChart.setVisibleXRangeMaximum(43206209);
+        mChart.moveViewToX((float) cal.getTime().getTime() - 21603104);
         mChart.notifyDataSetChanged();
         mChart.invalidate();
     }
@@ -222,12 +221,9 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     public void showSolunar() {
         Solunar solunar = new Solunar();
         solunar.populate(LocationHelper.CURRENT_LOCATION(this), cal);
-        ((TextView) findViewById(R.id.sunRise)).setText(solunar.sunRise);
-        ((TextView) findViewById(R.id.sunSet)).setText(solunar.sunSet);
-        ((TextView) findViewById(R.id.moonRise)).setText(solunar.moonRise);
-        ((TextView) findViewById(R.id.moonSet)).setText(solunar.moonSet);
-        ((TextView) findViewById(R.id.moonTransit)).setText(solunar.moonOverHead);
-        ((TextView) findViewById(R.id.moonUnder)).setText(solunar.moonUnderFoot);
+        ((TextView) findViewById(R.id.sunRise)).setText(solunar.sunRise + " / " + solunar.sunSet);
+        ((TextView) findViewById(R.id.moonRise)).setText(solunar.moonRise + " / " + solunar.moonSet);
+        ((TextView) findViewById(R.id.moonTransit)).setText(solunar.moonOverHead + " / " + solunar.moonUnderFoot);
         ((TextView) findViewById(R.id.moonPhase)).setText(solunar.moonPhase);
         ((TextView) findViewById(R.id.minor)).setText(solunar.minor);
         ((TextView) findViewById(R.id.major)).setText(solunar.major);
@@ -239,11 +235,9 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         weather.populate(loc.getLatitude(), loc.getLongitude(), cal.getTime(), getApplicationContext(), new ClickerCallback() {
             @Override
             public void onSuccess() {
-                ((TextView) findViewById(R.id.temperature)).setText(weather.temperature);
-                ((TextView) findViewById(R.id.apparentTemperature)).setText(weather.feelsLike);
+                ((TextView) findViewById(R.id.temperature)).setText(weather.temperature + " / " + weather.feelsLike);
                 ((TextView) findViewById(R.id.dewPoint)).setText(weather.dewPoint);
-                ((TextView) findViewById(R.id.windSpeed)).setText(weather.windSpeed);
-                ((TextView) findViewById(R.id.windGust)).setText(weather.windGust);
+                ((TextView) findViewById(R.id.windSpeed)).setText(weather.windSpeed + " / " + weather.windGust + " - " + weather.windDir);
                 ((TextView) findViewById(R.id.humidity)).setText(weather.humidity);
                 ((TextView) findViewById(R.id.pressure)).setText(weather.pressure);
                 ((TextView) findViewById(R.id.cloudCover)).setText(weather.cloudCover);

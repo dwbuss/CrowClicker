@@ -39,7 +39,7 @@ public class Weather {
     public String cloudCover;
     ArrayList<CandleEntry> pressurePoints;
     ArrayList<Entry> moonDegrees;
-    ArrayList<BarEntry> sunPoints;
+    ArrayList<Long> sunPoints;
 
 
     public void populate(double lat, double lon, Date cal, Context context, final ClickerCallback callback) {
@@ -115,9 +115,9 @@ public class Weather {
                             JSONArray dailyData = daily.getJSONArray("data");
 
                             Date r = new Date(1000 * Long.parseLong(dailyData.getJSONObject(0).getString("sunriseTime")));
-                            sunPoints.add(new BarEntry(r.getTime(), 50));
+                            sunPoints.add(r.getTime());
                             Date s = new Date(1000 * Long.parseLong(dailyData.getJSONObject(0).getString("sunsetTime")));
-                            sunPoints.add(new BarEntry(s.getTime(), 70));
+                            sunPoints.add(s.getTime());
                             JSONObject hourly = reader.getJSONObject("hourly");
                             JSONArray data = hourly.getJSONArray("data");
                             for (int i = 0; i < data.length(); i++) {

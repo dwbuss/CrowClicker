@@ -96,8 +96,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_media_next" />
-
-    <TableLayout
+<ScrollView
+    android:id="@+id/scrollview"
+    android:layout_width="match_parent"
+    android:layout_height="200dp">
+   <TableLayout
         android:id="@+id/tableLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -315,25 +318,24 @@
                 android:text="" />
         </TableRow>
     </TableLayout>
-
+</ScrollView>
     <View
         android:id="@+id/divider"
         android:layout_width="414dp"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/tableLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tableLayout" />
 
     <com.github.mikephil.charting.charts.CombinedChart
         android:id="@+id/chart"
-        android:layout_width="407dp"
-        android:layout_height="300dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/home"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tableLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
 
     <ImageView
         android:id="@+id/moonView"

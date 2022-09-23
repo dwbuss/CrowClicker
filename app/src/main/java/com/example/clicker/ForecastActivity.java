@@ -72,7 +72,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         mChart.setDrawBarShadow(false);
         mChart.setHighlightFullBarEnabled(false);
         mChart.setDrawOrder(new CombinedChart.DrawOrder[]{
-                CombinedChart.DrawOrder.LINE, CombinedChart.DrawOrder.CANDLE
+                CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE, CombinedChart.DrawOrder.CANDLE
         });
         renderData();
         btnDatePicker = findViewById(R.id.btn_date);
@@ -106,8 +106,6 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         rightAxis.removeAllLimitLines();
         rightAxis.setDrawZeroLine(false);
         rightAxis.setDrawLimitLinesBehindData(false);
-        rightAxis.setAxisMinimum(-100f);
-        rightAxis.setAxisMaximum(100f);
         rightAxis.setDrawLabels(false);
         rightAxis.setDrawGridLines(false);
 
@@ -120,16 +118,35 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
                 LimitLine limit = new LimitLine(point);
                 if (new SimpleDateFormat("a").format(new Date(point)).equalsIgnoreCase("PM")) {
                     limit.setLineColor(Color.BLACK);
-                    limit.setLabel("Sun Set "+new SimpleDateFormat("MM/dd").format(new Date(point)));
+                    limit.setLabel("Sun Set " + new SimpleDateFormat("MM/dd").format(new Date(point)));
                 } else {
                     limit.setLineColor(Color.RED);
-                    limit.setLabel("Sun Rise"+new SimpleDateFormat("MM/dd").format(new Date(point)));
+                    limit.setLabel("Sun Rise" + new SimpleDateFormat("MM/dd").format(new Date(point)));
                 }
                 limit.setLineWidth(2);
                 xAxis.addLimitLine(limit);
             });
         }
-
+        ArrayList<BarEntry> windValues = weather.windPoints;
+        Collections.sort(windValues, new Comparator<Entry>() {
+            @Override
+            public int compare(Entry entry, Entry t1) {
+                if (entry.getX() > t1.getX())
+                    return 1;
+                else
+                    return -1;
+            }
+        });
+        ArrayList<BarEntry> guestValues = weather.gustPoints;
+        Collections.sort(guestValues, new Comparator<Entry>() {
+            @Override
+            public int compare(Entry entry, Entry t1) {
+                if (entry.getX() > t1.getX())
+                    return 1;
+                else
+                    return -1;
+            }
+        });
         ArrayList<CandleEntry> pressureValues = weather.pressurePoints;
         Collections.sort(pressureValues, new Comparator<Entry>() {
             @Override
@@ -152,12 +169,19 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         });
         CandleDataSet pressuerSet;
         LineDataSet moonSet;
+        BarDataSet windSet;
+        BarDataSet gustSet;
         if (mChart.getData() != null &&
                 mChart.getData().getDataSetCount() > 0) {
             pressuerSet = (CandleDataSet) mChart.getData().getCandleData().getDataSetByIndex(0);
             pressuerSet.setValues(pressureValues);
             moonSet = (LineDataSet) mChart.getData().getLineData().getDataSetByIndex(0);
             moonSet.setValues(moonValues);
+            windSet = (BarDataSet) mChart.getData().getBarData().getDataSetByIndex(0);
+            windSet.setValues(windValues);
+            gustSet = (BarDataSet) mChart.getData().getBarData().getDataSetByIndex(1);
+            gustSet.setValues(guestValues);
+
             mChart.getData().notifyDataChanged();
             mChart.notifyDataSetChanged();
         } else {
@@ -193,25 +217,43 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
             } else {
                 moonSet.setFillColor(Color.DKGRAY);
             }
+            windSet = new BarDataSet(windValues, "Bar 1");
+            windSet.setColor(Color.rgb(60, 220, 78));
+            windSet.setValueTextColor(Color.rgb(60, 220, 78));
+            windSet.setValueTextSize(10f);
+            windSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+
+            gustSet = new BarDataSet(guestValues, "");
+            gustSet.setStackLabels(new String[]{"Stack 1", "Stack 2"});
+            gustSet.setColors(Color.rgb(61, 165, 255), Color.rgb(23, 197, 255));
+            gustSet.setValueTextColor(Color.rgb(61, 165, 255));
+            gustSet.setValueTextSize(10f);
+            gustSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
 
             CandleData candleData = new CandleData();
             pressuerSet.setAxisDependency(YAxis.AxisDependency.LEFT);
             candleData.addDataSet(pressuerSet);
 
+            BarData barData = new BarData(windSet, gustSet);
+            barData.setBarWidth(5.45f);
+            barData.groupBars(0, 0.06f, 0.02f); // start at x = 0
             LineData moonData = new LineData();
             moonSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
             moonData.addDataSet(moonSet);
             CombinedData data = new CombinedData();
             data.setData(candleData);
             data.setData(moonData);
+            data.setData(barData);
             mChart.setData(data);
         }
 
         mChart.setVisibleXRangeMaximum(43206209);
         mChart.moveViewToX((float) cal.getTime().getTime() - 21603104);
         mChart.notifyDataSetChanged();
+        mChart.getLegend().setEnabled(false);
         mChart.invalidate();
     }
+
 
     private void setDate() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");

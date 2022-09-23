@@ -16,12 +16,12 @@ import com.github.mikephil.charting.data.Entry;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.shredzone.commons.suncalc.SunTimes;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Weather {
 
@@ -40,6 +40,8 @@ public class Weather {
     ArrayList<CandleEntry> pressurePoints;
     ArrayList<Entry> moonDegrees;
     ArrayList<Long> sunPoints;
+    ArrayList<BarEntry> windPoints;
+    ArrayList<BarEntry> gustPoints;
 
 
     public void populate(double lat, double lon, Date cal, Context context, final ClickerCallback callback) {
@@ -96,6 +98,8 @@ public class Weather {
         pressurePoints = new ArrayList<>();
         moonDegrees = new ArrayList<>();
         sunPoints = new ArrayList<>();
+        windPoints = new ArrayList<>();
+        gustPoints = new ArrayList<>();
         RequestQueue queue = Volley.newRequestQueue(context);
         Date yesterday = new Date(today.getTime() - Duration.ofDays(1).toMillis());
         Date tomorrow = new Date(today.getTime() + Duration.ofDays(1).toMillis());
@@ -114,10 +118,8 @@ public class Weather {
                             JSONObject daily = reader.getJSONObject("daily");
                             JSONArray dailyData = daily.getJSONArray("data");
 
-                            Date r = new Date(1000 * Long.parseLong(dailyData.getJSONObject(0).getString("sunriseTime")));
-                            sunPoints.add(r.getTime());
-                            Date s = new Date(1000 * Long.parseLong(dailyData.getJSONObject(0).getString("sunsetTime")));
-                            sunPoints.add(s.getTime());
+                            sunPoints.add(new Date(1000 * Long.parseLong(dailyData.getJSONObject(0).getString("sunriseTime"))).getTime());
+                            sunPoints.add(new Date(1000 * Long.parseLong(dailyData.getJSONObject(0).getString("sunsetTime"))).getTime());
                             JSONObject hourly = reader.getJSONObject("hourly");
                             JSONArray data = hourly.getJSONArray("data");
                             for (int i = 0; i < data.length(); i++) {
@@ -126,7 +128,13 @@ public class Weather {
                                         (float) data.getJSONObject(i).getDouble("pressure") - 0.5f,
                                         (float) data.getJSONObject(i).getDouble("pressure") + 0.001f,
                                         (float) data.getJSONObject(i).getDouble("pressure") - 0.001f));
-                                moonDegrees.add(new Entry(d.getTime(), (float) Math.toDegrees(SunCalc4JavaUtils.getMoonPosition(d, lat, lon).get("altitude"))));
+                                moonDegrees.add(new Entry(d.getTime(), (float) Math.toDegrees(SunCalc4JavaUtils.getMoonPosition(d, lat, lon).get("altitude"))/10));
+                                windPoints.add(new BarEntry(((Long)d.getTime()).floatValue(), ((Double) data.getJSONObject(i).getDouble("windSpeed")).floatValue()));
+
+                             BarEntry b = new BarEntry(((Long)d.getTime()).floatValue(), ((Double) data.getJSONObject(i).getDouble("windGust")).floatValue());
+
+                                System.err.println("WTF "+((Long)d.getTime()).floatValue() + "    "+b.getX());
+                                gustPoints.add(b);
                             }
                         } catch (JSONException e) {
                             Log.e(TAG, "Failure to create SheetAccess", e);

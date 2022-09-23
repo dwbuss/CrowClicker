@@ -93,6 +93,7 @@ public class Weather {
         queue.addRequestEventListener((request, event) -> {
             if (event == RequestQueue.RequestEvent.REQUEST_FINISHED) {
                 if (totalRequests.decrementAndGet() == 0) {
+                    Log.d(TAG, "Pressure callbacks complete, calling success!");
                     callback.onSuccess();
                 }
             }

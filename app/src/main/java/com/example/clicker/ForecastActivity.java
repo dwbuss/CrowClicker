@@ -118,9 +118,13 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         if (weather.sunPoints != null) {
             weather.sunPoints.stream().forEach(point -> {
                 LimitLine limit = new LimitLine(point);
-                if (new SimpleDateFormat("a").format(new Date(point)).equalsIgnoreCase("PM"))
+                if (new SimpleDateFormat("a").format(new Date(point)).equalsIgnoreCase("PM")) {
                     limit.setLineColor(Color.BLACK);
-                else limit.setLineColor(Color.RED);
+                    limit.setLabel("Sun Set "+new SimpleDateFormat("MM/dd").format(new Date(point)));
+                } else {
+                    limit.setLineColor(Color.RED);
+                    limit.setLabel("Sun Rise"+new SimpleDateFormat("MM/dd").format(new Date(point)));
+                }
                 limit.setLineWidth(2);
                 xAxis.addLimitLine(limit);
             });

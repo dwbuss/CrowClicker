@@ -128,11 +128,8 @@ public class Weather {
                                     (float) data.getJSONObject(i).getDouble("pressure") + 0.001f,
                                     (float) data.getJSONObject(i).getDouble("pressure") - 0.001f));
                             moonDegrees.add(new Entry(d.getTime(), (float) Math.toDegrees(SunCalc4JavaUtils.getMoonPosition(d, lat, lon).get("altitude")) / 10));
-                            windPoints.add(new BarEntry(d.getTime(), ((Double) data.getJSONObject(i).getDouble("windSpeed")).floatValue()));
-
-                            BarEntry b = new BarEntry(d.getTime(), ((Double) data.getJSONObject(i).getDouble("windGust")).floatValue());
-                            System.err.println("WTF " + d.getTime() + "    " + b.getX());
-                            gustPoints.add(b);
+                            windPoints.add(new BarEntry(d.getTime(), ((Double) data.getJSONObject(i).getDouble("windSpeed")).floatValue(),getCardinalDirection( data.getJSONObject(i).getDouble("windBearing"))));
+                            gustPoints.add(new BarEntry(d.getTime(), ((Double) data.getJSONObject(i).getDouble("windGust")).floatValue(),getCardinalDirection( data.getJSONObject(i).getDouble("windBearing"))));
                         }
                     } catch (JSONException e) {
                         Log.e(TAG, "Failure to create SheetAccess", e);

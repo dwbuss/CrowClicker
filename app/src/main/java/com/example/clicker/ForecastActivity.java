@@ -1,5 +1,7 @@
 package com.example.clicker;
 
+import static org.locationtech.proj4j.parser.Proj4Keyword.f;
+
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.graphics.Color;
@@ -93,6 +95,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         LimitLine line = new LimitLine(cal.getTime().getTime());
         line.setLineColor(Color.BLUE);
         line.setLineWidth(2);
+        line.setLabel(new SimpleDateFormat("E HH:mm").format(cal.getTime()));
         xAxis.addLimitLine(line);
 
         YAxis leftAxis = mChart.getAxisLeft();
@@ -118,10 +121,10 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
                 LimitLine limit = new LimitLine(point);
                 if (new SimpleDateFormat("a").format(new Date(point)).equalsIgnoreCase("PM")) {
                     limit.setLineColor(Color.BLACK);
-                    limit.setLabel("Set " + new SimpleDateFormat("E").format(new Date(point)));
+                    limit.setLabel("Set " + new SimpleDateFormat("E HH:mm").format(new Date(point)));
                 } else {
                     limit.setLineColor(Color.RED);
-                    limit.setLabel("Rise " + new SimpleDateFormat("E").format(new Date(point)));
+                    limit.setLabel("Rise " + new SimpleDateFormat("E HH:mm").format(new Date(point)));
                 }
                 limit.setLineWidth(2);
                 xAxis.addLimitLine(limit);
@@ -180,7 +183,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         pressuerSet.setShadowWidth(5f);
         pressuerSet.setFormLineWidth(1f);
         pressuerSet.setFormSize(15.0f);
-        pressuerSet.setDrawValues(false);
+        pressuerSet.setDrawValues(true);
 
         LineDataSet moonSet = new LineDataSet(moonValues, "Moon Data");
         moonSet.setDrawIcons(false);
@@ -201,12 +204,20 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         }
         BarDataSet windSet = new BarDataSet(windValues, "Wind");
         windSet.setValueTextColor(Color.rgb(60, 220, 78));
-        windSet.setValueTextSize(20f);
+        windSet.setValueTextSize(10f);
+        windSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+            BarEntry v = windSet.getEntryForIndex(dataSetIndex);
+            return ((Float) value).intValue() + " " + v.getData();
+        });
         windSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
 
         BarDataSet gustSet = new BarDataSet(guestValues, "Gust");
         gustSet.setValueTextColor(Color.rgb(61, 165, 255));
-        gustSet.setValueTextSize(20f);
+        gustSet.setValueTextSize(10f);
+        gustSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+            BarEntry v = gustSet.getEntryForIndex(dataSetIndex);
+            return ((Float) value).intValue() + " " + v.getData();
+        });
         gustSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
 
         CandleData candleData = new CandleData();
@@ -214,7 +225,6 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         candleData.addDataSet(pressuerSet);
 
         BarData barData = new BarData(windSet, gustSet);
-        barData.setBarWidth(5.45f);
         LineData moonData = new LineData();
         moonSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
         moonData.addDataSet(moonSet);
@@ -260,7 +270,6 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
             public void onSuccess() {
                 ((TextView) findViewById(R.id.temperature)).setText(weather.temperature + " / " + weather.feelsLike);
                 ((TextView) findViewById(R.id.dewPoint)).setText(weather.dewPoint);
-                ((TextView) findViewById(R.id.windSpeed)).setText(weather.windSpeed + " / " + weather.windGust + " - " + weather.windDir);
                 ((TextView) findViewById(R.id.humidity)).setText(weather.humidity);
                 ((TextView) findViewById(R.id.pressure)).setText(weather.pressure);
                 ((TextView) findViewById(R.id.cloudCover)).setText(weather.cloudCover);

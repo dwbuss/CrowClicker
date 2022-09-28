@@ -7,6 +7,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.clicker.objectbo.Point;
+import com.example.clicker.objectbo.PointsHelper;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
@@ -40,6 +42,7 @@ public class Weather {
     ArrayList<Long> sunPoints;
     ArrayList<BarEntry> windPoints;
     ArrayList<BarEntry> gustPoints;
+    ArrayList<Point> contactPoints;
 
 
     public void populate(double lat, double lon, Date cal, Context context, final ClickerCallback callback) {
@@ -90,6 +93,9 @@ public class Weather {
         sunPoints = new ArrayList<>();
         windPoints = new ArrayList<>();
         gustPoints = new ArrayList<>();
+        contactPoints = new ArrayList<>();
+
+        PointsHelper helper = new PointsHelper(context);
         RequestQueue queue = Volley.newRequestQueue(context);
         Date yesterday = new Date(today.getTime() - Duration.ofDays(1).toMillis());
         Date tomorrow = new Date(today.getTime() + Duration.ofDays(1).toMillis());

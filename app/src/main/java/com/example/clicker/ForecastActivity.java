@@ -86,7 +86,6 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void renderData() {
-
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(new xFormatter());
@@ -97,6 +96,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         line.setLineWidth(2);
         line.setLabel(new SimpleDateFormat("E HH:mm").format(cal.getTime()));
         xAxis.addLimitLine(line);
+
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.removeAllLimitLines();
@@ -184,6 +184,9 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         pressuerSet.setFormLineWidth(1f);
         pressuerSet.setFormSize(15.0f);
         pressuerSet.setDrawValues(true);
+        pressuerSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+            return String.format("%.2f", (float) (((float)value) * .029529980164712)) ;
+        });
 
         LineDataSet moonSet = new LineDataSet(moonValues, "Moon Data");
         moonSet.setDrawIcons(false);
@@ -271,7 +274,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
                 ((TextView) findViewById(R.id.temperature)).setText(weather.temperature + " / " + weather.feelsLike);
                 ((TextView) findViewById(R.id.dewPoint)).setText(weather.dewPoint);
                 ((TextView) findViewById(R.id.humidity)).setText(weather.humidity);
-                ((TextView) findViewById(R.id.pressure)).setText(weather.pressure);
+                ((TextView) findViewById(R.id.pressure)).setText(String.format("%.2f", (float) (Float.parseFloat(weather.pressure)  * .029529980164712)) );
                 ((TextView) findViewById(R.id.cloudCover)).setText(weather.cloudCover);
             }
 

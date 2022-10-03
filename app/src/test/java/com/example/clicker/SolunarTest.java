@@ -9,6 +9,7 @@ import android.location.Location;
 import org.junit.Test;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class SolunarTest {
@@ -261,5 +262,30 @@ public class SolunarTest {
         assertFalse(solunar.isMajor);
         assertEquals("-40", solunar.moonDegree);
         assertEquals("M4", solunar.moonState);
+    }
+
+    @Test
+    public void checkDayWithNoMoonSet() {
+        Location waterfordWI = new Location("") {
+            @Override
+            public double getLatitude() { return 42.762890; }
+
+            @Override
+            public double getLongitude() {
+                return -88.212830;
+            }
+        };
+
+        Calendar noMoonSet = Calendar.getInstance(Locale.US);
+        noMoonSet.setTimeZone(TimeZone.getTimeZone("CST"));
+        noMoonSet.set(2022, 9, 3, 12, 52, 00);
+
+        Solunar solunar = new Solunar();
+        solunar.populate(waterfordWI, noMoonSet);
+        assertEquals("N/A", solunar.moonSet);
+        assertEquals("M4", solunar.moonState);
+        assertEquals( "3:31 PM", solunar.moonRise);
+        assertEquals( "6:52 AM", solunar.sunRise);
+        assertEquals( "6:30 PM", solunar.sunSet);
     }
 }

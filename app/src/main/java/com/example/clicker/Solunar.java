@@ -1,6 +1,7 @@
 package com.example.clicker;
 
 import android.location.Location;
+import android.util.Log;
 
 import org.shredzone.commons.suncalc.MoonPosition;
 import org.shredzone.commons.suncalc.MoonTimes;
@@ -51,6 +52,7 @@ public class Solunar {
             R.drawable.moon28,
             R.drawable.moon29,
     };
+    private static final String TAG = "Solunar";
     public String longitude;
     public String latitude;
     public String offset;
@@ -157,14 +159,15 @@ public class Solunar {
                     moonState = "M1";
                 else
                     moonState = "M2";
-                if (Date.from(moon.getRise().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(cal.getTime()) < 0 &&
-                        Date.from(moon.getRise().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(moonOverHeadDt) > 0)
+                if ((moon.getRise()!=null) && (Date.from(moon.getRise().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(cal.getTime()) < 0 &&
+                        Date.from(moon.getRise().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(moonOverHeadDt) > 0))
                     moonState = "M1";
             } else {
                 if (moonUnderFootDt.compareTo(cal.getTime()) > 0) moonState = "M3";
                 else moonState = "M4";
-                if (Date.from(moon.getSet().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(cal.getTime()) < 0 &&
-                        Date.from(moon.getSet().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(moonUnderFootDt) > 0)
+
+                if ((moon.getSet() != null) && (Date.from(moon.getSet().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(cal.getTime()) < 0 &&
+                        Date.from(moon.getSet().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(moonUnderFootDt) > 0))
                     moonState = "M3";
             }
         }

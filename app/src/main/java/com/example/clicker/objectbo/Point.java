@@ -62,8 +62,9 @@ public final class Point implements Parcelable {
     private String dewPoint = "";
     private String pressure = "";
     private String humidity = "";
+    private String lake = "";
 
-    public Point(long id, long sheetId, String name, double lon, double lat, Date timeStamp, String contactType, String airTemp, String waterTemp, String bait, String fishSize, String notes, String windSpeed, String windGust, String windDir, String precipProbability, String cloudCover, String dewPoint, String pressure, String humidity) {
+    public Point(long id, long sheetId, String name, double lon, double lat, Date timeStamp, String contactType, String airTemp, String waterTemp, String bait, String fishSize, String notes, String windSpeed, String windGust, String windDir, String precipProbability, String cloudCover, String dewPoint, String pressure, String humidity, String lake) {
         this.id = id;
         this.sheetId = sheetId;
         this.name = name;
@@ -84,6 +85,7 @@ public final class Point implements Parcelable {
         this.dewPoint = dewPoint;
         this.pressure = pressure;
         this.humidity = humidity;
+        this.lake = lake;
     }
 
     protected Point(Parcel in) {
@@ -108,6 +110,7 @@ public final class Point implements Parcelable {
         dewPoint = in.readString();
         pressure = in.readString();
         humidity = in.readString();
+        lake = in.readString();
     }
 
     public Point(JSONObject jsonObject) throws ParseException, JSONException {
@@ -129,6 +132,7 @@ public final class Point implements Parcelable {
         dewPoint = jsonObject.optString("dewPoint");
         pressure = jsonObject.optString("pressure");
         humidity = jsonObject.optString("humidity");
+        lake = jsonObject.optString("lake");
     }
 
     public Point(String csvRecord) throws ParseException {
@@ -150,26 +154,18 @@ public final class Point implements Parcelable {
         dewPoint = parts[14];
         pressure = parts[15];
         humidity = parts[16];
+        lake = parts[17];
     }
 
-    public Point(long id, String name, String contactType, double lon, double lat) {
+    public Point(long id, String name, String contactType, double lon, double lat, String bait, String lake) {
         this.id = id;
         this.name = name;
         this.timeStamp = Calendar.getInstance(Locale.US).getTime();
         this.lat = lat;
         this.lon = lon;
         this.contactType = contactType;
-    }
-
-    public Point(long id, String name, String length, String datetime, double lon, double lat) throws ParseException {
-        this.id = id;
-        this.name = name;
-        this.contactType = "CATCH";
-        this.fishSize = length;
-        DateFormat osLocalizedDateFormat = new SimpleDateFormat(CSV_TIMESTAMP_FORMAT, Locale.US);
-        this.timeStamp = osLocalizedDateFormat.parse(datetime);
-        this.lat = lat;
-        this.lon = lon;
+        this.bait = bait;
+        this.lake = lake;
     }
 
     public Point(List row) throws ParseException, InvalidObjectException {
@@ -179,7 +175,7 @@ public final class Point implements Parcelable {
     }
 
     public static String CSV_HEADER() {
-        return "id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\n";
+        return "id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\nlake\n";
     }
 
     @Override
@@ -217,6 +213,7 @@ public final class Point implements Parcelable {
         parcel.writeString(dewPoint);
         parcel.writeString(pressure);
         parcel.writeString(humidity);
+        parcel.writeString(lake);
     }
 
     private void populatePoint(List row) throws InvalidObjectException {
@@ -251,6 +248,7 @@ public final class Point implements Parcelable {
         airTemp = get(row, 14);
         bait = get(row, 8);
         fishSize = get(row, 3);
+        lake = get(row, 5);
         notes = get(row, 13);
         windSpeed = get(row, 16);
         windGust = get(row, 17);
@@ -323,6 +321,14 @@ public final class Point implements Parcelable {
 
     public void setBait(String bait) {
         this.bait = bait;
+    }
+
+    public String getLake() {
+        return lake;
+    }
+
+    public void setLake(String lake) {
+        this.lake = lake;
     }
 
     public String getFishSize() {
@@ -436,7 +442,7 @@ public final class Point implements Parcelable {
         return id + "\t" + name + "\t" + lon + "\t" + lat + "\t" + osLocalizedDateFormat.format(timeStamp) + "\t" + contactType + "\t" +
                 airTemp + "\t" + waterTemp + "\t" + bait + "\t" + fishSize + "\t" + notes + "\t" +
                 windSpeed + "\t" + windDir + "\t" + cloudCover + "\t" + dewPoint + "\t" +
-                pressure + "\t" + (humidity.isEmpty() ? " " : humidity);
+                pressure + "\t" + (humidity.isEmpty() ? " " : humidity+ "\t"+lake);
     }
 
     public String getMessage() {
@@ -448,7 +454,7 @@ public final class Point implements Parcelable {
             return String.format("%s lost one on a %s.%n%s%nhttp://maps.google.com/maps?q=%f,%f", getName().trim(), getBait(), getNotes().trim(), getLat(), getLon());
     }
 
-    public List<List<Object>> getSheetBody(String lake) {
+    public List<List<Object>> getSheetBody() {
         DateFormat dayFormat = new SimpleDateFormat(SHEET_DATE_FORMAT, Locale.US);
         DateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.US);
         String day = dayFormat.format(getTimeStamp());
@@ -476,7 +482,7 @@ public final class Point implements Parcelable {
         return 0;
     }
 
-    public List<List<Object>> getSheetBodyWithOutId(String lake) {
+    public List<List<Object>> getSheetBodyWithOutId() {
         DateFormat dayFormat = new SimpleDateFormat(SHEET_DATE_FORMAT, Locale.US);
         DateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.US);
         String day = dayFormat.format(getTimeStamp());
@@ -508,7 +514,7 @@ public final class Point implements Parcelable {
         cal.setTime(getTimeStamp());
         solunar.populate(lon, lat, cal);
         return Arrays.asList(
-                Arrays.asList(sheetId, (String) row.get(1), name, fishSize, (String) row.get(4), (String) row.get(5), day, time, bait, (String) row.get(9), (String) row.get(10), lat, lon, notes, airTemp, (String) row.get(15), windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor), solunar.moonDegree, solunar.moonState));
+                Arrays.asList(sheetId, (String) row.get(1), name, fishSize, (String) row.get(4), lake, day, time, bait, (String) row.get(9), (String) row.get(10), lat, lon, notes, airTemp, (String) row.get(15), windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor), solunar.moonDegree, solunar.moonState));
 
     }
 }

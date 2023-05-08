@@ -473,11 +473,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void addPoint(ContactType contactType, Location loc) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String username = prefs.getString("Username", null);
-        String defaultBait = prefs.getString("CurrentBait", "");
-        final Point point = new Point(0, username, contactType.toString(), loc.getLongitude(), loc.getLatitude());
-        point.setBait(defaultBait);
-        Intent addPoint = new Intent(MainActivity.this, PointActivity.class);
+        final Point point = new Point(0, prefs.getString("Username", null), contactType.toString(), loc.getLongitude(), loc.getLatitude(),prefs.getString("CurrentBait", null),prefs.getString("Lake", null));
+       Intent addPoint = new Intent(MainActivity.this, PointActivity.class);
         addPoint.putExtra("point", point);
         addPoint.putExtra("shouldNotify", true);
         startActivity(addPoint);

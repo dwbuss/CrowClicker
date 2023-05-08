@@ -399,6 +399,33 @@
                 android:text="@{point.notes}" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/lakeLbl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="end"
+                android:text="Lake"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/lake"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="80"
+                android:inputType="text"
+                android:text="@{point.lake}" />
+        </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"

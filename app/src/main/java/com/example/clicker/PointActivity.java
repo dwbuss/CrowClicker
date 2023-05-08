@@ -193,7 +193,7 @@ public class PointActivity extends AppCompatActivity {
                 finish();
             }
         };
-        sheets.storePoint(point, prefs.getString("Lake", "").trim(), callback);
+        sheets.storePoint(point, callback);
         lastAction = PUSH_ACTION;
     }
 
@@ -268,6 +268,7 @@ public class PointActivity extends AppCompatActivity {
         point.setPressure(binding.pressure.getText().toString().trim());
         point.setHumidity(binding.humidity.getText().toString().trim());
         point.setNotes(binding.notes.getText().toString().trim());
+        point.setLake(binding.lake.getText().toString().trim());
         return binding.notify.isChecked();
     }
 }

@@ -49,11 +49,7 @@ public class ClickerListener extends Flic2ButtonListener {
         MediaPlayer song = MediaPlayer.create(context, soundBite);
         song.start();
 
-        String username = prefs.getString("Username", null);
-        String defaultBait = prefs.getString("CurrentBait", "");
-        final Point point = new Point(0, username, contactType.toString(), loc.getLongitude(), loc.getLatitude());
-        point.setBait(defaultBait);
-        point.setName(username);
+        final Point point = new Point(0, prefs.getString("Username", null), contactType.toString(), loc.getLongitude(), loc.getLatitude(), prefs.getString("CurrentBait", ""), prefs.getString("Lake", ""));
         helper.addOrUpdatePoint(point);
         PointActivity.SEND_MESSAGE(point.getMessage(), contactType, prefs, context.getContentResolver());
     }

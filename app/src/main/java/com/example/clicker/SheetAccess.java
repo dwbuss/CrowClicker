@@ -235,7 +235,7 @@ public class SheetAccess {
         });
     }
 
-    public void storePoint(Point point, String lake, ClickerCallback callback) {
+    public void storePoint(Point point, ClickerCallback callback) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
             @Override
@@ -244,7 +244,7 @@ public class SheetAccess {
                 try {
                     if (point.getSheetId() == 0) {
                         if (point.getContactType().equalsIgnoreCase("CATCH")) {
-                            ValueRange body = new ValueRange().setValues(point.getSheetBodyWithOutId(lake));
+                            ValueRange body = new ValueRange().setValues(point.getSheetBodyWithOutId());
                             // store new row
                             AppendValuesResponse reponse = service.spreadsheets().values()
                                     .append(spreadsheetId, sheetName, body)
@@ -255,13 +255,13 @@ public class SheetAccess {
                                     .get(spreadsheetId, reponse.getUpdates().getUpdatedRange())
                                     .execute();
                             point.setSheetId(Long.parseLong((String) newRow.getValues().get(0).get(0)));
-                            Log.d(TAG, "Created new row " + point.getSheetBody(lake));
+                            Log.d(TAG, "Created new row " + point.getSheetBody());
                         } else {
                             Log.d(TAG, "Can only store catches");
                         }
                     } else {
                         String rowNumber = findRowNumberFromSpreadSheetForPointBySheetId(point);
-                        ValueRange body = new ValueRange().setValues(point.getSheetBody(lake));
+                        ValueRange body = new ValueRange().setValues(point.getSheetBody());
                         service.spreadsheets().values()
                                 .update(spreadsheetId, sheetName + "!A" + rowNumber, body)
                                 .setValueInputOption("USER_ENTERED")
@@ -271,7 +271,7 @@ public class SheetAccess {
                     callback.onSuccess();
                 } catch (IOException e) {
                     point.setSheetId(orgSheetId);
-                    Log.e(TAG, "Failure during store " + point.getSheetBody(lake), e);
+                    Log.e(TAG, "Failure during store " + point.getSheetBody(), e);
                     callback.onFailure();
                 }
             }

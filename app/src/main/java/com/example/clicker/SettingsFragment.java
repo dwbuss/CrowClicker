@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,19 +40,22 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             startActivity(transfer);
             return true;
         });
+        configureLakes();
         configureCatchNotificationChoices("Catch Notification");
         configureCatchNotificationChoices("Follow Notification");
         configureCatchNotificationChoices("Lost Notification");
-    }    private final ActivityResultLauncher<String[]> locationPermissionRequest =
+    }
+
+    private final ActivityResultLauncher<String[]> locationPermissionRequest =
             registerForActivityResult(new ActivityResultContracts
-                                              .RequestMultiplePermissions(), result -> {
-                                          Boolean fineLocationGranted = result.getOrDefault(
-                                                  Manifest.permission.ACCESS_FINE_LOCATION, false);
-                                          if (fineLocationGranted != null && fineLocationGranted) {
-                                              scanForButtons();
-                                          } else
-                                              Toast.makeText(getActivity(), "Scanning needs permissions for FINE accurace locations, which you have rejected", Toast.LENGTH_LONG).show();
-                                      }
+                            .RequestMultiplePermissions(), result -> {
+                        Boolean fineLocationGranted = result.getOrDefault(
+                                Manifest.permission.ACCESS_FINE_LOCATION, false);
+                        if (fineLocationGranted != null && fineLocationGranted) {
+                            scanForButtons();
+                        } else
+                            Toast.makeText(getActivity(), "Scanning needs permissions for FINE accurace locations, which you have rejected", Toast.LENGTH_LONG).show();
+                    }
             );
 
     public boolean scanForButtons() {
@@ -141,5 +145,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         contactGroups.setEntryValues(values.toArray(new CharSequence[entries.size()]));
     }
 
-
+    private void configureLakes() {
+        ListPreference lakes = findPreference("Lake");
+        SheetAccess sheets = new SheetAccess(getActivity().getApplicationContext());
+        try {
+            sheets.getSheets(lakes);
+        } catch (IOException e) {
+            Log.d(TAG, "Failed getting Lakes " + e.getMessage());
+        }
+    }
 }

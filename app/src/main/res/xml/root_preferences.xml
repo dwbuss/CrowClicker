@@ -26,7 +26,7 @@
             android:persistent="true"
             android:title="Name"
             app:useSimpleSummaryProvider="true" />
-        <EditTextPreference
+        <ListPreference
             android:defaultValue=""
             android:key="Lake"
             android:persistent="true"

@@ -5,6 +5,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.preference.ListPreference;
+
 import com.example.clicker.objectbo.Point;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -18,6 +20,8 @@ import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
 import com.google.api.services.sheets.v4.model.DimensionRange;
 import com.google.api.services.sheets.v4.model.Request;
+import com.google.api.services.sheets.v4.model.Sheet;
+import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import org.apache.commons.io.IOUtils;
@@ -28,10 +32,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -95,6 +101,36 @@ public class SheetAccess {
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Failure during import.", e);
+                }
+            }
+        });
+    }
+
+
+    public void getSheets(ListPreference lakes) throws IOException {
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Spreadsheet sp = service.spreadsheets().get(spreadsheetId).execute();
+                    List<Sheet> sheets = sp.getSheets();
+                    List<String> sheetNames = sheets.stream().map(sheet -> sheet.getProperties().getTitle()).collect(Collectors.toList());
+
+                    List<String> entries = new LinkedList<String>();
+                    List<String> values = new LinkedList<String>();
+                    sheetNames.forEach(sheet -> {
+                        if (!sheet.equalsIgnoreCase("data") &&
+                                !sheet.equalsIgnoreCase("test")) {
+                            entries.add(sheet);
+                            values.add(sheet);
+                        }
+                    });
+
+                    lakes.setEntries(entries.toArray(new CharSequence[entries.size()]));
+                    lakes.setEntryValues(values.toArray(new CharSequence[entries.size()]));
+
+                } catch (Exception e) {
                 }
             }
         });
@@ -212,12 +248,12 @@ public class SheetAccess {
                         int rowNumber = Integer.parseInt(findRowNumberFromSpreadSheetForPointBySheetId(point));
                         Request request = new Request()
                                 .setDeleteDimension(new DeleteDimensionRequest()
-                                                            .setRange(new DimensionRange()
-                                                                              .setSheetId(sheetId)
-                                                                              .setDimension("ROWS")
-                                                                              .setStartIndex(rowNumber - 1)
-                                                                              .setEndIndex(rowNumber)
-                                                            )
+                                        .setRange(new DimensionRange()
+                                                .setSheetId(sheetId)
+                                                .setDimension("ROWS")
+                                                .setStartIndex(rowNumber - 1)
+                                                .setEndIndex(rowNumber)
+                                        )
                                 );
                         List<Request> requests = new ArrayList<Request>();
                         requests.add(request);

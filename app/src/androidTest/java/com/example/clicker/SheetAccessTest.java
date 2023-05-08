@@ -106,7 +106,7 @@ public class SheetAccessTest {
 
     @Ignore
     public void canRowGivenSheetId() throws Exception {
-        Point paulIn2022 = new Point(222, "Paul",  "CATCH", -93.82745682, 49.22014097, "BUCKTAIL", "CROW");
+        Point paulIn2022 = new Point(222, "Paul", "CATCH", -93.82745682, 49.22014097, "BUCKTAIL", "CROW");
         paulIn2022.setSheetId(1618);
         String row = access.findRowNumberFromSpreadSheetForPointBySheetId(paulIn2022);
         assertEquals("1060", row);

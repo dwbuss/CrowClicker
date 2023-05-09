@@ -51,7 +51,7 @@ public class ReportActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int tripLength = Integer.parseInt(prefs.getString("TripLength", "0"));
-        dataModels = new PointsHelper(this).getPointsForTrip(tripLength);
+        dataModels = new PointsHelper(this).getPointsForTrip(tripLength, prefs.getString("Lake", ""));
 
         adapter = new PointAdapter(dataModels, editPointActivity);
         layoutManager = new LinearLayoutManager(this);

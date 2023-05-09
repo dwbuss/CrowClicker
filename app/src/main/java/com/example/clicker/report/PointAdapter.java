@@ -50,7 +50,7 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointHolder>
 
         holder.txtName.setText(point.getName());
         String timeStamp = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(point.getTimeStamp());
-        holder.txtType.setText(timeStamp);
+        holder.txtType.setText(timeStamp + " " + point.getLake());
 
         if (point.getContactType().equalsIgnoreCase(ContactType.CATCH.toString()))
             holder.txtLenOrType.setText(point.getFishSize());

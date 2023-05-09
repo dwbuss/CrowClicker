@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.example.clicker.databinding.ActivityTransferBinding;
 import com.example.clicker.objectbo.Point;
@@ -33,7 +34,7 @@ import java.util.List;
 public class TransferActivity extends AppCompatActivity {
 
     private static final String[] exportChoices = {"Follows", "Contacts", "Catches", "Labels"};
-    private boolean[] checkedItems = { false, false, true, false };
+    private boolean[] checkedItems = {false, false, true, false};
     private static final int EXPORT_FOLLOWS_INDEX = 0;
     private static final int EXPORT_CONTACTS_INDEX = 1;
     private static final int EXPORT_CATCHES_INDEX = 2;
@@ -85,10 +86,14 @@ public class TransferActivity extends AppCompatActivity {
     private List<Point> getPointsForExport() {
         PointsHelper pointsHelper = new PointsHelper(TransferActivity.this.getApplicationContext());
         List<Point> points = new LinkedList<Point>();
-        if (checkedItems[EXPORT_CATCHES_INDEX]) points.addAll(pointsHelper.getAllPointsOf(ContactType.CATCH));
-        if (checkedItems[EXPORT_CONTACTS_INDEX]) points.addAll(pointsHelper.getAllPointsOf(ContactType.CONTACT));
-        if (checkedItems[EXPORT_FOLLOWS_INDEX]) points.addAll(pointsHelper.getAllPointsOf(ContactType.FOLLOW));
-        if (checkedItems[EXPORT_LABELS_INDEX]) points.addAll(pointsHelper.getAllLabels());
+        String lake = PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", "");
+        if (checkedItems[EXPORT_CATCHES_INDEX])
+            points.addAll(pointsHelper.getAllPointsOf(ContactType.CATCH, lake));
+        if (checkedItems[EXPORT_CONTACTS_INDEX])
+            points.addAll(pointsHelper.getAllPointsOf(ContactType.CONTACT, lake));
+        if (checkedItems[EXPORT_FOLLOWS_INDEX])
+            points.addAll(pointsHelper.getAllPointsOf(ContactType.FOLLOW, lake));
+        if (checkedItems[EXPORT_LABELS_INDEX]) points.addAll(pointsHelper.getAllLabels(lake));
         return points;
     }
 
@@ -108,7 +113,7 @@ public class TransferActivity extends AppCompatActivity {
                             String suffix = "";
                             if (point.getContactType().equals(ContactType.CATCH.toString())) {
                                 icon = "Fish";
-                                suffix = "-"+point.getFishSize();
+                                suffix = "-" + point.getFishSize();
                             }
                             if (point.getContactType().equals(ContactType.CONTACT.toString())) {
                                 icon = "Redfish";
@@ -163,7 +168,7 @@ public class TransferActivity extends AppCompatActivity {
                 .setMessage("Are you sure to delete all CATCHES?")
                 .setPositiveButton("Yes", (dialogInterface, i) -> {
                     PointsHelper helper = new PointsHelper(getApplicationContext());
-                    long total = helper.clearAllPointsOf(ContactType.CATCH);
+                    long total = helper.clearAllPointsOf(ContactType.CATCH, PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", ""));
                     Toast.makeText(getApplicationContext(), String.format("Successfully deleted %d catches", total), Toast.LENGTH_SHORT).show();
                     dialogInterface.dismiss();
                 })
@@ -172,7 +177,7 @@ public class TransferActivity extends AppCompatActivity {
 
     public void importPoints(View view) {
         SheetAccess sheet = new SheetAccess(getApplicationContext());
-        sheet.syncSheet();
+        sheet.syncSheet(PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", ""));
         Toast.makeText(this, "Background sync started.", Toast.LENGTH_LONG).show();
     }
 
@@ -193,7 +198,8 @@ public class TransferActivity extends AppCompatActivity {
                     checkedItems[which] = isChecked;
                 })
                 .setPositiveButton("Export", positiveButton)
-                .setNegativeButton("Cancel", (dialogInterface, i) -> {});
+                .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                });
         return dialog.create();
     }
 

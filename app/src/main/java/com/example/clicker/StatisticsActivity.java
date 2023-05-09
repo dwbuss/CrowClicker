@@ -40,6 +40,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private void updateCounts() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String username = prefs.getString("Username", "Angler");
+        String lake = prefs.getString("Lake", "");
 
         binding.userDailyLabel.setText( String.format("%s's Daily Count", username) );
         binding.userDailyCatch.setText(pointsHelper.getDailyCatch(username));
@@ -56,16 +57,16 @@ public class StatisticsActivity extends AppCompatActivity {
         binding.tripContact.setText(pointsHelper.getTripContact(tripLength));
         binding.tripFollow.setText(pointsHelper.getTripFollow(tripLength));
 
-        binding.totalCatch.setText(pointsHelper.getTotalCatch());
-        binding.totalContact.setText(pointsHelper.getTotalContact());
-        binding.totalFollow.setText(pointsHelper.getTotalFollow());
+        binding.totalCatch.setText(pointsHelper.getTotalCatch(lake));
+        binding.totalContact.setText(pointsHelper.getTotalContact(lake));
+        binding.totalFollow.setText(pointsHelper.getTotalFollow(lake));
     }
 
     private void buildLeaderBoard() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int tripLength = Integer.parseInt(prefs.getString("TripLength", "0"));
 
-        List<Point> points = pointsHelper.getPointsForTrip(tripLength);
+        List<Point> points = pointsHelper.getPointsForTrip(tripLength, prefs.getString("Lake", ""));
 
         // Top anglers by inches caught
         String max = maxLen(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));

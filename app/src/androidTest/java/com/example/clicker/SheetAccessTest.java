@@ -83,7 +83,7 @@ public class SheetAccessTest {
         } catch (Exception e) {
             Log.e(TAG, "Failure to create SheetAccess", e);
         }
-        List<List<Object>> rows = access.getRowsFromSpreadSheet();
+        List<List<Object>> rows = access.getRowsFromSpreadSheet("test lake");
         for (List row : rows) {
             try {
                 Point point = new Point(row);

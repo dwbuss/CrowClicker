@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import io.objectbox.Box;
@@ -56,8 +57,6 @@ public class SheetAccess {
     final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
     private final Context context;
     Sheets service;
-    String sheetName = "test";
-    int sheetId = 1890696516;
     private String token;
 
     public SheetAccess(Context appContext) {
@@ -75,7 +74,7 @@ public class SheetAccess {
         }
     }
 
-    public void importSheet() {
+    public void importSheet(String lake) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
             @Override
@@ -84,7 +83,7 @@ public class SheetAccess {
                     BoxStore boxStore = ((ObjectBoxApp) context).getBoxStore();
                     Box<Point> pointBox = boxStore.boxFor(Point.class);
 
-                    List<List<Object>> values = getRowsFromSpreadSheet();
+                    List<List<Object>> values = getRowsFromSpreadSheet(lake);
                     if (values == null || values.isEmpty()) {
                         Log.d(TAG, "No data found.");
                     } else {
@@ -136,21 +135,21 @@ public class SheetAccess {
         });
     }
 
-    public List<List<Object>> getRowsFromSpreadSheet() throws IOException {
+    public List<List<Object>> getRowsFromSpreadSheet(String lake) throws IOException {
         ValueRange response = service.spreadsheets().values()
-                .get(spreadsheetId, sheetName)
+                .get(spreadsheetId, lake)
                 .execute();
         return response.getValues();
     }
 
     //used to fix moon phase logic on all data.
-    public void updateMoonOnAllRows() {
+    public void updateMoonOnAllRows(String lake) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    List<List<Object>> rows = getRowsFromSpreadSheet();
+                    List<List<Object>> rows = getRowsFromSpreadSheet(lake);
                     Calendar cal = Calendar.getInstance(Locale.US);
                     Solunar solunar = new Solunar();
                     int updatedRows = 0;
@@ -183,7 +182,7 @@ public class SheetAccess {
                                 if (!orgPhase.equalsIgnoreCase(solunar.moonPhase)) {
                                     ValueRange body = new ValueRange().setValues(Arrays.asList(row));
                                     service.spreadsheets().values()
-                                            .update(spreadsheetId, sheetName + "!A" + updateRow, body)
+                                            .update(spreadsheetId, point.getLake() + "!A" + updateRow, body)
                                             .setValueInputOption("USER_ENTERED")
                                             .execute();
                                     Log.i(TAG, "Updated row " + updateRow);
@@ -203,7 +202,7 @@ public class SheetAccess {
         });
     }
 
-    public void syncSheet() {
+    public void syncSheet(String lake) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
             @Override
@@ -211,19 +210,17 @@ public class SheetAccess {
                 try {
                     BoxStore boxStore = ((ObjectBoxApp) context).getBoxStore();
                     Box<Point> pointBox = boxStore.boxFor(Point.class);
-                    List<List<Object>> spreadSheetRows = getRowsFromSpreadSheet();
+                    List<List<Object>> spreadSheetRows = getRowsFromSpreadSheet(lake);
                     if (spreadSheetRows == null || spreadSheetRows.isEmpty()) {
                         Log.d(TAG, "No data found.");
                     } else {
                         int counter = 0;
                         List<Point> localPoints = pointBox.query().build().find();
-                        localPoints.stream().filter(p -> p.getSheetId() != 0).forEach(p -> pointBox.remove(p.getId()));
+                        localPoints.stream().filter(p -> p.getSheetId() != 0 && p.getLake().equalsIgnoreCase(lake)).forEach(p -> pointBox.remove(p.getId()));
                         for (List row : spreadSheetRows) {
                             try {
-                                if (((String) row.get(5)).equalsIgnoreCase("Crow")) {
-                                    pointBox.put(new Point(row));
-                                    counter++;
-                                }
+                                pointBox.put(new Point(row));
+                                counter++;
                             } catch (Exception e) {
                                 Log.d(TAG, "Invalid Point Row:" + row);
                             }
@@ -249,7 +246,7 @@ public class SheetAccess {
                         Request request = new Request()
                                 .setDeleteDimension(new DeleteDimensionRequest()
                                         .setRange(new DimensionRange()
-                                                .setSheetId(sheetId)
+                                                .setSheetId(getSheetId(point.getLake()))
                                                 .setDimension("ROWS")
                                                 .setStartIndex(rowNumber - 1)
                                                 .setEndIndex(rowNumber)
@@ -271,6 +268,17 @@ public class SheetAccess {
         });
     }
 
+    private Integer getSheetId(String lake) throws IOException {
+        AtomicReference<Integer> sheetId = new AtomicReference<>(0);
+        Spreadsheet sp = service.spreadsheets().get(spreadsheetId).execute();
+        List<Sheet> sheets = sp.getSheets();
+        sheets.stream().forEach(sheet -> {
+            if (sheet.getProperties().getTitle().equalsIgnoreCase(lake))
+                sheetId.set(sheet.getProperties().getSheetId());
+        });
+        return sheetId.get();
+    }
+
     public void storePoint(Point point, ClickerCallback callback) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
@@ -283,7 +291,7 @@ public class SheetAccess {
                             ValueRange body = new ValueRange().setValues(point.getSheetBodyWithOutId());
                             // store new row
                             AppendValuesResponse reponse = service.spreadsheets().values()
-                                    .append(spreadsheetId, sheetName, body)
+                                    .append(spreadsheetId, point.getLake(), body)
                                     .setValueInputOption("USER_ENTERED")
                                     .execute();
                             // returns new row with generated sheetid
@@ -299,7 +307,7 @@ public class SheetAccess {
                         String rowNumber = findRowNumberFromSpreadSheetForPointBySheetId(point);
                         ValueRange body = new ValueRange().setValues(point.getSheetBody());
                         service.spreadsheets().values()
-                                .update(spreadsheetId, sheetName + "!A" + rowNumber, body)
+                                .update(spreadsheetId, point.getLake() + "!A" + rowNumber, body)
                                 .setValueInputOption("USER_ENTERED")
                                 .execute();
                         Log.d(TAG, "Updated row " + rowNumber);
@@ -316,9 +324,9 @@ public class SheetAccess {
 
     String findRowNumberFromSpreadSheetForPointBySheetId(Point point) throws IOException {
         String row = "";
-        List<List<Object>> values = getRowsFromSpreadSheet();
+        List<List<Object>> values = getRowsFromSpreadSheet(point.getLake());
         if (values == null || values.isEmpty()) {
-            Log.d(TAG, "No data found." + sheetName);
+            Log.d(TAG, "No data found." + point.getLake());
             return null;
         } else {
             for (int i = values.size() - 1; i >= 0; i--) {

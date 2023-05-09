@@ -1,6 +1,9 @@
 package com.example.clicker.objectbo;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
 
 import com.example.clicker.ContactType;
 import com.example.clicker.ObjectBoxApp;
@@ -17,58 +20,63 @@ import io.objectbox.query.QueryCondition;
 
 public class PointsHelper {
     private final Box<Point> pointBox;
+    private final SharedPreferences prefs;
 
     public PointsHelper(Context context) {
         BoxStore boxStore = ((ObjectBoxApp) context.getApplicationContext()).getBoxStore();
+        prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         pointBox = boxStore.boxFor(Point.class);
     }
 
-    public PointsHelper(Box<Point> pointBox) {
-        this.pointBox = pointBox;
+    public String getDailyCatch() {
+        return retrieveDaily(ContactType.CATCH, null, prefs.getString("Lake", ""));
     }
 
-    public String getDailyCatch() { return retrieveDaily(ContactType.CATCH, null); }
-
     public String getDailyContact() {
-        return retrieveDaily(ContactType.CONTACT, null);
+        return retrieveDaily(ContactType.CONTACT, null, prefs.getString("Lake", ""));
     }
 
     public String getDailyFollow() {
-        return retrieveDaily(ContactType.FOLLOW, null);
+        return retrieveDaily(ContactType.FOLLOW, null, prefs.getString("Lake", ""));
     }
 
-    public String getDailyCatch(String angler) { return retrieveDaily(ContactType.CATCH, angler); }
+    public String getDailyCatch(String angler) {
+        return retrieveDaily(ContactType.CATCH, angler, prefs.getString("Lake", ""));
+    }
 
     public String getDailyContact(String angler) {
-        return retrieveDaily(ContactType.CONTACT, angler);
+        return retrieveDaily(ContactType.CONTACT, angler, prefs.getString("Lake", ""));
     }
 
     public String getDailyFollow(String angler) {
-        return retrieveDaily(ContactType.FOLLOW, angler);
+        return retrieveDaily(ContactType.FOLLOW, angler, prefs.getString("Lake", ""));
     }
 
     public String getTripCatch(int tripLength) {
-        return retrieveTrip(tripLength, ContactType.CATCH);
+        return retrieveTrip(tripLength, ContactType.CATCH, prefs.getString("Lake", ""));
     }
 
     public String getTripContact(int tripLength) {
-        return retrieveTrip(tripLength, ContactType.CONTACT);
+        return retrieveTrip(tripLength, ContactType.CONTACT, prefs.getString("Lake", ""));
     }
 
     public String getTripFollow(int tripLength) {
-        return retrieveTrip(tripLength, ContactType.FOLLOW);
+        return retrieveTrip(tripLength, ContactType.FOLLOW, prefs.getString("Lake", ""));
     }
 
-    public String getTotalCatch() {
-        return Long.toString(pointBox.query(Point_.contactType.equal(ContactType.CATCH.toString())).build().count());
+    public String getTotalCatch(String lake) {
+        QueryCondition<Point> baseQuery = Point_.contactType.equal(ContactType.CATCH.toString()).and(Point_.lake.equal(lake));
+        return Long.toString(pointBox.query(baseQuery).build().count());
     }
 
-    public String getTotalContact() {
-        return Long.toString(pointBox.query(Point_.contactType.equal(ContactType.CONTACT.toString())).build().count());
+    public String getTotalContact(String lake) {
+        QueryCondition<Point> baseQuery = Point_.contactType.equal(ContactType.CONTACT.toString()).and(Point_.lake.equal(lake));
+        return Long.toString(pointBox.query(baseQuery).build().count());
     }
 
-    public String getTotalFollow() {
-        return Long.toString(pointBox.query(Point_.contactType.equal(ContactType.FOLLOW.toString())).build().count());
+    public String getTotalFollow(String lake) {
+        QueryCondition<Point> baseQuery = Point_.contactType.equal(ContactType.FOLLOW.toString()).and(Point_.lake.equal(lake));
+        return Long.toString(pointBox.query(baseQuery).build().count());
     }
 
     public Point getPointById(long id) {
@@ -83,8 +91,8 @@ public class PointsHelper {
         pointBox.removeAll();
     }
 
-    public long clearAllPointsOf(ContactType type) {
-        return pointBox.query(Point_.contactType.equal(type.toString()).and(Point_.sheetId.notEqual(0))).build().remove();
+    public long clearAllPointsOf(ContactType type, String lake) {
+        return pointBox.query(Point_.contactType.equal(type.toString()).and(Point_.sheetId.notEqual(0)).and(Point_.lake.equal(lake))).build().remove();
     }
 
     public void deletePoint(long id) {
@@ -98,14 +106,14 @@ public class PointsHelper {
         return pointBox.query().build().find();
     }
 
-    public ArrayList<Point> getPointsForTrip(int tripLength) {
+    public ArrayList<Point> getPointsForTrip(int tripLength, String lake) {
         Calendar today = Calendar.getInstance(Locale.US);
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
         today.add(Calendar.DATE, 0 - tripLength);
         int flags = QueryBuilder.NULLS_LAST | QueryBuilder.DESCENDING;
 
-        List<Point> tempPoints = pointBox.query()
+        List<Point> tempPoints = pointBox.query(Point_.lake.equal(lake))
                 .order(Point_.timeStamp, flags)
                 .greater(Point_.timeStamp, today.getTime())
                 .build().find();
@@ -117,34 +125,38 @@ public class PointsHelper {
         return points;
     }
 
-    private String retrieveDaily(ContactType type, String angler) {
+    private String retrieveDaily(ContactType type, String angler, String lake) {
         Calendar today = Calendar.getInstance(Locale.US);
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
-        return retrieveFor(today, type, angler);
+        return retrieveFor(today, type, angler, lake);
     }
 
-    private String retrieveTrip(int tripLength, ContactType type) {
+    private String retrieveTrip(int tripLength, ContactType type, String lake) {
         Calendar today = Calendar.getInstance(Locale.US);
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
         today.add(Calendar.DATE, 0 - tripLength);
-        return retrieveFor(today, type, null);
+        return retrieveFor(today, type, null, lake);
     }
 
-    private String retrieveFor(Calendar date, ContactType type, String angler) {
+    private String retrieveFor(Calendar date, ContactType type, String angler, String lake) {
         boolean haveAngler = (angler != null && !angler.trim().isEmpty());
-        QueryCondition<Point> baseQuery = Point_.contactType.equal(type.toString()).and(Point_.timeStamp.greater(date.getTime()));
+        QueryCondition<Point> baseQuery = Point_.contactType.equal(type.toString())
+                .and(Point_.timeStamp.greater(date.getTime()))
+                .and(Point_.lake.equal(lake));
         if (haveAngler)
             baseQuery = baseQuery.and(Point_.name.equal(angler));
         return Long.toString(pointBox.query(baseQuery).build().count());
     }
 
-    public List<Point> getAllLabels() {
-        return pointBox.query(Point_.name.equal("label")).build().find();
+    public List<Point> getAllLabels(String lake) {
+        QueryCondition<Point> baseQuery = Point_.name.equal("label").and(Point_.lake.equal(lake));
+        return pointBox.query(baseQuery).build().find();
     }
 
-    public List<Point> getAllPointsOf(ContactType type) {
-        return pointBox.query(Point_.contactType.equal(type.toString())).build().find();
+    public List<Point> getAllPointsOf(ContactType type, String lake) {
+        QueryCondition<Point> baseQuery = Point_.contactType.equal(type.toString()).and(Point_.lake.equal(lake));
+        return pointBox.query(baseQuery).build().find();
     }
 }

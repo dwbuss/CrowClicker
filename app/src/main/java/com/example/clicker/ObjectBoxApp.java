@@ -1,9 +1,6 @@
 package com.example.clicker;
 
-import static android.Manifest.permission.BLUETOOTH_CONNECT;
-
 import android.Manifest;
-import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,7 +17,6 @@ import java.util.List;
 import io.flic.flic2libandroid.Flic2Button;
 import io.flic.flic2libandroid.Flic2Manager;
 import io.objectbox.BoxStore;
-import io.objectbox.DebugFlags;
 
 
 public class ObjectBoxApp extends Application {

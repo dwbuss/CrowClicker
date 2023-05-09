@@ -1,7 +1,5 @@
 package com.example.clicker;
 
-import static org.locationtech.proj4j.parser.Proj4Keyword.f;
-
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.graphics.Color;

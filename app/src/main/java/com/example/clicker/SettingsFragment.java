@@ -17,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 

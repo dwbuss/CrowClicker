@@ -1,7 +1,6 @@
 package com.example.clicker;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import com.example.clicker.objectbo.Point;
 import com.github.mikephil.charting.data.Entry;

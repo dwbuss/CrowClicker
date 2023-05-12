@@ -87,8 +87,8 @@ public class PointsHelper {
         pointBox.put(point);
     }
 
-    public void clearPoints() {
-        pointBox.removeAll();
+    public void clearPoints(String lake) {
+        pointBox.query(Point_.lake.equal(lake)).build().remove();
     }
 
     public long clearAllPointsOf(ContactType type, String lake) {

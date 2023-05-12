@@ -246,7 +246,7 @@ public class SheetAccess {
                         Request request = new Request()
                                 .setDeleteDimension(new DeleteDimensionRequest()
                                         .setRange(new DimensionRange()
-                                                .setSheetId(getSheetId(point.getLake()))
+                                                .setSheetId(Integer.parseInt(getSheetId(point.getLake())))
                                                 .setDimension("ROWS")
                                                 .setStartIndex(rowNumber - 1)
                                                 .setEndIndex(rowNumber)
@@ -268,7 +268,7 @@ public class SheetAccess {
         });
     }
 
-    private Integer getSheetId(String lake) throws IOException {
+    private String getSheetId(String lake) throws IOException {
         AtomicReference<Integer> sheetId = new AtomicReference<>(0);
         Spreadsheet sp = service.spreadsheets().get(spreadsheetId).execute();
         List<Sheet> sheets = sp.getSheets();
@@ -276,7 +276,7 @@ public class SheetAccess {
             if (sheet.getProperties().getTitle().equalsIgnoreCase(lake))
                 sheetId.set(sheet.getProperties().getSheetId());
         });
-        return sheetId.get();
+        return Integer.toString(sheetId.get());
     }
 
     public void storePoint(Point point, ClickerCallback callback) {

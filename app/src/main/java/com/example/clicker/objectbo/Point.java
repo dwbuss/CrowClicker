@@ -175,7 +175,7 @@ public final class Point implements Parcelable {
     }
 
     public static String CSV_HEADER() {
-        return "id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\nlake\n";
+        return "id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\tlake\n";
     }
 
     @Override

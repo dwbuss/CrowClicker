@@ -148,13 +148,14 @@ public class TransferActivity extends AppCompatActivity {
     }
 
     public void clearPoints(View view) {
+        String lake = PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", "");
         new AlertDialog.Builder(view.getContext())
                 .setTitle("Warning!!")
                 .setIcon(R.drawable.ic_baseline_warning_24)
-                .setMessage("Are you sure to delete all points?")
+                .setMessage("Are you sure to delete all points for lake "+lake+"?")
                 .setPositiveButton("Yes", (dialogInterface, i) -> {
                     PointsHelper helper = new PointsHelper(getApplicationContext());
-                    helper.clearPoints();
+                    helper.clearPoints(lake);
                     Toast.makeText(getApplicationContext(), "Delete successfully", Toast.LENGTH_SHORT).show();
                     dialogInterface.dismiss();
                 })
@@ -162,13 +163,14 @@ public class TransferActivity extends AppCompatActivity {
     }
 
     public void clearCatches(View view) {
+        String lake = PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", "");
         new AlertDialog.Builder(view.getContext())
                 .setTitle("Warning!!")
                 .setIcon(R.drawable.ic_baseline_warning_24)
-                .setMessage("Are you sure to delete all CATCHES?")
+                .setMessage("Are you sure to delete all CATCHES fro lake "+lake+"?")
                 .setPositiveButton("Yes", (dialogInterface, i) -> {
                     PointsHelper helper = new PointsHelper(getApplicationContext());
-                    long total = helper.clearAllPointsOf(ContactType.CATCH, PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", ""));
+                    long total = helper.clearAllPointsOf(ContactType.CATCH, lake);
                     Toast.makeText(getApplicationContext(), String.format("Successfully deleted %d catches", total), Toast.LENGTH_SHORT).show();
                     dialogInterface.dismiss();
                 })
@@ -177,8 +179,9 @@ public class TransferActivity extends AppCompatActivity {
 
     public void importPoints(View view) {
         SheetAccess sheet = new SheetAccess(getApplicationContext());
-        sheet.syncSheet(PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", ""));
-        Toast.makeText(this, "Background sync started.", Toast.LENGTH_LONG).show();
+        String lake = PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", "");
+        sheet.syncSheet(lake);
+        Toast.makeText(this, "Background sync for "+lake+" started.", Toast.LENGTH_LONG).show();
     }
 
     public void importFromTSV(View view) {

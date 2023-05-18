@@ -48,13 +48,13 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     private Button btnTimePicker;
 
     private CombinedChart mChart;
-    private Weather weather;
+    private Weather2 weather;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        weather = new Weather();
+        weather = new Weather2();
         setContentView(R.layout.activity_forecast);
         Button homeBtn = findViewById(R.id.home);
         homeBtn.setOnClickListener(new View.OnClickListener() {

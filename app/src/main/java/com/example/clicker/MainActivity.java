@@ -642,9 +642,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             if (!file.exists())
                 Toast.makeText(this, "File not Found" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
-
-            TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
-            mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+            else {
+                TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
+                mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+            }
         } catch (Exception e) {
             Log.e(TAG, "Failed to load Satellite.mbtiles", e);
             Toast.makeText(this, "Failed to load Satellite mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();

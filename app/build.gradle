@@ -27,7 +27,7 @@ android {
         versionCode 2
         versionName "2.10"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        manifestPlaceholders = [mapApiKey: mapProperties['google_maps_api_key'], googleCreds: mapProperties['google_creds']]
+        manifestPlaceholders = [mapApiKey: mapProperties['google_maps_api_key'], googleCreds: mapProperties['google_creds'], weatherKey: mapProperties['weather.key']]
     }
     buildTypes {
         release {

@@ -1,6 +1,8 @@
 package com.example.clicker;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -25,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Weather2 {
 
-    public static final String KEY = "LA5HBECPGDNRF7CSZUEG7U55K";
+    public static String KEY = "LA5HBECPGDNRF7CSZUEG7U55K";
     private static final String TAG = "Weather2";
     public static final String VISUAL_CROSSING = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/%f,%f/%d?key=%s";
     public String temperature;
@@ -46,6 +48,16 @@ public class Weather2 {
     ArrayList<BarEntry> gustPoints;
     ArrayList<Point> contactPoints;
 
+    public Weather2(final Context appContext) {
+        String apiKey = "MISSING";
+        try {
+            Bundle metaData = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA).metaData;
+            apiKey = metaData.getString("com.visualcrossing.API_KEY", "MISSING");
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Failure retrieving weather API key.", e);
+        }
+        this.KEY = apiKey;
+    }
 
     public void populate(double lat, double lon, Date cal, Context context, final ClickerCallback callback) {
         String url = String.format(VISUAL_CROSSING, lat, lon, (cal.getTime() / 1000), KEY);

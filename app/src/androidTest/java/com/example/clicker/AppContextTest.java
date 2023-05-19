@@ -38,6 +38,7 @@ public class AppContextTest {
         assertNotNull(metaData);
         assertNotEquals("MISSING", metaData.getString("com.google.android.maps.v2.API_KEY"));
         assertNotEquals("MISSING", metaData.getString("com.google.api.credentials"));
+        assertNotEquals("MISSING", metaData.getString( "com.visualcrossing.API_KEY"));
     }
 
     @Test

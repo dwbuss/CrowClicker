@@ -41,6 +41,9 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="${mapApiKey}" />
         <meta-data
+            android:name="com.visualcrossing.API_KEY"
+            android:value="${weatherKey}" />
+        <meta-data
             android:name="com.google.api.credentials"
             android:value="${googleCreds}" />
 

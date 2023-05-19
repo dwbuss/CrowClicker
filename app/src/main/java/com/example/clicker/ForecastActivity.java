@@ -2,12 +2,14 @@ package com.example.clicker;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -43,6 +45,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class ForecastActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = "ForecastActivity";
     private Calendar cal;
     private Button btnDatePicker;
     private Button btnTimePicker;
@@ -54,7 +57,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        weather = new Weather2();
+        weather = new Weather2(this);
         setContentView(R.layout.activity_forecast);
         Button homeBtn = findViewById(R.id.home);
         homeBtn.setOnClickListener(new View.OnClickListener() {

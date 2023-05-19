@@ -200,7 +200,7 @@ public class PointActivity extends AppCompatActivity {
     public void weatherButton(View v) {
         updatePoint();
         try {
-            final Weather2 weather = new Weather2();
+            final Weather2 weather = new Weather2(v.getContext());
             weather.populate(point.getLat(), point.getLon(), point.getTimeStamp(), this, new ClickerCallback() {
                 @Override
                 public void onSuccess() {

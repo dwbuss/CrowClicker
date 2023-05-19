@@ -2,14 +2,12 @@ package com.example.clicker;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -51,13 +49,13 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     private Button btnTimePicker;
 
     private CombinedChart mChart;
-    private Weather2 weather;
+    private Weather weather;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        weather = new Weather2(this);
+        weather = new Weather(this);
         setContentView(R.layout.activity_forecast);
         Button homeBtn = findViewById(R.id.home);
         homeBtn.setOnClickListener(new View.OnClickListener() {

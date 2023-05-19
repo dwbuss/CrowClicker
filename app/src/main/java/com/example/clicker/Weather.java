@@ -1,6 +1,8 @@
 package com.example.clicker;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -25,7 +27,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Weather {
 
-    private static final String TAG = "weather";
+    public static String KEY = "LA5HBECPGDNRF7CSZUEG7U55K";
+    private static final String TAG = "Weather2";
+    public static final String VISUAL_CROSSING = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/%f,%f/%d?key=%s";
     public String temperature;
     public String feelsLike;
     public String dewPoint;
@@ -44,9 +48,19 @@ public class Weather {
     ArrayList<BarEntry> gustPoints;
     ArrayList<Point> contactPoints;
 
+    public Weather(final Context appContext) {
+        String apiKey = "MISSING";
+        try {
+            Bundle metaData = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA).metaData;
+            apiKey = metaData.getString("com.visualcrossing.API_KEY", "MISSING");
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Failure retrieving weather API key.", e);
+        }
+        this.KEY = apiKey;
+    }
 
     public void populate(double lat, double lon, Date cal, Context context, final ClickerCallback callback) {
-        String url = "https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + lat + "," + lon + "," + (cal.getTime() / 1000);
+        String url = String.format(VISUAL_CROSSING, lat, lon, (cal.getTime() / 1000), KEY);
         populate(url, context, callback);
     }
 
@@ -61,18 +75,18 @@ public class Weather {
                 response -> {
                     try {
                         JSONObject reader = new JSONObject(response);
-                        JSONObject main = reader.getJSONObject("currently");
-                        temperature = ((int) Double.parseDouble(main.getString("temperature"))) + "";
-                        feelsLike = ((int) Double.parseDouble(main.getString("apparentTemperature"))) + "";
-                        dewPoint = ((int) Double.parseDouble(main.getString("dewPoint"))) + "";
-                        windSpeed = ((int) Double.parseDouble(main.getString("windSpeed"))) + "";
-                        windDir = getCardinalDirection(main.getDouble("windBearing"));
-                        windGust = ((int) Double.parseDouble(main.getString("windGust"))) + "";
-                        date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("time"))));
-                        precipProbability = main.getString("precipProbability");
+                        JSONObject main = reader.getJSONArray("days").getJSONObject(0);
+                        temperature = ((int) Double.parseDouble(main.getString("temp"))) + "";
+                        feelsLike = ((int) Double.parseDouble(main.getString("feelslike"))) + "";
+                        dewPoint = ((int) Double.parseDouble(main.getString("dew"))) + "";
+                        windSpeed = ((int) Double.parseDouble(main.getString("windspeed"))) + "";
+                        windDir = getCardinalDirection(main.getDouble("winddir"));
+                        windGust = ((int) Double.parseDouble(main.getString("windgust"))) + "";
+                        date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("datetimeEpoch"))));
+                        precipProbability = main.getString("precipprob");
                         humidity = main.getString("humidity");
                         pressure = ((int) Double.parseDouble(main.getString("pressure"))) + "";
-                        cloudCover = main.getString("cloudCover");
+                        cloudCover = main.getString("cloudcover");
                     } catch (JSONException e) {
                         Log.e(TAG, "Failure to create SheetAccess", e);
                     }
@@ -110,32 +124,33 @@ public class Weather {
             }
         });
 
-        queue.add(pullPressure("https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + lat + "," + lon + "," + (yesterday.getTime() / 1000), callback, lat, lon));
-        queue.add(pullPressure("https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + lat + "," + lon + "," + (today.getTime() / 1000), callback, lat, lon));
-        queue.add(pullPressure("https://api.darksky.net/forecast/9741785dc8b4e476aa45f20076c71fd9/" + lat + "," + lon + "," + (tomorrow.getTime() / 1000), callback, lat, lon));
+        queue.add(pullPressure(String.format(VISUAL_CROSSING, lat, lon, (yesterday.getTime() / 1000), KEY), callback, lat, lon));
+        queue.add(pullPressure(String.format(VISUAL_CROSSING, lat, lon, (today.getTime() / 1000), KEY), callback, lat, lon));
+        queue.add(pullPressure(String.format(VISUAL_CROSSING, lat, lon, (tomorrow.getTime() / 1000), KEY), callback, lat, lon));
     }
 
     private StringRequest pullPressure(String url, ClickerCallback callback, double lat, double lon) {
+        Log.i(TAG, url);
         return new StringRequest(Request.Method.GET, url,
                 response -> {
                     try {
+                        Log.i(TAG, response);
                         JSONObject reader = new JSONObject(response);
-                        JSONObject daily = reader.getJSONObject("daily");
-                        JSONArray dailyData = daily.getJSONArray("data");
+                        JSONObject dailyData = reader.getJSONArray("days").getJSONObject(0);
+                        JSONArray data = dailyData.getJSONArray("hours");
 
-                        sunPoints.add(new Date(1000 * Long.parseLong(dailyData.getJSONObject(0).getString("sunriseTime"))).getTime());
-                        sunPoints.add(new Date(1000 * Long.parseLong(dailyData.getJSONObject(0).getString("sunsetTime"))).getTime());
-                        JSONObject hourly = reader.getJSONObject("hourly");
-                        JSONArray data = hourly.getJSONArray("data");
+                        sunPoints.add(new Date(1000 * Long.parseLong(dailyData.getString("sunriseEpoch"))).getTime());
+                        sunPoints.add(new Date(1000 * Long.parseLong(dailyData.getString("sunsetEpoch"))).getTime());
                         for (int i = 0; i < data.length(); i++) {
-                            Date d = new Date(1000 * Long.parseLong(data.getJSONObject(i).getString("time")));
-                            pressurePoints.add(new CandleEntry(d.getTime(), (float) data.getJSONObject(i).getDouble("pressure") + 0.5f,
-                                    (float) data.getJSONObject(i).getDouble("pressure") - 0.5f,
-                                    (float) data.getJSONObject(i).getDouble("pressure") + 0.001f,
-                                    (float) data.getJSONObject(i).getDouble("pressure") - 0.001f));
+                            JSONObject hour = data.getJSONObject(i);
+                            Date d = new Date(1000 * Long.parseLong(hour.getString("datetimeEpoch")));
+                            pressurePoints.add(new CandleEntry(d.getTime(), (float) hour.getDouble("pressure") + 0.5f,
+                                    (float) hour.getDouble("pressure") - 0.5f,
+                                    (float) hour.getDouble("pressure") + 0.001f,
+                                    (float) hour.getDouble("pressure") - 0.001f));
                             moonDegrees.add(new Entry(d.getTime(), (float) Math.toDegrees(SunCalc4JavaUtils.getMoonPosition(d, lat, lon).get("altitude")) / 10));
-                            windPoints.add(new BarEntry(d.getTime(), ((Double) data.getJSONObject(i).getDouble("windSpeed")).floatValue(),getCardinalDirection( data.getJSONObject(i).getDouble("windBearing"))));
-                            gustPoints.add(new BarEntry(d.getTime(), ((Double) data.getJSONObject(i).getDouble("windGust")).floatValue(),getCardinalDirection( data.getJSONObject(i).getDouble("windBearing"))));
+                            windPoints.add(new BarEntry(d.getTime(), ((Double) hour.getDouble("windspeed")).floatValue(), getCardinalDirection(hour.getDouble("winddir"))));
+                            gustPoints.add(new BarEntry(d.getTime(), ((Double) hour.getDouble("windgust")).floatValue(), getCardinalDirection(hour.getDouble("winddir"))));
                         }
                     } catch (JSONException e) {
                         Log.e(TAG, "Failure to create SheetAccess", e);

@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class ForecastActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = "ForecastActivity";
     private Calendar cal;
     private Button btnDatePicker;
     private Button btnTimePicker;
@@ -54,7 +55,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        weather = new Weather();
+        weather = new Weather(this);
         setContentView(R.layout.activity_forecast);
         Button homeBtn = findViewById(R.id.home);
         homeBtn.setOnClickListener(new View.OnClickListener() {

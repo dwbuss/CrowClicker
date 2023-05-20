@@ -641,13 +641,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 file = new File(sdcard, "Satellite.mbtiles");
             }
             if (!file.exists())
-                Toast.makeText(this, "File not Found" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
-
-            TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
-            mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+                Log.i(TAG, "File not Found" + file.getAbsolutePath());
+            else {
+                TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
+                mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+            }
         } catch (Exception e) {
             Log.e(TAG, "Failed to load Satellite.mbtiles", e);
-            Toast.makeText(this, "Failed to load Satellite mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Failed to load Satellite layer.", Toast.LENGTH_LONG).show();
         }
         try {
             File file;
@@ -660,13 +661,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 file = new File(sdcard, "Crow.mbtiles");
             }
             if (!file.exists())
-                Toast.makeText(this, "File not Found" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
-
-            TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
-            satelliteOptions = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+                Log.i(TAG, "File not Found" + file.getAbsolutePath());
+            else {
+                TileProvider tileProvider = new ExpandedMBTilesTileProvider(file, 256, 256);
+                satelliteOptions = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
+            }
         } catch (Exception e) {
             Log.e(TAG, "Failed to load Crow.mbtiles", e);
-            Toast.makeText(this, "Failed to load Crow mbtiles " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Failed to load Crow layer.", Toast.LENGTH_LONG).show();
         }
     }
 

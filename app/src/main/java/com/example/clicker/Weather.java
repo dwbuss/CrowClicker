@@ -30,7 +30,8 @@ public class Weather {
     private String KEY;
     private static final String TAG = "Weather";
     public static final String VISUAL_CROSSING = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/%f,%f/%d";
-    public static final String VISUAL_CROSSING_POSTFIX = "?unitGroup=us&elements=datetime%%2CdatetimeEpoch%%2Cname%%2Clatitude%%2Clongitude%%2Ctemp%%2Cfeelslike%%2Cdew%%2Ccloudcover%%2Chumidity%%2Cprecipprob%%2Cwindgust%%2Cwindspeed%%2Cwinddir%%2Cpressure%%2Csunrise%%2Csunset%%2Cmoonphase&include=hours%%2Cdays%%2Ccurrent%%2Cfcst%%2Cobs%%2Cremote&key=%s&contentType=json";
+    public static final String MULTI_DAY_POSTFIX = "/%d?unitGroup=us&elements=datetime%%2CdatetimeEpoch%%2Cname%%2Clatitude%%2Clongitude%%2Ctemp%%2Cfeelslike%%2Cdew%%2Ccloudcover%%2Chumidity%%2Cprecipprob%%2Cwindgust%%2Cwindspeed%%2Cwinddir%%2Cpressure%%2Csunrise%%2Csunset%%2Cmoonphase&include=hours%%2Cdays%%2Ccurrent%%2Cfcst%%2Cobs%%2Cremote&key=%s&contentType=json";
+    public static final String SINGLE_DAY_POSTFIX = "?unitGroup=us&elements=datetime%%2CdatetimeEpoch%%2Cname%%2Clatitude%%2Clongitude%%2Ctemp%%2Cfeelslike%%2Cdew%%2Chumidity%%2Cprecipprob%%2Cwindgust%%2Cwindspeed%%2Cwinddir%%2Cpressure%%2Ccloudcover%%2Csunrise%%2Csunset%%2Cmoonphase&include=days%%2Ccurrent%%2Cfcst%%2Cobs%%2Cremote&key=%s&contentType=json";
     public String temperature;
     public String feelsLike;
     public String dewPoint;
@@ -61,7 +62,7 @@ public class Weather {
     }
 
     public void populate(double lat, double lon, Date cal, Context context, final ClickerCallback callback) {
-        String url = String.format(VISUAL_CROSSING + VISUAL_CROSSING_POSTFIX, lat, lon, (cal.getTime() / 1000), KEY);
+        String url = String.format(VISUAL_CROSSING + SINGLE_DAY_POSTFIX, lat, lon, (cal.getTime() / 1000), KEY);
         populate(url, context, callback);
     }
 
@@ -72,8 +73,10 @@ public class Weather {
     }
 
     public StringRequest pullWeather(String url, ClickerCallback callback) {
+        Log.i(TAG, url);
         return new StringRequest(Request.Method.GET, url,
                                  response -> {
+                                     Log.i(TAG, response);
                                      try {
                                          JSONObject reader = new JSONObject(response);
                                          JSONObject main = reader.getJSONArray("days").getJSONObject(0);
@@ -110,25 +113,10 @@ public class Weather {
         gustPoints = new ArrayList<>();
         contactPoints = new ArrayList<>();
 
-        PointsHelper helper = new PointsHelper(context);
         RequestQueue queue = Volley.newRequestQueue(context);
         Date yesterday = new Date(today.getTime() - Duration.ofDays(1).toMillis());
         Date tomorrow = new Date(today.getTime() + Duration.ofDays(1).toMillis());
-
-
-        AtomicInteger totalRequests = new AtomicInteger(3);
-        queue.addRequestEventListener((request, event) -> {
-            if (event == RequestQueue.RequestEvent.REQUEST_FINISHED) {
-                if (totalRequests.decrementAndGet() == 0) {
-                    Log.d(TAG, "Pressure callbacks complete, calling success!");
-                    callback.onSuccess();
-                }
-            }
-        });
-
-        queue.add(pullPressure(String.format(VISUAL_CROSSING + "/%d" + VISUAL_CROSSING_POSTFIX, lat, lon, (yesterday.getTime() / 1000), (tomorrow.getTime() / 1000), KEY), callback, lat, lon));
-//        queue.add(pullPressure(String.format(VISUAL_CROSSING, lat, lon, (today.getTime() / 1000), KEY), callback, lat, lon));
-//        queue.add(pullPressure(String.format(VISUAL_CROSSING, lat, lon, (tomorrow.getTime() / 1000), KEY), callback, lat, lon));
+        queue.add(pullPressure(String.format(VISUAL_CROSSING + MULTI_DAY_POSTFIX, lat, lon, (yesterday.getTime() / 1000), (tomorrow.getTime() / 1000), KEY), callback, lat, lon));
     }
 
     private StringRequest pullPressure(String url, ClickerCallback callback, double lat, double lon) {
@@ -159,8 +147,10 @@ public class Weather {
                                              }
                                          }
                                      } catch (JSONException | ParseException e) {
-                                         Log.e(TAG, "Failure to create SheetAccess", e);
+                                         Log.e(TAG, "Failure to pull pressure.", e);
                                      }
+
+                                     callback.onSuccess();
                                  }, error -> callback.onFailure());
     }
 }

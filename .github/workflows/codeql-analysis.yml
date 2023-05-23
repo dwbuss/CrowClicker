@@ -49,16 +49,13 @@ jobs:
       uses: actions/setup-java@v2
       with:
           java-version: 17
-          distribution: 'adopt'
+          distribution: 'adopt'	  
           
     - name: Copy gradle properties file
       run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
     
     - name: Run Test Suite
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: test
-#      run: ./gradlew --stacktrace test
+      run: ./gradlew --scan test
 
     - name: Upload Reports
       uses: actions/upload-artifact@v2

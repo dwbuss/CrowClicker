@@ -56,42 +56,21 @@ public class ExpandedMBTilesTileProvider implements TileProvider {
 
     private byte[] readBitmapFromDB(final int x, final int y, final int zoom) {
         byte[] bitmap = null;
-
-        SQLiteDatabase db = null;
-        Cursor cursor = null;
-
-        try {
-            db = SQLiteDatabase.openDatabase(source.getPath(), null, SQLiteDatabase.OPEN_READONLY);
-
-            cursor = db.query("tiles",
-                              new String[]{"tile_data"},
-                              "tile_column=? and tile_row=? and zoom_level=?",
-                              new String[]{"" + x, "" + y, "" + zoom},
-                              null,
-                              null,
-                              null);
+        try (SQLiteDatabase db = SQLiteDatabase.openDatabase(source.getPath(), null, SQLiteDatabase.OPEN_READONLY);
+             Cursor cursor = db.query("tiles",
+                                      new String[]{"tile_data"},
+                                      "tile_column=? and tile_row=? and zoom_level=?",
+                                      new String[]{"" + x, "" + y, "" + zoom},
+                                      null,
+                                      null,
+                                      null)) {
 
             if (cursor != null && cursor.moveToFirst()) {
                 bitmap = cursor.getBlob(0);
             }
         } catch (final Exception e) {
             Log.e("Error reading database", e.getMessage());
-        } finally {
-            try {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            } catch (Exception e) {
-            }
-
-            try {
-                if (db != null) {
-                    db.close();
-                }
-            } catch (Exception e) {
-            }
         }
-
         return bitmap;
     }
 

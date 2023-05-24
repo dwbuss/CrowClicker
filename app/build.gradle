@@ -49,6 +49,12 @@ android {
         }
     }
     namespace 'com.example.clicker'
+    signingConfigs {
+        debug {
+            storeFile file('debug-dbuss.keystore')
+            keyAlias "androiddebugkey"
+        }
+    }
 }
 
 dependencies {

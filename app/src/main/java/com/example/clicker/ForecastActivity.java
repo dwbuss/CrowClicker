@@ -51,7 +51,6 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     private CombinedChart mChart;
     private Weather weather;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

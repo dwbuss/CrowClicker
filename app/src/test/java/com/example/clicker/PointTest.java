@@ -7,14 +7,9 @@ import com.github.mikephil.charting.data.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.InvalidObjectException;
 import java.net.HttpURLConnection;
@@ -24,9 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -153,7 +146,7 @@ public class PointTest {
 
             ArrayList<Entry> values = new ArrayList<>();
 
-            for (int i=0; i < data.length(); i++){
+            for (int i = 0; i < data.length(); i++) {
                 values.add(new Entry(data.getJSONObject(i).getInt("time"), (float) data.getJSONObject(i).getDouble("pressure")));
             }
             pressure = ((int) Double.parseDouble(hourly.getString("pressure"))) + "";

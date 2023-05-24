@@ -268,7 +268,9 @@ public class SolunarTest {
     public void checkDayWithNoMoonSet() {
         Location waterfordWI = new Location("") {
             @Override
-            public double getLatitude() { return 42.762890; }
+            public double getLatitude() {
+                return 42.762890;
+            }
 
             @Override
             public double getLongitude() {
@@ -284,8 +286,8 @@ public class SolunarTest {
         solunar.populate(waterfordWI, noMoonSet);
         assertEquals("N/A", solunar.moonSet);
         assertEquals("M4", solunar.moonState);
-        assertEquals( "3:31 PM", solunar.moonRise);
-        assertEquals( "6:52 AM", solunar.sunRise);
-        assertEquals( "6:30 PM", solunar.sunSet);
+        assertEquals("3:31 PM", solunar.moonRise);
+        assertEquals("6:52 AM", solunar.sunRise);
+        assertEquals("6:30 PM", solunar.sunSet);
     }
 }

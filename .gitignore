@@ -16,3 +16,4 @@ map.properties
 credentials.json
 *.bak
 *~
+*.keystore

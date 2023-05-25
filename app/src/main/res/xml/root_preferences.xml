@@ -64,6 +64,11 @@
             android:persistent="true"
             android:title="Map on Phone"
             app:useSimpleSummaryProvider="true" />
+        <Preference
+            android:icon="@android:drawable/ic_menu_directions"
+            app:key="manage_data_storage"
+            app:summary="Check this setting if map layers are not displaying."
+            app:title="Manage Storage Permissions"/>
     </PreferenceCategory>
     <PreferenceCategory
         app:key="notifications_category"

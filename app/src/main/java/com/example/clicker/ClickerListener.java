@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
@@ -15,6 +16,7 @@ import io.flic.flic2libandroid.Flic2Button;
 import io.flic.flic2libandroid.Flic2ButtonListener;
 
 public class ClickerListener extends Flic2ButtonListener {
+    private static final String TAG = "ClickerListener";
     private final Context context;
     private final PointsHelper helper;
 
@@ -31,9 +33,14 @@ public class ClickerListener extends Flic2ButtonListener {
             // Drop the event if it's more than 15 seconds old
             return;
         }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.context);
+        ContactType singleClickType = ContactType.valueOf(prefs.getString("single_click", "FOLLOW"));
+        ContactType doubleClickType = ContactType.valueOf(prefs.getString("double_click", "CONTACT"));
 
-        if (isSingleClick) addFromButton(ContactType.FOLLOW);
-        if (isDoubleClick) addFromButton(ContactType.CONTACT);
+        Log.d(TAG, String.format("Single-click is %s, Double-click is %s", singleClickType, doubleClickType));
+
+        if (isSingleClick) addFromButton(singleClickType);
+        if (isDoubleClick) addFromButton(doubleClickType);
     }
 
     private void addFromButton(ContactType contactType) {

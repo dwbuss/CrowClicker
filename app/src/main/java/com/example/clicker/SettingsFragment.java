@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import java.util.LinkedList;
@@ -39,6 +41,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             startActivity(transfer);
             return true;
         });
+        Preference pref = findPreference("manage_data_storage");
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            pref.setVisible(true);
+            pref.setOnPreferenceClickListener(preference -> {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                startActivity(intent);
+                return true;
+            });
+        }
+        else {
+            pref.setVisible(false);
+        }
         configureCatchNotificationChoices("Catch Notification");
         configureCatchNotificationChoices("Follow Notification");
         configureCatchNotificationChoices("Lost Notification");

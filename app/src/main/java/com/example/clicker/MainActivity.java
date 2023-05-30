@@ -23,6 +23,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.storage.StorageManager;
@@ -271,10 +272,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-        permissions.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
         permissions.add(Manifest.permission.INTERNET);
         permissions.add(Manifest.permission.SEND_SMS);
         permissions.add(Manifest.permission.READ_CONTACTS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            permissions.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+        }
 
         if (!checkPermission(permissions)) {
             permissionRequest.launch(permissions.toArray(new String[permissions.size()]));
@@ -283,8 +286,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private boolean checkPermission(List<String> permissions) {
         return permissions.stream()
-                .map(permission -> ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED)
-                .collect(Collectors.reducing(Boolean.FALSE, Boolean::logicalAnd));
+                .map(permission -> ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED).reduce(Boolean.FALSE, Boolean::logicalAnd);
     }
 
     @Override
@@ -302,6 +304,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
         locationManager = ((LocationManager) this.getSystemService(Context.LOCATION_SERVICE));
         try {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 3, locationListenerGPS);
         } catch (Exception e) {
             Log.e(TAG, "Something happened with LocationManager?", e);

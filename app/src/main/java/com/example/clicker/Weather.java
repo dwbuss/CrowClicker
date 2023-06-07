@@ -85,7 +85,8 @@ public class Weather {
                                          dewPoint = ((int) Double.parseDouble(main.getString("dew"))) + "";
                                          windSpeed = ((int) Double.parseDouble(main.getString("windspeed"))) + "";
                                          windDir = getCardinalDirection(main.getDouble("winddir"));
-                                         windGust = ((int) Double.parseDouble(main.getString("windgust"))) + "";
+                                         String windgust = main.getString("windgust");
+                                         windGust = ((int) Double.parseDouble(!windgust.equals("null")?windgust:"0")) + "";
                                          date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("datetimeEpoch"))));
                                          precipProbability = main.getString("precipprob");
                                          humidity = main.getString("humidity");

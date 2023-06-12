@@ -107,7 +107,7 @@ public class StatisticsActivity extends AppCompatActivity {
         Map<String, Point> intermediateInches = points.stream()
                 .filter(point -> point.getContactType().equals(ContactType.CATCH.toString()))
                 .collect(Collectors.toMap(Point::getName, Function.identity(),
-                                          BinaryOperator.maxBy(Comparator.comparing(Point::getFishSize))));
+                                          BinaryOperator.maxBy(Comparator.comparing(Point::getFishSizeAsDouble))));
         intermediateInches.keySet().stream().forEach(k -> maxLens.put(k, intermediateInches.get(k).getFishSizeAsDouble()));
 
         maxLens.entrySet().stream()

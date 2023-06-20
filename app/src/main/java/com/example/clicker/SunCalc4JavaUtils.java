@@ -40,6 +40,40 @@ public class SunCalc4JavaUtils {
     final static double dayMs = 1000 * 60 * 60 * 24;
     final static double J1970 = 2440588;
     final static double J2000 = 2451545;
+    /**
+     * general calculations for position
+     * // obliquity of the Earth
+     */
+    final static double e = rad * 23.4397;
+    /**
+     * calculations for sun times
+     */
+
+    final static double J0 = 0.0009;
+    /**
+     * * sun times configuration (angle, morning name, evening name)
+     * sunrise	日出（太阳的顶部边缘出现在地平线上）
+     * sunriseEnd	日出结束（太阳的底部边缘接触地平线）
+     * goldenHourEnd	早上黄金时段（柔和的光线，摄影的最佳时间）结束
+     * solarNoon	太阳正午（太阳位于最高位置）
+     * goldenHour	晚上黄金时段开始
+     * sunsetStart	日落开始（太阳的底部边缘接触地平线）
+     * sunset	日落（太阳消失在地平线以下，晚上民间黄昏开始）
+     * dusk	黄昏（傍晚航海黄昏开始）
+     * nauticalDusk	航海黄昏（晚上天文学黄昏开始）
+     * night	夜晚开始（黑暗足以进行天文观测）
+     * nadir	最低点（夜晚最黑暗的时刻，太阳处于最低位置）
+     * nightEnd	夜晚结束（早晨天文学黄昏开始）
+     * nauticalDawn	航海黎明（早上航海暮光之城开始）
+     * dawn	黎明（早晨航海黄昏结束，早晨民间黄昏开始）
+     */
+    static List times = Lists.newArrayList(
+            Lists.newArrayList(-0.833D, "sunrise", "sunset"),
+            Lists.newArrayList(-0.3D, "sunriseEnd", "sunsetStart"),
+            Lists.newArrayList(-6D, "dawn", "dusk"),
+            Lists.newArrayList(-12D, "nauticalDawn", "nauticalDusk"),
+            Lists.newArrayList(-18D, "nightEnd", "night"),
+            Lists.newArrayList(6D, "goldenHourEnd", "goldenHour"));
 
     static double toJulian(Date date) {
         return date.getTime() / dayMs - 0.5 + J1970;
@@ -52,12 +86,6 @@ public class SunCalc4JavaUtils {
     static double toDays(Date date) {
         return toJulian(date) - J2000;
     }
-
-    /**
-     * general calculations for position
-     * // obliquity of the Earth
-     */
-    final static double e = rad * 23.4397;
 
     static double rightAscension(double l, double b) {
         return atan2(sin(l) * cos(e) - tan(b) * sin(e), cos(l));
@@ -117,7 +145,6 @@ public class SunCalc4JavaUtils {
         return map;
     }
 
-
     /**
      * calculates sun position for a given date and latitude/longitude
      * 计算给定日期和纬度/经度的太阳位置
@@ -140,34 +167,6 @@ public class SunCalc4JavaUtils {
         return map;
     }
 
-    ;
-
-
-    /**
-     * * sun times configuration (angle, morning name, evening name)
-     * sunrise	日出（太阳的顶部边缘出现在地平线上）
-     * sunriseEnd	日出结束（太阳的底部边缘接触地平线）
-     * goldenHourEnd	早上黄金时段（柔和的光线，摄影的最佳时间）结束
-     * solarNoon	太阳正午（太阳位于最高位置）
-     * goldenHour	晚上黄金时段开始
-     * sunsetStart	日落开始（太阳的底部边缘接触地平线）
-     * sunset	日落（太阳消失在地平线以下，晚上民间黄昏开始）
-     * dusk	黄昏（傍晚航海黄昏开始）
-     * nauticalDusk	航海黄昏（晚上天文学黄昏开始）
-     * night	夜晚开始（黑暗足以进行天文观测）
-     * nadir	最低点（夜晚最黑暗的时刻，太阳处于最低位置）
-     * nightEnd	夜晚结束（早晨天文学黄昏开始）
-     * nauticalDawn	航海黎明（早上航海暮光之城开始）
-     * dawn	黎明（早晨航海黄昏结束，早晨民间黄昏开始）
-     */
-    static List times = Lists.newArrayList(
-            Lists.newArrayList(-0.833D, "sunrise", "sunset"),
-            Lists.newArrayList(-0.3D, "sunriseEnd", "sunsetStart"),
-            Lists.newArrayList(-6D, "dawn", "dusk"),
-            Lists.newArrayList(-12D, "nauticalDawn", "nauticalDusk"),
-            Lists.newArrayList(-18D, "nightEnd", "night"),
-            Lists.newArrayList(6D, "goldenHourEnd", "goldenHour"));
-
     /**
      * adds a custom time to the times config
      *
@@ -178,13 +177,6 @@ public class SunCalc4JavaUtils {
     public static void addTime(double angle, String riseName, String setName) {
         times.add(Lists.newArrayList(angle, riseName, setName));
     }
-
-
-    /**
-     * calculations for sun times
-     */
-
-    final static double J0 = 0.0009;
 
     static double julianCycle(double d, double lw) {
         return round(d - J0 - lw / (2 * PI));
@@ -262,8 +254,6 @@ public class SunCalc4JavaUtils {
         return result;
     }
 
-    ;
-
 
     /**
      * moon calculations, based on http://aa.quae.nl/en/reken/hemelpositie.html formulas
@@ -311,17 +301,15 @@ public class SunCalc4JavaUtils {
         double H = siderealTime(d, lw) - c.get("ra");
         double h = altitude(H, phi, c.get("dec"));
         // formula 14.1 of "Astronomical Algorithms" 2nd edition by Jean Meeus (Willmann-Bell, Richmond) 1998.
-        double pa = atan2(sin(H), tan(phi) * cos((double) c.get("dec")) - sin((double) c.get("dec")) * cos(H));
+        double pa = atan2(sin(H), tan(phi) * cos(c.get("dec")) - sin(c.get("dec")) * cos(H));
         // altitude correction for refraction
         h = h + astroRefraction(h);
-        result.put("azimuth", azimuth(H, phi, (double) c.get("dec")));
+        result.put("azimuth", azimuth(H, phi, c.get("dec")));
         result.put("altitude", h);
         result.put("distance", c.get("dist"));
         result.put("parallacticAngle", pa);
         return result;
     }
-
-    ;
 
 
     /**
@@ -349,8 +337,6 @@ public class SunCalc4JavaUtils {
         result.put("angle", angle);
         return result;
     }
-
-    ;
 
 
     static Date hoursLater(Date date, double h) {
@@ -455,5 +441,4 @@ public class SunCalc4JavaUtils {
         return result;
     }
 
-    ;
 }

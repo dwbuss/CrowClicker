@@ -110,7 +110,7 @@ public class PointsHelper {
         Calendar today = Calendar.getInstance(Locale.US);
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
-        today.add(Calendar.DATE, 0 - tripLength);
+        today.add(Calendar.DATE, -tripLength);
         int flags = QueryBuilder.NULLS_LAST | QueryBuilder.DESCENDING;
 
         List<Point> tempPoints = pointBox.query(Point_.lake.equal(lake))
@@ -136,7 +136,7 @@ public class PointsHelper {
         Calendar today = Calendar.getInstance(Locale.US);
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
-        today.add(Calendar.DATE, 0 - tripLength);
+        today.add(Calendar.DATE, -tripLength);
         return retrieveFor(today, type, null, lake);
     }
 

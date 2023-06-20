@@ -76,7 +76,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
@@ -432,17 +431,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Calendar today = Calendar.getInstance(Locale.US);
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
-        today.add(Calendar.DATE, 0 - tripLength);
+        today.add(Calendar.DATE, -tripLength);
         BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
         Box<Point> pointBox = boxStore.boxFor(Point.class);
 
         if (prefs.getBoolean("ViewLabels", true))
             return pointBox.query(Point_.timeStamp.greater(today.getTime())
-                    .or(Point_.name.equal(label)))
+                                          .or(Point_.name.equal(label)))
                     .build().find();
         else
             return pointBox.query(Point_.timeStamp.greater(today.getTime())
-                    .and(Point_.name.notEqual(label)))
+                                          .and(Point_.name.notEqual(label)))
                     .build().find();
     }
 
@@ -485,8 +484,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void addPoint(ContactType contactType, Location loc) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        final Point point = new Point(0, prefs.getString("Username", null), contactType.toString(), loc.getLongitude(), loc.getLatitude(),prefs.getString("CurrentBait", null),prefs.getString("Lake", null));
-       Intent addPoint = new Intent(MainActivity.this, PointActivity.class);
+        final Point point = new Point(0, prefs.getString("Username", null), contactType.toString(), loc.getLongitude(), loc.getLatitude(), prefs.getString("CurrentBait", null), prefs.getString("Lake", null));
+        Intent addPoint = new Intent(MainActivity.this, PointActivity.class);
         addPoint.putExtra("point", point);
         addPoint.putExtra("shouldNotify", true);
         startActivity(addPoint);

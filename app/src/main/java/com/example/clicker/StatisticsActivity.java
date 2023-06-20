@@ -42,7 +42,7 @@ public class StatisticsActivity extends AppCompatActivity {
         String username = prefs.getString("Username", "Angler");
         String lake = prefs.getString("Lake", "");
 
-        binding.userDailyLabel.setText( String.format("%s's Daily Count", username) );
+        binding.userDailyLabel.setText(String.format("%s's Daily Count", username));
         binding.userDailyCatch.setText(pointsHelper.getDailyCatch(username));
         binding.userDailyContact.setText(pointsHelper.getDailyContact(username));
         binding.userDailyFollow.setText(pointsHelper.getDailyFollow(username));

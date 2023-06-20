@@ -71,6 +71,7 @@ public class ObjectBoxApp extends Application {
         }
         return retVal;
     }
+
     public BoxStore getBoxStore() {
         return boxStore;
     }

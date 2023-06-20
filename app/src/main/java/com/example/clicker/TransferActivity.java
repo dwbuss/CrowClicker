@@ -34,12 +34,10 @@ import java.util.List;
 public class TransferActivity extends AppCompatActivity {
 
     private static final String[] exportChoices = {"Follows", "Contacts", "Catches", "Labels"};
-    private boolean[] checkedItems = {false, false, true, false};
     private static final int EXPORT_FOLLOWS_INDEX = 0;
     private static final int EXPORT_CONTACTS_INDEX = 1;
     private static final int EXPORT_CATCHES_INDEX = 2;
     private static final int EXPORT_LABELS_INDEX = 3;
-
     private static final String TAG = "TransferActivity";
     ActivityResultLauncher<Intent> importFromTSVActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -61,6 +59,7 @@ public class TransferActivity extends AppCompatActivity {
                     }
                 }
             });
+    private final boolean[] checkedItems = {false, false, true, false};
     ActivityResultLauncher<Intent> exportToTSVActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -81,22 +80,6 @@ public class TransferActivity extends AppCompatActivity {
                     }
                 }
             });
-
-    @NonNull
-    private List<Point> getPointsForExport() {
-        PointsHelper pointsHelper = new PointsHelper(TransferActivity.this.getApplicationContext());
-        List<Point> points = new LinkedList<Point>();
-        String lake = PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", "");
-        if (checkedItems[EXPORT_CATCHES_INDEX])
-            points.addAll(pointsHelper.getAllPointsOf(ContactType.CATCH, lake));
-        if (checkedItems[EXPORT_CONTACTS_INDEX])
-            points.addAll(pointsHelper.getAllPointsOf(ContactType.CONTACT, lake));
-        if (checkedItems[EXPORT_FOLLOWS_INDEX])
-            points.addAll(pointsHelper.getAllPointsOf(ContactType.FOLLOW, lake));
-        if (checkedItems[EXPORT_LABELS_INDEX]) points.addAll(pointsHelper.getAllLabels(lake));
-        return points;
-    }
-
     ActivityResultLauncher<Intent> exportToGPXActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -140,6 +123,21 @@ public class TransferActivity extends AppCompatActivity {
             });
     private ActivityTransferBinding binding;
 
+    @NonNull
+    private List<Point> getPointsForExport() {
+        PointsHelper pointsHelper = new PointsHelper(TransferActivity.this.getApplicationContext());
+        List<Point> points = new LinkedList<Point>();
+        String lake = PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", "");
+        if (checkedItems[EXPORT_CATCHES_INDEX])
+            points.addAll(pointsHelper.getAllPointsOf(ContactType.CATCH, lake));
+        if (checkedItems[EXPORT_CONTACTS_INDEX])
+            points.addAll(pointsHelper.getAllPointsOf(ContactType.CONTACT, lake));
+        if (checkedItems[EXPORT_FOLLOWS_INDEX])
+            points.addAll(pointsHelper.getAllPointsOf(ContactType.FOLLOW, lake));
+        if (checkedItems[EXPORT_LABELS_INDEX]) points.addAll(pointsHelper.getAllLabels(lake));
+        return points;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -152,7 +150,7 @@ public class TransferActivity extends AppCompatActivity {
         new AlertDialog.Builder(view.getContext())
                 .setTitle("Warning!!")
                 .setIcon(R.drawable.ic_baseline_warning_24)
-                .setMessage("Are you sure to delete all points for lake "+lake+"?")
+                .setMessage("Are you sure to delete all points for lake " + lake + "?")
                 .setPositiveButton("Yes", (dialogInterface, i) -> {
                     PointsHelper helper = new PointsHelper(getApplicationContext());
                     helper.clearPoints(lake);
@@ -167,7 +165,7 @@ public class TransferActivity extends AppCompatActivity {
         new AlertDialog.Builder(view.getContext())
                 .setTitle("Warning!!")
                 .setIcon(R.drawable.ic_baseline_warning_24)
-                .setMessage("Are you sure to delete all CATCHES fro lake "+lake+"?")
+                .setMessage("Are you sure to delete all CATCHES fro lake " + lake + "?")
                 .setPositiveButton("Yes", (dialogInterface, i) -> {
                     PointsHelper helper = new PointsHelper(getApplicationContext());
                     long total = helper.clearAllPointsOf(ContactType.CATCH, lake);
@@ -181,7 +179,7 @@ public class TransferActivity extends AppCompatActivity {
         SheetAccess sheet = new SheetAccess(getApplicationContext());
         String lake = PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", "");
         sheet.syncSheet(lake);
-        Toast.makeText(this, "Background sync for "+lake+" started.", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Background sync for " + lake + " started.", Toast.LENGTH_LONG).show();
     }
 
     public void importFromTSV(View view) {

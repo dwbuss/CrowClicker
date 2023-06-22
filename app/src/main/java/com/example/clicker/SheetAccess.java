@@ -180,7 +180,7 @@ public class SheetAccess {
                                     row.set(26, Boolean.toString(solunar.isMinor));
                                 }
                                 if (!orgPhase.equalsIgnoreCase(solunar.moonPhase)) {
-                                    ValueRange body = new ValueRange().setValues(Arrays.asList(row));
+                                    ValueRange body = new ValueRange().setValues(List.of(row));
                                     service.spreadsheets().values()
                                             .update(spreadsheetId, point.getLake() + "!A" + updateRow, body)
                                             .setValueInputOption("USER_ENTERED")
@@ -245,12 +245,12 @@ public class SheetAccess {
                         int rowNumber = Integer.parseInt(findRowNumberFromSpreadSheetForPointBySheetId(point));
                         Request request = new Request()
                                 .setDeleteDimension(new DeleteDimensionRequest()
-                                        .setRange(new DimensionRange()
-                                                .setSheetId(Integer.parseInt(getSheetId(point.getLake())))
-                                                .setDimension("ROWS")
-                                                .setStartIndex(rowNumber - 1)
-                                                .setEndIndex(rowNumber)
-                                        )
+                                                            .setRange(new DimensionRange()
+                                                                              .setSheetId(Integer.parseInt(getSheetId(point.getLake())))
+                                                                              .setDimension("ROWS")
+                                                                              .setStartIndex(rowNumber - 1)
+                                                                              .setEndIndex(rowNumber)
+                                                            )
                                 );
                         List<Request> requests = new ArrayList<Request>();
                         requests.add(request);

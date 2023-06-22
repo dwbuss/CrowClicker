@@ -88,7 +88,7 @@ public final class Point implements Parcelable {
         this.lake = lake;
     }
 
-    protected Point(Parcel in) {
+    private Point(Parcel in) {
         id = in.readLong();
         sheetId = in.readLong();
         name = in.readString();
@@ -442,7 +442,7 @@ public final class Point implements Parcelable {
         return id + "\t" + name + "\t" + lon + "\t" + lat + "\t" + osLocalizedDateFormat.format(timeStamp) + "\t" + contactType + "\t" +
                 airTemp + "\t" + waterTemp + "\t" + bait + "\t" + fishSize + "\t" + notes + "\t" +
                 windSpeed + "\t" + windDir + "\t" + cloudCover + "\t" + dewPoint + "\t" +
-                pressure + "\t" + (humidity.isEmpty() ? " " : humidity)+ "\t"+lake;
+                pressure + "\t" + (humidity.isEmpty() ? " " : humidity) + "\t" + lake;
     }
 
     public String getMessage() {
@@ -465,7 +465,7 @@ public final class Point implements Parcelable {
         Calendar cal = Calendar.getInstance(Locale.US);
         cal.setTime(getTimeStamp());
         solunar.populate(lon, lat, cal);
-        return Arrays.asList(
+        return List.of(
                 Arrays.asList(sheetId, "", name, fishSize, "", lake, day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor), solunar.moonDegree));
     }
 
@@ -493,7 +493,7 @@ public final class Point implements Parcelable {
         Calendar cal = Calendar.getInstance(Locale.US).getInstance();
         cal.setTime(getTimeStamp());
         solunar.populate(lon, lat, cal);
-        return Arrays.asList(
+        return List.of(
                 Arrays.asList(cal.getTime().getTime(), "", name, fishSize, "", lake, day, time, bait, "", "", lat, lon, notes, airTemp, "", windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor), solunar.moonDegree, solunar.moonState));
     }
 
@@ -513,8 +513,8 @@ public final class Point implements Parcelable {
         Calendar cal = Calendar.getInstance(Locale.US);
         cal.setTime(getTimeStamp());
         solunar.populate(lon, lat, cal);
-        return Arrays.asList(
-                Arrays.asList(sheetId, (String) row.get(1), name, fishSize, (String) row.get(4), lake, day, time, bait, (String) row.get(9), (String) row.get(10), lat, lon, notes, airTemp, (String) row.get(15), windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor), solunar.moonDegree, solunar.moonState));
+        return List.of(
+                Arrays.asList(sheetId, row.get(1), name, fishSize, row.get(4), lake, day, time, bait, row.get(9), row.get(10), lat, lon, notes, airTemp, row.get(15), windSpeed, windGust, windDir, pressure, humidity, dewPoint, cloudCover, precipProbability, solunar.moonPhase, Boolean.toString(solunar.isMajor), Boolean.toString(solunar.isMinor), solunar.moonDegree, solunar.moonState));
 
     }
 }

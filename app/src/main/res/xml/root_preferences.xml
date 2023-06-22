@@ -68,7 +68,7 @@
             android:icon="@android:drawable/ic_menu_directions"
             app:key="manage_data_storage"
             app:summary="Check this setting if map layers are not displaying."
-            app:title="Manage Storage Permissions"/>
+            app:title="Manage Storage Permissions" />
     </PreferenceCategory>
     <PreferenceCategory
         app:key="notifications_category"
@@ -103,17 +103,17 @@
             app:summary="Scan for new bluetooth buttons."
             app:title="Scan for 'Clickers'" />
         <ListPreference
-            android:entryValues="@array/contact_array"
-            android:entries="@array/contact_array"
             android:defaultValue="FOLLOW"
+            android:entries="@array/contact_array"
+            android:entryValues="@array/contact_array"
             android:key="single_click"
             android:persistent="true"
             android:title="What to record for a single button click"
             app:useSimpleSummaryProvider="true" />
         <ListPreference
-            android:entryValues="@array/contact_array"
-            android:entries="@array/contact_array"
             android:defaultValue="CONTACT"
+            android:entries="@array/contact_array"
+            android:entryValues="@array/contact_array"
             android:key="double_click"
             android:persistent="true"
             android:title="What to record for a double button click"

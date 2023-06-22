@@ -10,7 +10,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.clicker.objectbo.Point;
-import com.example.clicker.objectbo.PointsHelper;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
@@ -24,14 +23,12 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Weather {
-    private String KEY;
-    private static final String TAG = "Weather";
     public static final String VISUAL_CROSSING = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/%f,%f/%d";
     public static final String MULTI_DAY_POSTFIX = "/%d?unitGroup=us&elements=datetime%%2CdatetimeEpoch%%2Cname%%2Clatitude%%2Clongitude%%2Ctemp%%2Cfeelslike%%2Cdew%%2Ccloudcover%%2Chumidity%%2Cprecipprob%%2Cwindgust%%2Cwindspeed%%2Cwinddir%%2Cpressure%%2Csunrise%%2Csunset%%2Cmoonphase&include=hours%%2Cdays%%2Ccurrent%%2Cfcst%%2Cobs%%2Cremote&key=%s&contentType=json";
     public static final String SINGLE_DAY_POSTFIX = "?unitGroup=us&elements=datetime%%2CdatetimeEpoch%%2Cname%%2Clatitude%%2Clongitude%%2Ctemp%%2Cfeelslike%%2Cdew%%2Chumidity%%2Cprecipprob%%2Cwindgust%%2Cwindspeed%%2Cwinddir%%2Cpressure%%2Ccloudcover%%2Csunrise%%2Csunset%%2Cmoonphase&include=current%%2Cfcst%%2Cobs&key=%s&contentType=json";
+    private static final String TAG = "Weather";
     public String temperature;
     public String feelsLike;
     public String dewPoint;
@@ -49,6 +46,7 @@ public class Weather {
     ArrayList<BarEntry> windPoints;
     ArrayList<BarEntry> gustPoints;
     ArrayList<Point> contactPoints;
+    private final String KEY;
 
     public Weather(final Context appContext) {
         String apiKey = "MISSING";
@@ -86,7 +84,7 @@ public class Weather {
                                          windSpeed = ((int) Double.parseDouble(main.getString("windspeed"))) + "";
                                          windDir = getCardinalDirection(main.getDouble("winddir"));
                                          String windgust = main.getString("windgust");
-                                         windGust = ((int) Double.parseDouble(!windgust.equals("null")?windgust:"0")) + "";
+                                         windGust = ((int) Double.parseDouble(!windgust.equals("null") ? windgust : "0")) + "";
                                          date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("datetimeEpoch"))));
                                          precipProbability = main.getString("precipprob");
                                          humidity = main.getString("humidity");

@@ -183,7 +183,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         pressuerSet.setFormSize(15.0f);
         pressuerSet.setDrawValues(true);
         pressuerSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            return String.format("%.2f", (float) (((float)value) * .029529980164712)) ;
+            return String.format("%.2f", (float) (value * .029529980164712));
         });
 
         LineDataSet moonSet = new LineDataSet(moonValues, "Moon Data");
@@ -272,7 +272,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
                 ((TextView) findViewById(R.id.temperature)).setText(weather.temperature + " / " + weather.feelsLike);
                 ((TextView) findViewById(R.id.dewPoint)).setText(weather.dewPoint);
                 ((TextView) findViewById(R.id.humidity)).setText(weather.humidity);
-                ((TextView) findViewById(R.id.pressure)).setText(String.format("%.2f", (float) (Float.parseFloat(weather.pressure)  * .029529980164712)) );
+                ((TextView) findViewById(R.id.pressure)).setText(String.format("%.2f", (float) (Float.parseFloat(weather.pressure) * .029529980164712)));
                 ((TextView) findViewById(R.id.cloudCover)).setText(weather.cloudCover);
             }
 
@@ -308,32 +308,32 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         if (v == btnDatePicker) {
             DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                    new DatePickerDialog.OnDateSetListener() {
+                                                                     new DatePickerDialog.OnDateSetListener() {
 
-                        @Override
-                        public void onDateSet(DatePicker view, int year,
-                                              int monthOfYear, int dayOfMonth) {
+                                                                         @Override
+                                                                         public void onDateSet(DatePicker view, int year,
+                                                                                               int monthOfYear, int dayOfMonth) {
 
-                            cal.set(year, monthOfYear, dayOfMonth);
-                            setDate();
-                        }
-                    }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+                                                                             cal.set(year, monthOfYear, dayOfMonth);
+                                                                             setDate();
+                                                                         }
+                                                                     }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
             datePickerDialog.show();
         }
         if (v == btnTimePicker) {
             // Launch Time Picker Dialog
             TimePickerDialog timePickerDialog = new TimePickerDialog(this,
-                    new TimePickerDialog.OnTimeSetListener() {
+                                                                     new TimePickerDialog.OnTimeSetListener() {
 
-                        @Override
-                        public void onTimeSet(TimePicker view, int hourOfDay,
-                                              int minute) {
+                                                                         @Override
+                                                                         public void onTimeSet(TimePicker view, int hourOfDay,
+                                                                                               int minute) {
 
-                            cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                            cal.set(Calendar.MINUTE, minute);
-                            setDate();
-                        }
-                    }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(ForecastActivity.this));
+                                                                             cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                                                             cal.set(Calendar.MINUTE, minute);
+                                                                             setDate();
+                                                                         }
+                                                                     }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(ForecastActivity.this));
             timePickerDialog.show();
         }
     }

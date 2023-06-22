@@ -422,9 +422,9 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="80"
+                android:enabled="false"
                 android:inputType="text"
-                android:text="@{point.lake}"
-                android:enabled="false"/>
+                android:text="@{point.lake}" />
         </LinearLayout>
 
 

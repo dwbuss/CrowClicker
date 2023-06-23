@@ -27,11 +27,16 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.shredzone.commons.suncalc.MoonPosition;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -62,24 +67,20 @@ public class SheetAccessTest {
         JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
         List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
         final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
-        Context context;
         Sheets service = null;
-        String sheetName = "test";
-        int sheetId = 1890696516;
-        String token;
         try {
             Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             Bundle metaData = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA).metaData;
             GoogleCredential credentials = GoogleCredential.fromStream(IOUtils.toInputStream(metaData.getString("com.google.api.credentials"), StandardCharsets.UTF_8)).createScoped(SCOPES);
-            token = credentials.getAccessToken();
+
             service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
                     .setApplicationName(APPLICATION_NAME)
                     .build();
         } catch (Exception e) {
             Log.e(TAG, "Failure to create SheetAccess", e);
         }
-        List<List<Object>> rows = access.getRowsFromSpreadSheet("test lake");
+        List<List<Object>> rows = access.getRowsFromSpreadSheet("Pewaukee");
         for (List row : rows) {
             try {
                 Point point = new Point(row);
@@ -89,7 +90,7 @@ public class SheetAccessTest {
                     System.err.println(body);
                     String rowNumber = access.findRowNumberFromSpreadSheetForPointBySheetId(point);
                     service.spreadsheets().values()
-                            .update(spreadsheetId, sheetName + "!A" + rowNumber, body)
+                            .update(spreadsheetId, "Pewaukee!A" + rowNumber, body)
                             .setValueInputOption("USER_ENTERED")
                             .execute();
                 }
@@ -98,6 +99,64 @@ public class SheetAccessTest {
         }
         assertTrue("We should have more than 500 rows returned.", rows.size() > 500);
         assertEquals("First row should have these columns.", 27, rows.get(0).size());
+    }
+
+    @Test
+    @Ignore
+    public void updateMoonDistance() throws Exception {
+        String TAG = "SheetAccess";
+        String APPLICATION_NAME = "crowapp-257113";
+        JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+        List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
+        final String spreadsheetId = "1xgnjh0SvHrU44OLXb3z_2PHsIe5AjeCoBEyVE8IRGuo";
+        Sheets service = null;
+        try {
+            Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+            final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+            Bundle metaData = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA).metaData;
+            GoogleCredential credentials = GoogleCredential.fromStream(IOUtils.toInputStream(metaData.getString("com.google.api.credentials"), StandardCharsets.UTF_8)).createScoped(SCOPES);
+
+            service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
+                    .setApplicationName(APPLICATION_NAME)
+                    .build();
+        } catch (Exception e) {
+            Log.e(TAG, "Failure to create SheetAccess", e);
+        }
+        List<List<Object>> rows = access.getRowsFromSpreadSheet("Data");
+        Calendar cal = Calendar.getInstance(Locale.US);
+        int updatedRows = 0;
+        for (int i = 0; i < rows.size(); i++) {
+            List<Object> row = rows.get(i);
+            int updateRow = i + 1;
+            try {
+                if (updatedRows > 59) {
+                    Log.i(TAG, "Update limit exceeded, sleeping ");
+                    Thread.sleep(60000);
+                    updatedRows = 0;
+                }
+                if (!((String) row.get(0)).equalsIgnoreCase("Row") && !((String) row.get(2)).equalsIgnoreCase("label") && !((String) row.get(2)).isEmpty()) {
+
+                    Point point = new Point(row);
+                    cal.setTime(point.getTimeStamp());
+
+                    double distance = MoonPosition.compute()
+                            .at(-89.1627949, 46.0258947	)
+                            .on(cal.getTime())
+                            .execute().getDistance();
+
+                    ValueRange body = new ValueRange().setValues(Arrays.asList(Arrays.asList((long)distance)));
+                    String range =  "Data!AD" + updateRow;
+                    service.spreadsheets().values()
+                            .update(spreadsheetId, range, body)
+                            .setValueInputOption("USER_ENTERED")
+                            .execute();
+                    Log.i(TAG, "Updated row " + updateRow);
+                    updatedRows++;
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to update row " + updateRow, e);
+            }
+        }
     }
 
     @Ignore

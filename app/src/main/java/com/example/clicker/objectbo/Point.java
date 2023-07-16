@@ -447,11 +447,11 @@ public final class Point implements Parcelable {
 
     public String getMessage() {
         if (contactType.equalsIgnoreCase("CATCH"))
-            return String.format("%s caught a %s on a %s.%n%s%nhttp://maps.google.com/maps?q=%f,%f", getName().trim(), getFishSize().trim(), getBait(), getNotes().trim(), getLat(), getLon());
+            return String.format("%s caught a %s on a %s.%n%s%nhttps://maps.google.com/maps?q=%f,%f", getName().trim(), getFishSize().trim(), getBait(), getNotes().trim(), getLat(), getLon());
         else if (contactType.equalsIgnoreCase("FOLLOW"))
-            return String.format("%s saw one on a %s.%n%s%nhttp://maps.google.com/maps?q=%f,%f", getName().trim(), getBait(), getNotes().trim(), getLat(), getLon());
+            return String.format("%s saw one on a %s.%n%s%nhttps://maps.google.com/maps?q=%f,%f", getName().trim(), getBait(), getNotes().trim(), getLat(), getLon());
         else
-            return String.format("%s lost one on a %s.%n%s%nhttp://maps.google.com/maps?q=%f,%f", getName().trim(), getBait(), getNotes().trim(), getLat(), getLon());
+            return String.format("%s lost one on a %s.%n%s%nhttps://maps.google.com/maps?q=%f,%f", getName().trim(), getBait(), getNotes().trim(), getLat(), getLon());
     }
 
     public List<List<Object>> getSheetBody() {

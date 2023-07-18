@@ -20,6 +20,11 @@
     <PreferenceCategory
         app:key="click_settings"
         app:title="Clicker Settings">
+        <Preference
+            android:key="pref_version"
+            android:title="Version"
+            android:summary="%s"
+            android:enabled="false" />
         <EditTextPreference
             android:defaultValue="Angler"
             android:key="Username"

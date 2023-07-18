@@ -35,6 +35,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
+        Preference versionPreference = findPreference("pref_version");
+        String versionName = BuildConfig.VERSION_NAME;
+        versionPreference.setSummary(String.format(versionPreference.getSummary().toString(), versionName));
+
         findPreference("scan_for_buttons").setOnPreferenceClickListener(preference -> scanForButtons());
         findPreference("advanced").setOnPreferenceClickListener(preference -> {
             Intent transfer = new Intent(getActivity(), TransferActivity.class);

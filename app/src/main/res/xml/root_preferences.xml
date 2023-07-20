@@ -109,19 +109,27 @@
             app:title="Scan for 'Clickers'" />
         <ListPreference
             android:defaultValue="FOLLOW"
-            android:entries="@array/contact_array"
-            android:entryValues="@array/contact_array"
+            android:entries="@array/contact_button_actions"
+            android:entryValues="@array/contact_button_actions"
             android:key="single_click"
             android:persistent="true"
             android:title="What to record for a single button click"
             app:useSimpleSummaryProvider="true" />
         <ListPreference
             android:defaultValue="CONTACT"
-            android:entries="@array/contact_array"
-            android:entryValues="@array/contact_array"
+            android:entries="@array/contact_button_actions"
+            android:entryValues="@array/contact_button_actions"
             android:key="double_click"
             android:persistent="true"
             android:title="What to record for a double button click"
+            app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            android:defaultValue="CONTACT"
+            android:entries="@array/contact_button_actions"
+            android:entryValues="@array/contact_button_actions"
+            android:key="long_click"
+            android:persistent="true"
+            android:title="What to record for a long button click"
             app:useSimpleSummaryProvider="true" />
         <Preference
             android:icon="@android:drawable/ic_menu_zoom"

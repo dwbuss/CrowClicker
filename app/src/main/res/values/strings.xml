@@ -34,4 +34,13 @@
         <item>CATCH</item>
         <item>FOLLOW</item>
     </string-array>
+
+    <string-array name="contact_button_actions">
+        <item>CONTACT</item>
+        <item>CATCH</item>
+        <item>FOLLOW</item>
+        <item>FOLLOW_ON_BLADES</item>
+        <item>FOLLOW_ON_RUBBER</item>
+    </string-array>
+
 </resources>

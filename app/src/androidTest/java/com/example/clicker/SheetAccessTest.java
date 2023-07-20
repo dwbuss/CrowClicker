@@ -34,7 +34,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -140,12 +139,12 @@ public class SheetAccessTest {
                     cal.setTime(point.getTimeStamp());
 
                     double distance = MoonPosition.compute()
-                            .at(-89.1627949, 46.0258947	)
+                            .at(-89.1627949, 46.0258947)
                             .on(cal.getTime())
                             .execute().getDistance();
 
-                    ValueRange body = new ValueRange().setValues(Arrays.asList(Arrays.asList((long)distance)));
-                    String range =  "Data!AD" + updateRow;
+                    ValueRange body = new ValueRange().setValues(List.of(List.of((long) distance)));
+                    String range = "Data!AD" + updateRow;
                     service.spreadsheets().values()
                             .update(spreadsheetId, range, body)
                             .setValueInputOption("USER_ENTERED")

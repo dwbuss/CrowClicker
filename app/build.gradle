@@ -25,7 +25,7 @@ android {
         compileSdkVersion 33
         targetSdkVersion 33
         versionCode 2
-        versionName String.format("%s  %s", "2.21", new Date().format('yyyy-MM-dd'))
+        versionName String.format("%s  %s", "2.22", new Date().format('yyyy-MM-dd'))
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [mapApiKey: mapProperties['google_maps_api_key'], googleCreds: mapProperties['google_creds'], weatherKey: mapProperties['weather.key']]
     }

@@ -286,7 +286,8 @@ public class SheetAccess {
             public void run() {
                 long orgSheetId = point.getSheetId();
                 try {
-                    if (point.getSheetId() == 0) {
+                    String rowNumber = findRowNumberFromSpreadSheetForPointBySheetId(point);
+                    if (point.getSheetId() == 0 || rowNumber.isEmpty()) {
                         if (point.getContactType().equalsIgnoreCase("CATCH")) {
                             ValueRange body = new ValueRange().setValues(point.getSheetBodyWithOutId());
                             // store new row
@@ -304,7 +305,6 @@ public class SheetAccess {
                             Log.d(TAG, "Can only store catches");
                         }
                     } else {
-                        String rowNumber = findRowNumberFromSpreadSheetForPointBySheetId(point);
                         ValueRange body = new ValueRange().setValues(point.getSheetBody());
                         service.spreadsheets().values()
                                 .update(spreadsheetId, point.getLake() + "!A" + rowNumber, body)

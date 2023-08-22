@@ -113,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                                                                 stringBooleanEntry.getKey(),
                                                                                 stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
             });
+    
+    private final ActivityResultLauncher<String[]> googleMapsLink = 
+            registerForActivityResult()
     OvershootInterpolator interpolator = new OvershootInterpolator();
     SupportMapFragment mapFragment;
     TileOverlay satelliteOptions;

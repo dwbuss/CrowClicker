@@ -67,8 +67,9 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <data android:scheme="geo" />
-                <data android:host="maps.google.com" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="clicker.example.com"/>
             </intent-filter>
         </activity>
     </application>

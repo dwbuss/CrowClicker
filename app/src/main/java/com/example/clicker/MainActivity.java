@@ -23,6 +23,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -114,8 +115,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                                                                 stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
             });
     
-    private final ActivityResultLauncher<String[]> googleMapsLink = 
-            registerForActivityResult()
     OvershootInterpolator interpolator = new OvershootInterpolator();
     SupportMapFragment mapFragment;
     TileOverlay satelliteOptions;
@@ -325,7 +324,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         sheets = new SheetAccess(getApplicationContext());
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
+
         getLocation();
+
+        //Check if we came from a maps url
+        Intent intent = getIntent();
+        Uri data = intent.getData();
+        if ( data != null ){
+            if ("https".equals(data.getScheme()) && "clicker.example.com".equals(data.getHost())) {
+                Log.d(TAG, String.format("WE ARE IN FROM A CLICKER URL: %s", data.toString()));
+                String[] coordinate = data.getQueryParameter("ll").split(",");
+                double latitude = Double.parseDouble(coordinate[0]);
+                double longitude = Double.parseDouble(coordinate[1]);
+                String name = data.getQueryParameter("name");
+                String type = data.getQueryParameter("type");
+                String bait = data.getQueryParameter("bait");
+                String lake = data.getQueryParameter( "lake" );
+                gotoPoint = new Point(-1,
+                                      name == null ? "Angler" : name,
+                                      type == null ? ContactType.FOLLOW.toString() : type,
+                                      longitude, latitude,
+                                      bait == null ? "NA" : bait,
+                                      lake);
+            }
+        }
         initView();
     }
 

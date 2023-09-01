@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.example.clicker.ContactType;
 import com.example.clicker.Solunar;
 
 import org.json.JSONException;
@@ -446,12 +447,13 @@ public final class Point implements Parcelable {
     }
 
     public String getMessage() {
-        if (contactType.equalsIgnoreCase("CATCH"))
-            return String.format("%s caught a %s on a %s.%n%s%nhttps://maps.google.com/maps?q=%f,%f", getName().trim(), getFishSize().trim(), getBait(), getNotes().trim(), getLat(), getLon());
-        else if (contactType.equalsIgnoreCase("FOLLOW"))
-            return String.format("%s saw one on a %s.%n%s%nhttps://maps.google.com/maps?q=%f,%f", getName().trim(), getBait(), getNotes().trim(), getLat(), getLon());
+        final String format = "%1$s %2$s a %3$s.%n%4$s%nhttps://maps.google.com/maps?q=%5$f,%6$f%nhttps://clicker.example.com?ll=%5$f,%6$f";
+        if (contactType.equalsIgnoreCase(ContactType.CATCH.toString())) {
+            return String.format("%1$s %2$s a %3$s on a %4$s.%n%5$s%nhttps://maps.google.com/maps?q=%6$f,%7$f%nhttps://clicker.example.com?ll=%6$f,%7$f", getName().trim(), ContactType.CATCH.getMessageFragment(), getFishSize().trim(), getBait().trim(), getNotes().trim(), getLat(), getLon());
+        } else if (contactType.equalsIgnoreCase(ContactType.FOLLOW.toString()))
+            return String.format(format, getName().trim(), ContactType.FOLLOW.getMessageFragment(), getBait().trim(), getNotes().trim(), getLat(), getLon());
         else
-            return String.format("%s lost one on a %s.%n%s%nhttps://maps.google.com/maps?q=%f,%f", getName().trim(), getBait(), getNotes().trim(), getLat(), getLon());
+            return String.format(format, getName().trim(), ContactType.CONTACT.getMessageFragment(), getBait().trim(), getNotes().trim(), getLat(), getLon());
     }
 
     public List<List<Object>> getSheetBody() {

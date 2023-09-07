@@ -331,15 +331,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent intent = getIntent();
         Uri data = intent.getData();
         if ( data != null ){
-            if ("https".equals(data.getScheme()) && "clicker.example.com".equals(data.getHost())) {
-                Log.d(TAG, String.format("WE ARE IN FROM A CLICKER URL: %s", data.toString()));
-                String[] coordinate = data.getQueryParameter("ll").split(",");
+            if ("https".equals(data.getScheme()) && "maps.google.com".equals(data.getHost())) {
+                Log.d(TAG, String.format("We are coming from a url: %s", data.toString()));
+                String key = ( data.getQueryParameter("q") != null) ? "q" : "ll";
+                String[] coordinate = data.getQueryParameter(key).split(",");
                 double latitude = Double.parseDouble(coordinate[0]);
                 double longitude = Double.parseDouble(coordinate[1]);
+
                 String name = data.getQueryParameter("name");
                 String type = data.getQueryParameter("type");
                 String bait = data.getQueryParameter("bait");
-                String lake = data.getQueryParameter( "lake" );
+                String lake = data.getQueryParameter("lake");
                 gotoPoint = new Point(-1,
                                       name == null ? "Angler" : name,
                                       type == null ? ContactType.FOLLOW.toString() : type,

@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                                                                 stringBooleanEntry.getKey(),
                                                                                 stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
             });
-    
+
     OvershootInterpolator interpolator = new OvershootInterpolator();
     SupportMapFragment mapFragment;
     TileOverlay satelliteOptions;
@@ -330,10 +330,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //Check if we came from a maps url
         Intent intent = getIntent();
         Uri data = intent.getData();
-        if ( data != null ){
+        if (data != null) {
             if ("https".equals(data.getScheme()) && "maps.google.com".equals(data.getHost())) {
-                Log.d(TAG, String.format("We are coming from a url: %s", data.toString()));
-                String key = ( data.getQueryParameter("q") != null) ? "q" : "ll";
+                Log.d(TAG, String.format("We are coming from a url: %s", data));
+                String key = (data.getQueryParameter("q") != null) ? "q" : "ll";
                 String[] coordinate = data.getQueryParameter(key).split(",");
                 double latitude = Double.parseDouble(coordinate[0]);
                 double longitude = Double.parseDouble(coordinate[1]);

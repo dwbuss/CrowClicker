@@ -39,6 +39,7 @@ public class TransferActivity extends AppCompatActivity {
     private static final int EXPORT_CATCHES_INDEX = 2;
     private static final int EXPORT_LABELS_INDEX = 3;
     private static final String TAG = "TransferActivity";
+    private final boolean[] checkedItems = {false, false, true, false};
     ActivityResultLauncher<Intent> importFromTSVActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -59,7 +60,6 @@ public class TransferActivity extends AppCompatActivity {
                     }
                 }
             });
-    private final boolean[] checkedItems = {false, false, true, false};
     ActivityResultLauncher<Intent> exportToTSVActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {

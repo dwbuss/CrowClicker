@@ -29,6 +29,7 @@ public class Weather {
     public static final String MULTI_DAY_POSTFIX = "/%d?unitGroup=us&elements=datetime%%2CdatetimeEpoch%%2Cname%%2Clatitude%%2Clongitude%%2Ctemp%%2Cfeelslike%%2Cdew%%2Ccloudcover%%2Chumidity%%2Cprecipprob%%2Cwindgust%%2Cwindspeed%%2Cwinddir%%2Cpressure%%2Csunrise%%2Csunset%%2Cmoonphase&include=hours%%2Cdays%%2Ccurrent%%2Cfcst%%2Cobs%%2Cremote&key=%s&contentType=json";
     public static final String SINGLE_DAY_POSTFIX = "?unitGroup=us&elements=datetime%%2CdatetimeEpoch%%2Cname%%2Clatitude%%2Clongitude%%2Ctemp%%2Cfeelslike%%2Cdew%%2Chumidity%%2Cprecipprob%%2Cwindgust%%2Cwindspeed%%2Cwinddir%%2Cpressure%%2Ccloudcover%%2Csunrise%%2Csunset%%2Cmoonphase&include=current%%2Cfcst%%2Cobs&key=%s&contentType=json";
     private static final String TAG = "Weather";
+    private final String KEY;
     public String temperature;
     public String feelsLike;
     public String dewPoint;
@@ -46,7 +47,6 @@ public class Weather {
     ArrayList<BarEntry> windPoints;
     ArrayList<BarEntry> gustPoints;
     ArrayList<Point> contactPoints;
-    private final String KEY;
 
     public Weather(final Context appContext) {
         String apiKey = "MISSING";

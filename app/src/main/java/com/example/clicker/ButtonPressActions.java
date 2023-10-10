@@ -14,5 +14,7 @@ public enum ButtonPressActions {
         this.type = type;
     }
 
-    public final ContactType getType() { return type; }
+    public final ContactType getType() {
+        return type;
+    }
 }

@@ -9,11 +9,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.net.Uri;
 
 import androidx.core.app.NotificationCompat;
-
-import com.example.clicker.objectbo.Point;
 
 import java.util.Calendar;
 import java.util.Locale;

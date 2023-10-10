@@ -9,7 +9,6 @@ import android.provider.ContactsContract;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.Preference;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

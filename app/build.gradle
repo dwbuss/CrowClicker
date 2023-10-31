@@ -25,7 +25,7 @@ android {
         compileSdk 34
         targetSdkVersion 34
         versionCode 2
-        versionName String.format("%s  %s", "2.40", new Date().format('yyyy-MM-dd'))
+        versionName String.format("%s  %s", "2.41", new Date().format('yyyy-MM-dd'))
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [mapApiKey: mapProperties['google_maps_api_key'], googleCreds: mapProperties['google_creds'], weatherKey: mapProperties['weather.key']]
     }
@@ -63,7 +63,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.2.1'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.google.android.material:material:1.10.0'
-    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-maps:18.2.0'
     implementation 'commons-io:commons-io:2.11.0'
     implementation 'org.shredzone.commons:commons-suncalc:3.7'
     implementation 'org.locationtech.proj4j:proj4j:1.3.0'
@@ -72,7 +72,7 @@ dependencies {
     implementation 'com.google.apis:google-api-services-sheets:v4-rev20230227-2.0.0'
     implementation 'com.github.50ButtonsEach:flic2lib-android:1.3.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
-    testImplementation 'org.json:json:20230618'
+    testImplementation 'org.json:json:20231013'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

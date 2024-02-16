@@ -146,7 +146,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
         contactGroups.setEntries(entries.toArray(new CharSequence[entries.size()]));
         contactGroups.setEntryValues(values.toArray(new CharSequence[entries.size()]));
-    }    private final ActivityResultLauncher<String[]> locationPermissionRequest =
+    }
+
+    private final ActivityResultLauncher<String[]> locationPermissionRequest =
             registerForActivityResult(new ActivityResultContracts
                                               .RequestMultiplePermissions(), result -> {
                                           Boolean fineLocationGranted = result.getOrDefault(
@@ -157,8 +159,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                                               Toast.makeText(getActivity(), "Scanning needs permissions for FINE accurace locations, which you have rejected", Toast.LENGTH_LONG).show();
                                       }
             );
-
-
 
 
 }

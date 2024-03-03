@@ -149,7 +149,7 @@ public class PointTest {
             for (int i = 0; i < data.length(); i++) {
                 values.add(new Entry(data.getJSONObject(i).getInt("time"), (float) data.getJSONObject(i).getDouble("pressure")));
             }
-            pressure = ((int) Double.parseDouble(hourly.getString("pressure"))) + "";
+            pressure = String.valueOf((int) Double.parseDouble(hourly.getString("pressure")));
             String outputStr = "\t" + temperature + "\t" + feelsLike + "\t" + windSpeed + "\t" + windGust + "\t" + windDir + "\t" + pressure + "\t" + humidity + "\t" + dewPoint + "\t" + cloudCover + "\t" + precipProbability + "\r\n";
         } catch (Exception e) {
             e.printStackTrace();
@@ -158,7 +158,7 @@ public class PointTest {
 
     String getDouble(JSONObject obj, String field) {
         try {
-            return obj.getDouble(field) + "";
+            return String.valueOf(obj.getDouble(field));
         } catch (Exception e) {
             return "";
         }

@@ -60,7 +60,7 @@ public class ExpandedMBTilesTileProvider implements TileProvider {
              Cursor cursor = db.query("tiles",
                                       new String[]{"tile_data"},
                                       "tile_column=? and tile_row=? and zoom_level=?",
-                                      new String[]{"" + x, "" + y, "" + zoom},
+                                      new String[]{String.valueOf(x), String.valueOf(y), String.valueOf(zoom)},
                                       null,
                                       null,
                                       null)) {

@@ -3,12 +3,14 @@ package com.example.clicker;
 import static com.example.clicker.Constants.NOTIFICATION_CHANNEL_ID;
 import static com.example.clicker.Constants.NOTIFICATION_CHANNEL_NAME;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 
 import androidx.core.app.NotificationCompat;
 
@@ -38,6 +40,8 @@ public class MyReceiver extends BroadcastReceiver {
                         .setChannelId(NOTIFICATION_CHANNEL_ID)
                         .setContentText(event.startsWith("Minor") ? "Minor disappointment" : "Major disappointment")
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(event))
+                        .setDefaults(Notification.DEFAULT_LIGHTS|Notification.DEFAULT_VIBRATE)
+                        .setSound(findSound(context, event))
                         .setAutoCancel(true);
 
                 NotificationManager notificationmanager = (NotificationManager) context
@@ -49,5 +53,17 @@ public class MyReceiver extends BroadcastReceiver {
                 notificationmanager.notify(1, builder.build());
             }
         }
+    }
+
+    private Uri findSound(Context context, String event) {
+        if (event.contains("Minor") && event.contains("is starting"))
+            return (Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.cc_minor_start));
+        if (event.contains("Minor") && event.contains("has ended"))
+            return (Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.cc_minor_end));
+        if (event.contains("Major") && event.contains("is starting"))
+            return (Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.cc_major_start));
+        if (event.contains("Major") && event.contains("has ended"))
+            return (Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.cc_major_end));
+        return Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.drop);
     }
 }

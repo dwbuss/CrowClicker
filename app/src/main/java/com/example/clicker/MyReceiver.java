@@ -3,13 +3,14 @@ package com.example.clicker;
 import static com.example.clicker.Constants.NOTIFICATION_CHANNEL_ID;
 import static com.example.clicker.Constants.NOTIFICATION_CHANNEL_NAME;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
 import android.net.Uri;
 
 import androidx.core.app.NotificationCompat;
@@ -18,6 +19,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class MyReceiver extends BroadcastReceiver {
+    private static final String TAG = "MyReceiver";
     private final Location loc;
 
     public MyReceiver(Location loc) {
@@ -40,22 +42,27 @@ public class MyReceiver extends BroadcastReceiver {
                         .setChannelId(NOTIFICATION_CHANNEL_ID)
                         .setContentText(event.startsWith("Minor") ? "Minor disappointment" : "Major disappointment")
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(event))
-                        .setDefaults(Notification.DEFAULT_LIGHTS|Notification.DEFAULT_VIBRATE)
-                        .setSound(findSound(context, event))
                         .setAutoCancel(true);
 
                 NotificationManager notificationmanager = (NotificationManager) context
                         .getSystemService(Context.NOTIFICATION_SERVICE);
                 NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+                AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .build();
                 assert notificationmanager != null;
                 notificationmanager.createNotificationChannel(notificationChannel);
                 // Build Notification with Notification Manager
                 notificationmanager.notify(1, builder.build());
+
+                MediaPlayer player = MediaPlayer.create(context, findSound(context, event));
+                player.start();
             }
         }
     }
 
-    private Uri findSound(Context context, String event) {
+    Uri findSound(Context context, String event) {
         if (event.contains("Minor") && event.contains("is starting"))
             return (Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.cc_minor_start));
         if (event.contains("Minor") && event.contains("has ended"))

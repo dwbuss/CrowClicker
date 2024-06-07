@@ -15,11 +15,11 @@ public class FantasyFishingTest {
 FF Selections
 Dan               Tony         Jeff
 S. Gateway (F)    Adams (C)    New Spot(V)
-3 Point           Careys       Chase(C,V)
+3 Point           Carey's       Chase(C,V)
 
 Catch -   angler, size , location, owner, video
-1           Amy,    41,     Careys,  Tony,  false
-2          Tony,    41,     Careys,  Tony,  true
+1           Amy,    41,     Carey's,  Tony,  false
+2          Tony,    41,     Carey's,  Tony,  true
 3           Dan,    41,   Adams (C),  Dan,  false
 Result -    Dan          Tony        Jeff
 1             0            41           0
@@ -44,7 +44,7 @@ Result -    Dan          Tony        Jeff
 
         List<Object> row2 = new ArrayList<>();
         row2.add( "3 Point" );
-        row2.add( "Careys" );
+        row2.add( "Carey's" );
         row2.add( "Chase(C,V)" );
         sheetData.add( row2 );
     }
@@ -80,7 +80,7 @@ Result -    Dan          Tony        Jeff
         assertEquals( "S. Gateway (F) : Dan", locations[ 1 ] );
         assertEquals( "3 Point : Dan", locations[ 2 ] );
         assertEquals( "Adams (C) : Tony", locations[ 3 ] );
-        assertEquals( "Careys : Tony", locations[ 4 ] );
+        assertEquals( "Carey's : Tony", locations[ 4 ] );
         assertEquals( "New Spot(V) : Jeff", locations[ 5 ] );
         assertEquals( "Chase(C,V) : Jeff", locations[ 6 ] );
     }
@@ -94,23 +94,23 @@ Result -    Dan          Tony        Jeff
         row1.add( "June 6" );
         row1.add( "Amy" );
         row1.add( "41" );
-        row1.add( "Careys" );
+        row1.add( "Carey's" );
         row1.add( "Tony" );
         row1.add( "" );
         row1.add( "41.0" );
         row1.add( "" );
-        assertEquals( row1, ff.scoreCatch( "Amy", "Careys", "41", "Tony", "June 6", false, false, false ) );
+        assertEquals( row1, ff.scoreCatch( "Amy", "Carey's", "41", "Tony", "June 6", false, false, false ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
         row1.add( "June 6" );
         row1.add( "Tony" );
         row1.add( "41" );
-        row1.add( "Careys" );
+        row1.add( "Carey's" );
         row1.add( "Tony" );
         row1.add( "" );
         row1.add( "51.0" );
         row1.add( "" );
-        assertEquals( row1, ff.scoreCatch( "Tony", "Careys", "41", "Tony", "June 6", true, false, false ) );
+        assertEquals( row1, ff.scoreCatch( "Tony", "Carey's", "41", "Tony", "June 6", true, false, false ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
         row1.add( "June 6" );
@@ -138,12 +138,12 @@ Result -    Dan          Tony        Jeff
         row1.add( "June 6" );
         row1.add( "Dan" );
         row1.add( "41" );
-        row1.add( "Careys" );
+        row1.add( "Carey's" );
         row1.add( "Dan" );
         row1.add( "27.5" );
         row1.add( "25.5" );
         row1.add( "" );
-        assertEquals( row1, ff.scoreCatch( "Dan", "Careys", "41", "Dan", "June 6", true, false, true ) );
+        assertEquals( row1, ff.scoreCatch( "Dan", "Carey's", "41", "Dan", "June 6", true, false, true ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
         row1.add( "June 6" );

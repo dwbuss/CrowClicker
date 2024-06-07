@@ -25,14 +25,14 @@ public final class FantasyFishing {
         List<Object> header = ffSheet.get(0);
         AtomicInteger index = new AtomicInteger(0);
         header.forEach(name -> {
-            anglerIndex.put((String) name, index.get());
-            anglers.put((String) name, new ArrayList<>());
+            anglerIndex.put(((String) name).trim(), index.get());
+            anglers.put(((String) name).trim(), new ArrayList<>());
             index.getAndIncrement();
         });
         for (int i = 1; i <= ffSheet.size() - 1; i++) {
             List<Object> spots = ffSheet.get(i);
             for (int i1 = 0; i1 <= spots.size() - 1; i1++) {
-                String spotName = (String) spots.get(i1);
+                String spotName = ((String) spots.get(i1)).trim();
                 boolean isVirgin = spotName.contains("(") ? spotName.substring(spotName.indexOf('(')).toUpperCase().contains(
                         "V") : false;
                 boolean isFranchise =
@@ -88,7 +88,7 @@ public final class FantasyFishing {
         if (anglers.containsKey(angler)) {
             // angler location
             String spotOwner =
-                    anglers.entrySet().stream().filter(x -> x.getValue().stream().filter(s -> s.name.equalsIgnoreCase(location)).findFirst().isPresent()).findFirst().get().getKey();
+                    anglers.entrySet().stream().filter(x -> x.getValue().stream().anyMatch(s -> s.name.equalsIgnoreCase(location))).findFirst().get().getKey();
             if (spotOwner.equalsIgnoreCase(angler) ||
                     anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isCommunity) {
                 if (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isFranchise)

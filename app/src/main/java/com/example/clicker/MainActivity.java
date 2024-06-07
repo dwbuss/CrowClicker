@@ -68,6 +68,7 @@ import com.google.android.gms.maps.model.TileProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -111,8 +112,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
                 result.entrySet().stream()
                         .forEach(stringBooleanEntry -> Log.i(TAG, String.format("Permission request %s was %s.",
-                                                                                stringBooleanEntry.getKey(),
-                                                                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
+                                stringBooleanEntry.getKey(),
+                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
             });
 
     OvershootInterpolator interpolator = new OvershootInterpolator();
@@ -142,7 +143,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Point point = (Point) marker.getTag();
             Intent editPoint = new Intent(MainActivity.this, PointActivity.class);
             editPoint.putExtra("point", point);
+            editPoint.putExtra("ffspots", ff.getLocations());
+            editPoint.putExtra("ffowners", ff.getOwners());
             editPoint.putExtra("shouldNotify", false);
+            String[] ffSpots = {"", "Chase", "S. Gateway", "Adams"};
+            editPoint.putExtra("ffSpots", ffSpots);
             startActivity(editPoint);
             refreshCounts();
         }
@@ -233,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private SheetAccess sheets;
     private Point gotoPoint = null;
     private boolean isMenuOpen = false;
+    FantasyFishing ff = null;
 
     private static String getExternalStoragePath(Context mContext, boolean is_removable) {
         StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
@@ -324,6 +330,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         sheets = new SheetAccess(getApplicationContext());
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
+        ff = new FantasyFishing();
+        sheets.loadLocation("2024FF", ff);
+
 
         getLocation();
 
@@ -343,11 +352,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String bait = data.getQueryParameter("bait");
                 String lake = data.getQueryParameter("lake");
                 gotoPoint = new Point(-1,
-                                      name == null ? "Angler" : name,
-                                      type == null ? ContactType.FOLLOW.toString() : type,
-                                      longitude, latitude,
-                                      bait == null ? "NA" : bait,
-                                      lake);
+                        name == null ? "Angler" : name,
+                        type == null ? ContactType.FOLLOW.toString() : type,
+                        longitude, latitude,
+                        bait == null ? "NA" : bait,
+                        lake);
             }
         }
         initView();
@@ -464,11 +473,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (prefs.getBoolean("ViewLabels", true))
             return pointBox.query(Point_.timeStamp.greater(today.getTime())
-                                          .or(Point_.name.equal(label)))
+                            .or(Point_.name.equal(label)))
                     .build().find();
         else
             return pointBox.query(Point_.timeStamp.greater(today.getTime())
-                                          .and(Point_.name.notEqual(label)))
+                            .and(Point_.name.notEqual(label)))
                     .build().find();
     }
 
@@ -515,20 +524,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent addPoint = new Intent(MainActivity.this, PointActivity.class);
         addPoint.putExtra("point", point);
         addPoint.putExtra("shouldNotify", true);
+        addPoint.putExtra("ffspots", ff.getLocations());
+        addPoint.putExtra("ffowners", ff.getOwners());
         startActivity(addPoint);
     }
 
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                                              .position(new LatLng(point.getLat(), point.getLon()))
-                                              .title("Hold to Edit")
-                                              .draggable(true)
-                                              .anchor(0.5f, 0.5f)
-                                              .visible(false)
-                                              .flat(true)
-                                              .zIndex(0)
-                                              .icon(getMarker(point)));
+                    .position(new LatLng(point.getLat(), point.getLon()))
+                    .title("Hold to Edit")
+                    .draggable(true)
+                    .anchor(0.5f, 0.5f)
+                    .visible(false)
+                    .flat(true)
+                    .zIndex(0)
+                    .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
                 m.setVisible(true);

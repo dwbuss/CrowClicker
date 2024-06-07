@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".PointActivity">
 
@@ -35,6 +36,7 @@
                 android:layout_weight="20"
                 android:gravity="end"
                 android:text="Name"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <EditText
@@ -56,6 +58,35 @@
             android:weightSum="100">
 
             <TextView
+                android:id="@+id/lakeLbl"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="center|end"
+                android:text="Lake"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/lake"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="80"
+                android:text="@{point.lake}"
+                android:textColor="#000000"
+                android:textStyle="italic" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
                 android:id="@+id/timeStampLbl"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -63,6 +94,7 @@
                 android:layout_weight="30"
                 android:gravity="end"
                 android:text="Time"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <TextView
@@ -85,7 +117,7 @@
                 <ImageButton
                     android:id="@+id/btnDate"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:src="@drawable/ic_baseline_date_range_24"
@@ -94,7 +126,7 @@
                 <ImageButton
                     android:id="@+id/btnTime"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:src="@drawable/ic_baseline_access_time_24"
@@ -111,33 +143,25 @@
             <TextView
                 android:id="@+id/contactTypeLbl"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_weight="20"
-                android:gravity="end"
+                android:layout_weight="15"
+                android:gravity="center|end"
                 android:text="Type"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <Spinner
                 android:id="@+id/contactType"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="bottom"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_weight="45"
+                android:layout_weight="33.333332"
                 android:entries="@{contact_type.asStringArray()}"
                 android:spinnerMode="dialog" />
-
-            <CheckBox
-                android:id="@+id/notify"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_weight="25"
-                android:checked="true"
-                android:text="Notify" />
 
         </LinearLayout>
 
@@ -150,44 +174,74 @@
             <TextView
                 android:id="@+id/baitLbl"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
-                android:layout_weight="20"
-                android:gravity="end"
+                android:layout_weight="25"
+                android:gravity="center|end"
                 android:text="Bait"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <Spinner
                 android:id="@+id/bait"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
                 android:layout_gravity="bottom"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_weight="40"
+                android:layout_weight="25"
                 android:spinnerMode="dialog" />
 
             <TextView
                 android:id="@+id/fishSizeLbl"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
-                android:layout_weight="20"
-                android:gravity="end"
+                android:layout_weight="25"
+                android:gravity="center|center"
                 android:text="Fish Size"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/fishSize"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_weight="20"
+                android:layout_weight="25"
                 android:inputType="numberDecimal"
                 android:maxLines="1"
                 android:text="@{point.fishSize}" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/notesLbl"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_weight="20"
+                android:gravity="center|center"
+                android:text="Notes"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/notes"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="80"
+                android:inputType="text"
+                android:text="@{point.notes}" />
         </LinearLayout>
 
         <LinearLayout
@@ -202,8 +256,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_weight="20"
-                android:gravity="end"
+                android:gravity="center|center"
                 android:text="Air Temp"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <TextView
@@ -221,8 +276,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
-                android:gravity="end"
+                android:gravity="center|center"
                 android:text="Water Temp"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <EditText
@@ -249,8 +305,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_weight="20"
-                android:gravity="end"
+                android:gravity="center|center"
                 android:text="Wind Speed"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <TextView
@@ -268,8 +325,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
-                android:gravity="end"
+                android:gravity="center|center"
                 android:text="Wind Direction"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <TextView
@@ -291,17 +349,18 @@
             <TextView
                 android:id="@+id/cloudCoverLbl"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
                 android:layout_weight="20"
-                android:gravity="end"
+                android:gravity="center|center"
                 android:text="Cloud Cover"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/cloudCover"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="30"
@@ -310,17 +369,18 @@
             <TextView
                 android:id="@+id/dewPointLbl"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
-                android:gravity="end"
+                android:gravity="center|center"
                 android:text="Dew Point"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/dewPoint"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
@@ -336,17 +396,18 @@
             <TextView
                 android:id="@+id/pressureLbl"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
                 android:layout_weight="20"
-                android:gravity="end"
+                android:gravity="center|center"
                 android:text="Pressure"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/pressure"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="30"
@@ -355,17 +416,18 @@
             <TextView
                 android:id="@+id/humidityLbl"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
-                android:gravity="end"
+                android:gravity="center|center"
                 android:text="Humidity"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/humidity"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
@@ -375,28 +437,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="100">
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/notesLbl"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_weight="20"
-                android:gravity="end"
-                android:text="Notes"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/notes"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_weight="80"
-                android:inputType="text"
-                android:text="@{point.notes}" />
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="15dp"
+                android:background="@android:color/darker_gray" />
         </LinearLayout>
 
         <LinearLayout
@@ -406,27 +453,110 @@
             android:weightSum="100">
 
             <TextView
-                android:id="@+id/lakeLbl"
+                android:id="@+id/ffLbl"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
-                android:layout_weight="20"
-                android:gravity="end"
-                android:text="Lake"
+                android:layout_weight="50"
+                android:gravity="center|end"
+                android:text="FF Spot"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/lake"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+            <Spinner
+                android:id="@+id/ffSpots"
+                android:layout_width="200dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center|center"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_weight="80"
-                android:enabled="false"
-                android:inputType="text"
-                android:text="@{point.lake}" />
+                android:layout_weight="50"
+                android:spinnerMode="dialog" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/ffOwnerLbl"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_weight="50"
+                android:gravity="center|end"
+                android:text="Captain"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/ffOwnerSpots"
+                android:layout_width="200dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="50"
+                android:spinnerMode="dialog" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/ffFiller"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:gravity="center|center"
+                android:text=""
+                android:textStyle="bold" />
+
+            <CheckBox
+                android:id="@+id/video"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:checked="false"
+                android:text="Video" />
+
+            <CheckBox
+                android:id="@+id/vest"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:checked="false"
+                android:text="LifeVest" />
+
+            <CheckBox
+                android:id="@+id/northern"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="25"
+                android:checked="false"
+                android:text="Northern" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="15dp"
+                android:background="@android:color/darker_gray" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -435,31 +565,66 @@
 
             <Button
                 android:id="@+id/btnSave"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
                 android:onClick="saveButton"
-                android:text="Save" />
+                android:text="Save"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="10sp" />
 
             <Button
                 android:id="@+id/btnDelete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
                 android:onClick="deleteButton"
                 android:text="Delete"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="10sp"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/btnWeather"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
+                android:onClick="weatherButton"
+                android:text="Weather"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="10sp"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/btnPush"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
+                android:onClick="pushButton"
+                android:text="Save/Push"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:textSize="10sp"
                 android:visibility="visible" />
 
             <Button
                 android:id="@+id/btnCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="3dp"
+                android:layout_weight="1"
                 android:onClick="cancelButton"
-                android:text="Cancel" />
+                android:text="Cancel"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="10sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -467,26 +632,15 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnWeather"
-                android:layout_width="wrap_content"
+            <CheckBox
+                android:id="@+id/notify"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:onClick="weatherButton"
-                android:text="Weather"
-                android:visibility="visible" />
-
-            <Button
-                android:id="@+id/btnPush"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:onClick="pushButton"
-                android:text="Save/Push"
-                android:visibility="visible" />
-
+                android:layout_weight="3"
+                android:checked="true"
+                android:text="Notify" />
         </LinearLayout>
+
     </LinearLayout>
 </layout>

@@ -12,6 +12,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.clicker.ContactType;
+import com.example.clicker.FantasyFishing;
 import com.example.clicker.MainActivity;
 import com.example.clicker.PointActivity;
 import com.example.clicker.R;
@@ -25,6 +26,7 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointHolder>
     private final ArrayList<Point> points;
     private final ActivityResultLauncher<Intent> editPointActivity;
 
+
     // Provide a suitable constructor (depends on the kind of dataset)
     public PointAdapter(ArrayList<Point> points, ActivityResultLauncher<Intent> editPointActivity) {
         this.points = points;
@@ -37,8 +39,8 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointHolder>
                                                        int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_item,
-                                                                  parent,
-                                                                  false);
+                parent,
+                false);
         return new PointHolder(v);
     }
 
@@ -66,6 +68,9 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointHolder>
         holder.edit.setOnClickListener(v -> {
             Intent editPoint = new Intent(v.getContext(), PointActivity.class);
             editPoint.putExtra("point", point);
+            String[] empty = {""};
+            editPoint.putExtra("ffspots", empty);
+            editPoint.putExtra("ffowners", empty);
             editPointActivity.launch(editPoint);
         });
 

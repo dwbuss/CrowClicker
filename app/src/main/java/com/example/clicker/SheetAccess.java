@@ -141,6 +141,23 @@ public class SheetAccess {
         return response.getValues();
     }
 
+    public void loadLocation(String sheet, FantasyFishing ff) {
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ValueRange response = service.spreadsheets().values()
+                            .get(spreadsheetId, sheet)
+                            .execute();
+                    ff.loadAnglers(response.getValues());
+                } catch (Exception e) {
+                    Log.e(TAG, "Failure during update.", e);
+                }
+            }
+        });
+    }
+
     //used to fix moon phase logic on all data.
     public void updateMoonOnAllRows(String lake) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
@@ -244,12 +261,12 @@ public class SheetAccess {
                         int rowNumber = Integer.parseInt(findRowNumberFromSpreadSheetForPointBySheetId(point));
                         Request request = new Request()
                                 .setDeleteDimension(new DeleteDimensionRequest()
-                                                            .setRange(new DimensionRange()
-                                                                              .setSheetId(Integer.parseInt(getSheetId(point.getLake())))
-                                                                              .setDimension("ROWS")
-                                                                              .setStartIndex(rowNumber - 1)
-                                                                              .setEndIndex(rowNumber)
-                                                            )
+                                        .setRange(new DimensionRange()
+                                                .setSheetId(Integer.parseInt(getSheetId(point.getLake())))
+                                                .setDimension("ROWS")
+                                                .setStartIndex(rowNumber - 1)
+                                                .setEndIndex(rowNumber)
+                                        )
                                 );
                         List<Request> requests = new ArrayList<Request>();
                         requests.add(request);

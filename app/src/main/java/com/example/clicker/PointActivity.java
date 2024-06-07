@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.ListAdapter;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -28,12 +29,17 @@ import com.example.clicker.databinding.ActivityPointBinding;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -41,6 +47,8 @@ public class PointActivity extends AppCompatActivity {
 
     private static final String TAG = "PointActivity";
     private Point point;
+    private String[] ffSpots;
+    private String[] ffOwners;
     private ActivityPointBinding binding;
     private PointsHelper helper;
     private SheetAccess sheets;
@@ -79,23 +87,24 @@ public class PointActivity extends AppCompatActivity {
         binding = ActivityPointBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         point = getIntent().getParcelableExtra("point");
-
+        ffOwners = getIntent().getStringArrayExtra("ffowners");
+        ffSpots = getIntent().getStringArrayExtra("ffspots");
         binding.btnDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Calendar cal = Calendar.getInstance(Locale.US);
                 cal.setTime(point.getTimeStamp());
                 DatePickerDialog datePickerDialog = new DatePickerDialog(PointActivity.this,
-                                                                         new DatePickerDialog.OnDateSetListener() {
+                        new DatePickerDialog.OnDateSetListener() {
 
-                                                                             @Override
-                                                                             public void onDateSet(DatePicker view, int year,
-                                                                                                   int monthOfYear, int dayOfMonth) {
-                                                                                 cal.set(year, monthOfYear, dayOfMonth);
-                                                                                 point.setTimeStamp(cal.getTime());
-                                                                                 binding.timeStamp.setText(point.timeStampAsString());
-                                                                             }
-                                                                         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                cal.set(year, monthOfYear, dayOfMonth);
+                                point.setTimeStamp(cal.getTime());
+                                binding.timeStamp.setText(point.timeStampAsString());
+                            }
+                        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
             }
         });
@@ -105,18 +114,18 @@ public class PointActivity extends AppCompatActivity {
                 Calendar cal = Calendar.getInstance(Locale.US);
                 cal.setTime(point.getTimeStamp());
                 TimePickerDialog timePickerDialog = new TimePickerDialog(PointActivity.this,
-                                                                         new TimePickerDialog.OnTimeSetListener() {
+                        new TimePickerDialog.OnTimeSetListener() {
 
-                                                                             @Override
-                                                                             public void onTimeSet(TimePicker view, int hourOfDay,
-                                                                                                   int minute) {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay,
+                                                  int minute) {
 
-                                                                                 cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                                                                                 cal.set(Calendar.MINUTE, minute);
-                                                                                 point.setTimeStamp(cal.getTime());
-                                                                                 binding.timeStamp.setText(point.timeStampAsString());
-                                                                             }
-                                                                         }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(PointActivity.this));
+                                cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                cal.set(Calendar.MINUTE, minute);
+                                point.setTimeStamp(cal.getTime());
+                                binding.timeStamp.setText(point.timeStampAsString());
+                            }
+                        }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(PointActivity.this));
                 timePickerDialog.show();
             }
         });
@@ -149,9 +158,9 @@ public class PointActivity extends AppCompatActivity {
         if (shouldNotify) {
             ContentResolver contentResolver = getContentResolver();
             SEND_MESSAGE(point.getMessage(),
-                         ContactType.valueOf(point.getContactType()),
-                         PreferenceManager.getDefaultSharedPreferences(this),
-                         contentResolver);
+                    ContactType.valueOf(point.getContactType()),
+                    PreferenceManager.getDefaultSharedPreferences(this),
+                    contentResolver);
         }
         lastAction = SAVE_ACTION;
         finish();
@@ -193,6 +202,13 @@ public class PointActivity extends AppCompatActivity {
                 finish();
             }
         };
+        List<String> ffResult = new LinkedList<>();
+        if (!binding.ffOwnerSpots.getSelectedItem().toString().trim().isEmpty() &&
+                !binding.ffSpots.getSelectedItem().toString().trim().isEmpty() &&
+                point.getFishSizeAsDouble() >= 40) {
+            //   ffResult = ff.scoreCatch(point.getName(), binding.ffSpots.getSelectedItem().toString().trim(), point.getFishSize(), binding.ffOwnerSpots.getSelectedItem().toString().trim(),
+            //          point.timeStampAsString(), binding.video.isChecked(), binding.northern.isChecked(), binding.vest.isChecked());
+        }
         sheets.storePoint(point, callback);
         lastAction = PUSH_ACTION;
     }
@@ -239,6 +255,12 @@ public class PointActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.bait.setAdapter(adapter);
         binding.bait.setSelection(Arrays.asList(baits).indexOf(point.getBait()));
+        ArrayAdapter<String> ffadapter = new ArrayAdapter<>(binding.getRoot().getContext(), android.R.layout.simple_spinner_item, ffSpots);
+        ffadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.ffSpots.setAdapter(ffadapter);
+        ArrayAdapter<String> ffOwneradapter = new ArrayAdapter<>(binding.getRoot().getContext(), android.R.layout.simple_spinner_item, ffOwners);
+        ffOwneradapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.ffOwnerSpots.setAdapter(ffOwneradapter);
 
         binding.notify.setChecked(shouldNotifyDefault);
     }

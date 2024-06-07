@@ -18,8 +18,11 @@ import com.example.clicker.PointActivity;
 import com.example.clicker.R;
 import com.example.clicker.objectbo.Point;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointHolder> {
     private static final String TAG = "PointAdapter";
@@ -68,9 +71,8 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointHolder>
         holder.edit.setOnClickListener(v -> {
             Intent editPoint = new Intent(v.getContext(), PointActivity.class);
             editPoint.putExtra("point", point);
-            String[] empty = {""};
-            editPoint.putExtra("ffspots", empty);
-            editPoint.putExtra("ffowners", empty);
+            List<List<Object>> empty = new LinkedList<>();
+            editPoint.putExtra("ffdata", (Serializable) empty);
             editPointActivity.launch(editPoint);
         });
 

@@ -30,12 +30,14 @@ import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -47,13 +49,14 @@ public class PointActivity extends AppCompatActivity {
 
     private static final String TAG = "PointActivity";
     private Point point;
-    private String[] ffSpots;
-    private String[] ffOwners;
     private ActivityPointBinding binding;
     private PointsHelper helper;
     private SheetAccess sheets;
     private boolean shouldNotifyDefault;
     private int lastAction;
+    private FantasyFishing ff;
+    private String[] ffLocations = new String[]{""};
+    private String[] ffOwners = new String[]{""};;
 
     public static void SEND_MESSAGE(String message, ContactType action, SharedPreferences prefs, ContentResolver resolver) {
         String notification;
@@ -87,8 +90,11 @@ public class PointActivity extends AppCompatActivity {
         binding = ActivityPointBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         point = getIntent().getParcelableExtra("point");
-        ffOwners = getIntent().getStringArrayExtra("ffowners");
-        ffSpots = getIntent().getStringArrayExtra("ffspots");
+        List<List<Object>> ffData = (List<List<Object>>) getIntent().getSerializableExtra("ffdata");
+        ff = new FantasyFishing();
+        ff.loadAnglers(ffData);
+        ffLocations = ff.getLocations();
+        ffOwners = ff.getOwners();
         binding.btnDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -202,14 +208,15 @@ public class PointActivity extends AppCompatActivity {
                 finish();
             }
         };
-        List<String> ffResult = new LinkedList<>();
+        List<Object> ffResult = new LinkedList<>();
         if (!binding.ffOwnerSpots.getSelectedItem().toString().trim().isEmpty() &&
                 !binding.ffSpots.getSelectedItem().toString().trim().isEmpty() &&
                 point.getFishSizeAsDouble() >= 40) {
-            //   ffResult = ff.scoreCatch(point.getName(), binding.ffSpots.getSelectedItem().toString().trim(), point.getFishSize(), binding.ffOwnerSpots.getSelectedItem().toString().trim(),
-            //          point.timeStampAsString(), binding.video.isChecked(), binding.northern.isChecked(), binding.vest.isChecked());
+            String location = binding.ffSpots.getSelectedItem().toString().trim();
+            ffResult = ff.scoreCatch(point.getName(), location.substring(0, location.indexOf(":")).trim(), point.getFishSize(), binding.ffOwnerSpots.getSelectedItem().toString().trim(),
+                    point.timeStampAsString(), binding.video.isChecked(), binding.northern.isChecked(), binding.vest.isChecked());
         }
-        sheets.storePoint(point, callback);
+        sheets.storePoint(point, ffResult, callback);
         lastAction = PUSH_ACTION;
     }
 
@@ -255,7 +262,7 @@ public class PointActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.bait.setAdapter(adapter);
         binding.bait.setSelection(Arrays.asList(baits).indexOf(point.getBait()));
-        ArrayAdapter<String> ffadapter = new ArrayAdapter<>(binding.getRoot().getContext(), android.R.layout.simple_spinner_item, ffSpots);
+        ArrayAdapter<String> ffadapter = new ArrayAdapter<>(binding.getRoot().getContext(), android.R.layout.simple_spinner_item, ffLocations);
         ffadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.ffSpots.setAdapter(ffadapter);
         ArrayAdapter<String> ffOwneradapter = new ArrayAdapter<>(binding.getRoot().getContext(), android.R.layout.simple_spinner_item, ffOwners);

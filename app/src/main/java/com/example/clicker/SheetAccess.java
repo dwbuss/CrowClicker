@@ -22,6 +22,7 @@ import com.google.api.services.sheets.v4.model.DimensionRange;
 import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
+import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import org.apache.commons.io.IOUtils;
@@ -150,7 +151,8 @@ public class SheetAccess {
                     ValueRange response = service.spreadsheets().values()
                             .get(spreadsheetId, sheet)
                             .execute();
-                    ff.loadAnglers(response.getValues());
+                    ff.setAnglerData(response.getValues());
+                    ff.loadAnglers(ff.getAnglerData());
                 } catch (Exception e) {
                     Log.e(TAG, "Failure during update.", e);
                 }
@@ -295,7 +297,7 @@ public class SheetAccess {
         return Integer.toString(sheetId.get());
     }
 
-    public void storePoint(Point point, ClickerCallback callback) {
+    public void storePoint(Point point, List<Object> ffResult, ClickerCallback callback) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
             @Override
@@ -328,8 +330,16 @@ public class SheetAccess {
                                 .execute();
                         Log.d(TAG, "Updated row " + rowNumber);
                     }
+                    if (!ffResult.isEmpty()) {
+                        ValueRange body = new ValueRange().setValues(List.of(ffResult));
+                        service.spreadsheets().values()
+                                .append(spreadsheetId, "2024FFResults!A2", body)
+                                .setValueInputOption("USER_ENTERED")
+                                .setInsertDataOption("INSERT_ROWS")
+                                .execute();
+                    }
                     callback.onSuccess();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     point.setSheetId(orgSheetId);
                     Log.e(TAG, "Failure during store " + point.getSheetBody(), e);
                     callback.onFailure();

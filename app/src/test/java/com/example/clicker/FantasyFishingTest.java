@@ -65,10 +65,10 @@ Result -    Dan          Tony        Jeff
         FantasyFishing ff = new FantasyFishing();
         ff.loadAnglers( sheetData );
         String[] owners = ff.getOwners();
-        assertEquals( 3, owners.length );
-        assertEquals( "Dan", owners[ 0 ] );
-        assertEquals( "Tony", owners[ 1 ] );
-        assertEquals( "Jeff", owners[ 2 ] );
+        assertEquals( 4, owners.length );
+        assertEquals( "Dan", owners[ 1 ] );
+        assertEquals( "Tony", owners[ 2 ] );
+        assertEquals( "Jeff", owners[ 3 ] );
     }
 
     @Test
@@ -76,13 +76,13 @@ Result -    Dan          Tony        Jeff
         FantasyFishing ff = new FantasyFishing();
         ff.loadAnglers( sheetData );
         String[] locations = ff.getLocations();
-        assertEquals( 6, locations.length );
-        assertEquals( "S. Gateway (F)", locations[ 0 ] );
-        assertEquals( "3 Point", locations[ 1 ] );
-        assertEquals( "Adams (C)", locations[ 2 ] );
-        assertEquals( "Careys", locations[ 3 ] );
-        assertEquals( "New Spot(V)", locations[ 4 ] );
-        assertEquals( "Chase(C,V)", locations[ 5 ] );
+        assertEquals( 7, locations.length );
+        assertEquals( "S. Gateway (F) : Dan", locations[ 1 ] );
+        assertEquals( "3 Point : Dan", locations[ 2 ] );
+        assertEquals( "Adams (C) : Tony", locations[ 3 ] );
+        assertEquals( "Careys : Tony", locations[ 4 ] );
+        assertEquals( "New Spot(V) : Jeff", locations[ 5 ] );
+        assertEquals( "Chase(C,V) : Jeff", locations[ 6 ] );
     }
 
     @Test

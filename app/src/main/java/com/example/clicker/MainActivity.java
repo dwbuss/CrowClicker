@@ -69,6 +69,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -143,11 +144,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Point point = (Point) marker.getTag();
             Intent editPoint = new Intent(MainActivity.this, PointActivity.class);
             editPoint.putExtra("point", point);
-            editPoint.putExtra("ffspots", ff.getLocations());
-            editPoint.putExtra("ffowners", ff.getOwners());
+            editPoint.putExtra("ffdata", (Serializable) ff.getAnglerData());
             editPoint.putExtra("shouldNotify", false);
-            String[] ffSpots = {"", "Chase", "S. Gateway", "Adams"};
-            editPoint.putExtra("ffSpots", ffSpots);
             startActivity(editPoint);
             refreshCounts();
         }
@@ -524,8 +522,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent addPoint = new Intent(MainActivity.this, PointActivity.class);
         addPoint.putExtra("point", point);
         addPoint.putExtra("shouldNotify", true);
-        addPoint.putExtra("ffspots", ff.getLocations());
-        addPoint.putExtra("ffowners", ff.getOwners());
+        addPoint.putExtra("ffdata", (Serializable) ff.getAnglerData());
         startActivity(addPoint);
     }
 

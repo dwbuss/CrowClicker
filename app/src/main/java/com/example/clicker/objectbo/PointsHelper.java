@@ -119,7 +119,7 @@ public class PointsHelper {
                 .build().find();
         ArrayList<Point> points = new ArrayList<>();
         for (Point p : tempPoints) {
-            if (!p.getName().equalsIgnoreCase("Label"))
+            if (!p.getName().equalsIgnoreCase("Label") && !p.getName().equalsIgnoreCase("FF"))
                 points.add(p);
         }
         return points;
@@ -144,7 +144,8 @@ public class PointsHelper {
         boolean haveAngler = (angler != null && !angler.trim().isEmpty());
         QueryCondition<Point> baseQuery = Point_.contactType.equal(type.toString())
                 .and(Point_.timeStamp.greater(date.getTime()))
-                .and(Point_.lake.equal(lake));
+                .and(Point_.lake.equal(lake))
+                .and(Point_.name.notEqual("FF"));
         if (haveAngler)
             baseQuery = baseQuery.and(Point_.name.equal(angler));
         return Long.toString(pointBox.query(baseQuery).build().count());

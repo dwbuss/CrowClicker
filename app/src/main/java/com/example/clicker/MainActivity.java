@@ -548,7 +548,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private BitmapDescriptor getMarker(Point point) {
 
-        if (point.getContactType().equals("CATCH") || point.getName().equalsIgnoreCase("label")) {
+        if (point.getContactType().equals("CATCH") || point.getName().equalsIgnoreCase("label") || point.getName().equalsIgnoreCase("ff")) {
             if (point.getName().equalsIgnoreCase("Adam")) {
                 return BitmapDescriptorFactory.fromResource(R.drawable.gm_adam);
             } else if (point.getName().equalsIgnoreCase("Amy")) {
@@ -581,6 +581,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return BitmapDescriptorFactory.fromResource(R.drawable.gm_nicole);
             } else if (point.getName().equalsIgnoreCase("Tony")) {
                 return BitmapDescriptorFactory.fromResource(R.drawable.gm_tony);
+            }
+            if (point.getName().equalsIgnoreCase("FF")) {
+                if (point.getNotes().toUpperCase().startsWith("DAN")) {
+                    return BitmapDescriptorFactory.fromResource(R.drawable.gm_dan_ff);
+                } else if (point.getNotes().toUpperCase().startsWith("TONY")) {
+                    return BitmapDescriptorFactory.fromResource(R.drawable.gm_tony_ff);
+                } else if (point.getNotes().toUpperCase().startsWith("BLAIR")) {
+                    return BitmapDescriptorFactory.fromResource(R.drawable.gm_blair_ff);
+                } else if (point.getNotes().toUpperCase().startsWith("CHRIS")) {
+                    return BitmapDescriptorFactory.fromResource(R.drawable.gm_chris_ff);
+                } else if (point.getNotes().toUpperCase().startsWith("MATT")) {
+                    return BitmapDescriptorFactory.fromResource(R.drawable.gm_matt_ff);
+                } else if (point.getNotes().toUpperCase().startsWith("DON")) {
+                    return BitmapDescriptorFactory.fromResource(R.drawable.gm_don_ff);
+                }
             }
             if (!point.getName().equalsIgnoreCase("Label")) {
                 return BitmapDescriptorFactory.fromResource(R.drawable.gm_dave);

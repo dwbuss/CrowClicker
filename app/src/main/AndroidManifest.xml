@@ -61,6 +61,7 @@
             android:label="@string/title_activity_settings" />
         <activity android:name=".ForecastActivity" />
         <activity android:name=".report.ReportActivity" />
+        <activity android:name=".report.FfActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

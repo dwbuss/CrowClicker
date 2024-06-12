@@ -51,6 +51,7 @@ import androidx.preference.PreferenceManager;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.Point_;
 import com.example.clicker.objectbo.PointsHelper;
+import com.example.clicker.report.FfActivity;
 import com.example.clicker.report.ReportActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -330,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
         ff = new FantasyFishing();
         sheets.loadLocation("2024FF", ff);
-
+        sheets.loadStandings("2024FFResults", ff);
 
         getLocation();
 
@@ -425,6 +426,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((FloatingActionButton) findViewById(R.id.layersButton)).hide();
         ((FloatingActionButton) findViewById(R.id.tripReportButton)).hide();
         ((FloatingActionButton) findViewById(R.id.statsButton)).hide();
+        ((FloatingActionButton) findViewById(R.id.ffButton)).hide();
     }
 
     public void handleFabMenu(View view) {
@@ -445,6 +447,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((FloatingActionButton) findViewById(R.id.layersButton)).show();
         ((FloatingActionButton) findViewById(R.id.tripReportButton)).show();
         ((FloatingActionButton) findViewById(R.id.statsButton)).show();
+        ((FloatingActionButton) findViewById(R.id.ffButton)).show();
     }
 
     private void closeMenu() {
@@ -456,6 +459,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((FloatingActionButton) findViewById(R.id.layersButton)).hide();
         ((FloatingActionButton) findViewById(R.id.tripReportButton)).hide();
         ((FloatingActionButton) findViewById(R.id.statsButton)).hide();
+        ((FloatingActionButton) findViewById(R.id.ffButton)).hide();
     }
 
     private List<Point> filterPoints() {
@@ -754,6 +758,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         closeMenu();
         Intent report = new Intent(this, ReportActivity.class);
         startActivity(report);
+    }
+
+    public void ffStandings(View view) {
+        closeMenu();
+        Intent ffStandings = new Intent(this, FfActivity.class);
+        ffStandings.putExtra("ffstandings", (Serializable) ff.getStandings());
+        startActivity(ffStandings);
     }
 
     public void switchLayer(View view) {

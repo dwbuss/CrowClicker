@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,8 +15,17 @@ public final class FantasyFishing {
 
     Map<String, List<FfSpot>> anglers;
     private List<List<Object>> anglerData;
-
+    private List<List<Object>> standingsData;
+    private List<List<Object>> standings;
     private Map<String, Integer> anglerIndex;
+
+    public void loadStandings(List<List<Object>> ffSheet) {
+        standings = ffSheet;
+    }
+
+    public List<List<Object>> getStandings() {
+        return standings;
+    }
 
     public void loadAnglers(List<List<Object>> ffSheet) {
         anglers = new LinkedHashMap<>();
@@ -25,7 +35,7 @@ public final class FantasyFishing {
         List<Object> header = ffSheet.get(0);
         AtomicInteger index = new AtomicInteger(0);
         header.forEach(name -> {
-            if (!((String)name).equalsIgnoreCase("Selection")) {
+            if (!((String) name).equalsIgnoreCase("Selection")) {
                 anglerIndex.put(((String) name).trim(), index.get());
                 anglers.put(((String) name).trim(), new ArrayList<>());
                 index.getAndIncrement();
@@ -230,7 +240,15 @@ public final class FantasyFishing {
         anglerData = values;
     }
 
+    public void setStandingsData(List<List<Object>> values) {
+        standingsData = values;
+    }
+
     public List<List<Object>> getAnglerData() {
         return anglerData;
+    }
+
+    public List<List<Object>> getStandingsData() {
+        return standingsData;
     }
 }

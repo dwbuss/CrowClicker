@@ -160,6 +160,24 @@ public class SheetAccess {
         });
     }
 
+    public void loadStandings(String sheet, FantasyFishing ff) {
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ValueRange response = service.spreadsheets().values()
+                            .get(spreadsheetId, sheet)
+                            .execute();
+                    ff.setStandingsData(response.getValues());
+                    ff.loadStandings(ff.getStandingsData());
+                } catch (Exception e) {
+                    Log.e(TAG, "Failure during update.", e);
+                }
+            }
+        });
+    }
+
     //used to fix moon phase logic on all data.
     public void updateMoonOnAllRows(String lake) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);

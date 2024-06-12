@@ -99,6 +99,7 @@ Result -    Dan          Tony        Jeff
         row1.add( "" );
         row1.add( "41.0" );
         row1.add( "" );
+        row1.add( "" );
         assertEquals( row1, ff.scoreCatch( "Amy", "Carey's", "41", "Tony", "June 6", false, false, false ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
@@ -110,6 +111,7 @@ Result -    Dan          Tony        Jeff
         row1.add( "" );
         row1.add( "51.0" );
         row1.add( "" );
+        row1.add( " Video" );
         assertEquals( row1, ff.scoreCatch( "Tony", "Carey's", "41", "Tony", "June 6", true, false, false ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
@@ -121,6 +123,7 @@ Result -    Dan          Tony        Jeff
         row1.add( "82.0" );
         row1.add( "" );
         row1.add( "" );
+        row1.add( " Franchise" );
         assertEquals( row1, ff.scoreCatch( "Dan", "S. Gateway (F)", "41", "Dan", "June 6", false, false, false ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
@@ -132,6 +135,7 @@ Result -    Dan          Tony        Jeff
         row1.add( "41.0" );
         row1.add( "" );
         row1.add( "" );
+        row1.add( " Community" );
         assertEquals( row1, ff.scoreCatch( "Dan", "Adams (C)", "41", "Dan", "June 6", false, false, false ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
@@ -140,9 +144,10 @@ Result -    Dan          Tony        Jeff
         row1.add( "41" );
         row1.add( "Carey's" );
         row1.add( "Dan" );
-        row1.add( "27.5" );
-        row1.add( "25.5" );
+        row1.add( "32.5" );
+        row1.add( "20.5" );
         row1.add( "" );
+        row1.add( " Video LifeVest" );
         assertEquals( row1, ff.scoreCatch( "Dan", "Carey's", "41", "Dan", "June 6", true, false, true ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
@@ -153,7 +158,8 @@ Result -    Dan          Tony        Jeff
         row1.add( "Jeff" );
         row1.add( "" );
         row1.add( "" );
-        row1.add( "64.0" );
+        row1.add( "54.0" );
+        row1.add( " Video Northern LifeVest" );
         assertEquals( row1, ff.scoreCatch( "Jeff", "New Spot(V)", "42", "Jeff", "June 6", true, true, true ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
@@ -165,6 +171,7 @@ Result -    Dan          Tony        Jeff
         row1.add( "52.0" );
         row1.add( "" );
         row1.add( "" );
+        row1.add( " Virgin Community" );
         assertEquals( row1, ff.scoreCatch( "Calvin", "Chase(C,V)", "42", "Dan", "June 6", false, false, false ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
@@ -173,9 +180,10 @@ Result -    Dan          Tony        Jeff
         row1.add( "42" );
         row1.add( "S. Gateway (F)" );
         row1.add( "Dan" );
-        row1.add( "52.0" );
-        row1.add( "28.0" );
+        row1.add( "42.0" );
+        row1.add( "33.0" );
         row1.add( "" );
+        row1.add( " Video Northern LifeVest Franchise" );
         assertEquals( row1, ff.scoreCatch( "Tony", "S. Gateway (F)", "42", "Dan", "June 6", true, true, true ) );
     }
 }

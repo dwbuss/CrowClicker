@@ -65,7 +65,9 @@ public class PointsHelper {
     }
 
     public String getTotalCatch(String lake) {
-        QueryCondition<Point> baseQuery = Point_.contactType.equal(ContactType.CATCH.toString()).and(Point_.lake.equal(lake));
+        QueryCondition<Point> baseQuery = Point_.contactType.equal(ContactType.CATCH.toString())
+                .and(Point_.lake.equal(lake))
+                .and(Point_.fishSize.notEqual(""));
         return Long.toString(pointBox.query(baseQuery).build().count());
     }
 

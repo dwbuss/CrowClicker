@@ -25,13 +25,15 @@ public final class FantasyFishing {
         List<Object> header = ffSheet.get(0);
         AtomicInteger index = new AtomicInteger(0);
         header.forEach(name -> {
-            anglerIndex.put(((String) name).trim(), index.get());
-            anglers.put(((String) name).trim(), new ArrayList<>());
-            index.getAndIncrement();
+            if (!((String)name).equalsIgnoreCase("Selection")) {
+                anglerIndex.put(((String) name).trim(), index.get());
+                anglers.put(((String) name).trim(), new ArrayList<>());
+                index.getAndIncrement();
+            }
         });
         for (int i = 1; i <= ffSheet.size() - 1; i++) {
             List<Object> spots = ffSheet.get(i);
-            for (int i1 = 0; i1 <= spots.size() - 1; i1++) {
+            for (int i1 = 1; i1 <= spots.size() - 1; i1++) {
                 String spotName = ((String) spots.get(i1)).trim();
                 boolean isVirgin = spotName.contains("(") ? spotName.substring(spotName.indexOf('(')).toUpperCase().contains(
                         "V") : false;

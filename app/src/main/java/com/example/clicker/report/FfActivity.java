@@ -13,19 +13,20 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import com.example.clicker.databinding.ActivityFfBinding;
+
 import java.util.List;
 
 public class FfActivity extends AppCompatActivity {
     private static final String TAG = "FfActivity";
     private TableLayout mTableLayout;
-
-     //private ActivityPointBinding binding;
+    private ActivityFfBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //binding = ActivityPointBinding.inflate(getLayoutInflater());
-        //setContentView(binding.getRoot());
+        binding = ActivityFfBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         List<List<Object>> ffData = (List<List<Object>>) getIntent().getSerializableExtra("ffdata");
 

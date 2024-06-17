@@ -543,7 +543,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
                 android:checked="false"
-                android:text="Northern" />
+                android:text="40&quot; + Northern" />
         </LinearLayout>
 
         <LinearLayout

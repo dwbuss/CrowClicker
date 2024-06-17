@@ -22,7 +22,6 @@ import com.google.api.services.sheets.v4.model.DimensionRange;
 import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
-import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import org.apache.commons.io.IOUtils;
@@ -142,7 +141,7 @@ public class SheetAccess {
         return response.getValues();
     }
 
-    public void loadLocation(String sheet, FantasyFishing ff) {
+    public void loadAnglers(String sheet, FantasyFishing ff) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
             @Override
@@ -169,8 +168,7 @@ public class SheetAccess {
                     ValueRange response = service.spreadsheets().values()
                             .get(spreadsheetId, sheet)
                             .execute();
-                    ff.setStandingsData(response.getValues());
-                    ff.loadStandings(ff.getStandingsData());
+                    ff.setStandings(response.getValues());
                 } catch (Exception e) {
                     Log.e(TAG, "Failure during update.", e);
                 }

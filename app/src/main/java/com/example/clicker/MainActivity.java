@@ -69,7 +69,6 @@ import com.google.android.gms.maps.model.TileProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -330,8 +329,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         sheets = new SheetAccess(getApplicationContext());
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
         ff = new FantasyFishing();
-        sheets.loadLocation("2024FF", ff);
         sheets.loadStandings("2024FFResults", ff);
+        sheets.loadAnglers("2024FF", ff);
 
         getLocation();
 

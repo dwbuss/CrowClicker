@@ -42,15 +42,16 @@ public final class FantasyFishing {
             for (int i1 = 1; i1 <= spots.size() - 1; i1++) {
                 String spotName = ((String) spots.get(i1)).trim();
                 AtomicBoolean alreadyVirgin = new AtomicBoolean(false);
-                standingsData.stream().forEach(x -> {
-                    AtomicBoolean sameSpot = new AtomicBoolean(false);
-                    x.stream().forEach(y -> {
-                        if (((String) y).equalsIgnoreCase(spotName))
-                            sameSpot.set(true);
-                        if (((String) y).toUpperCase().contains("VIRGIN") && sameSpot.get())
-                            alreadyVirgin.set(true);
+                if (standingsData != null)
+                    standingsData.stream().forEach(x -> {
+                        AtomicBoolean sameSpot = new AtomicBoolean(false);
+                        x.stream().forEach(y -> {
+                            if (((String) y).equalsIgnoreCase(spotName))
+                                sameSpot.set(true);
+                            if (((String) y).toUpperCase().contains("VIRGIN") && sameSpot.get())
+                                alreadyVirgin.set(true);
+                        });
                     });
-                });
                 boolean isVirgin = false;
                 if (!alreadyVirgin.get()) {
                     isVirgin = spotName.contains("(") ? spotName.substring(spotName.indexOf('(')).toUpperCase().contains("V") : false;
@@ -104,8 +105,7 @@ public final class FantasyFishing {
         }
         Double points = Double.parseDouble(size);
         if (quarterBonus) points = points - .25;
-        // only 1 virgin per spot
-        // load weather on push
+        // load weather on push and reload ff data on pull
 
         if (anglers.containsKey(angler)) {
             // angler location

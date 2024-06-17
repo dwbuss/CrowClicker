@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Intent editPoint = new Intent(MainActivity.this, PointActivity.class);
             editPoint.putExtra("point", point);
             editPoint.putExtra("ffdata", (Serializable) ff.getAnglerData());
+            editPoint.putExtra("ffstandings", (Serializable) ff.getStandings());
             editPoint.putExtra("shouldNotify", false);
             startActivity(editPoint);
             refreshCounts();
@@ -526,6 +527,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         addPoint.putExtra("point", point);
         addPoint.putExtra("shouldNotify", true);
         addPoint.putExtra("ffdata", (Serializable) ff.getAnglerData());
+        addPoint.putExtra("ffstandings", (Serializable) ff.getStandings());
         startActivity(addPoint);
     }
 

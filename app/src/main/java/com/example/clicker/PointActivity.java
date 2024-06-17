@@ -91,7 +91,9 @@ public class PointActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         point = getIntent().getParcelableExtra("point");
         List<List<Object>> ffData = (List<List<Object>>) getIntent().getSerializableExtra("ffdata");
+        List<List<Object>> ffStandings = (List<List<Object>>) getIntent().getSerializableExtra("ffstandings");
         ff = new FantasyFishing();
+        ff.setStandings(ffStandings);
         ff.loadAnglers(ffData);
         ffLocations = ff.getLocations();
         ffOwners = ff.getOwners();

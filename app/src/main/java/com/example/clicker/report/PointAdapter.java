@@ -73,6 +73,7 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointHolder>
             editPoint.putExtra("point", point);
             List<List<Object>> empty = new LinkedList<>();
             editPoint.putExtra("ffdata", (Serializable) empty);
+            editPoint.putExtra("ffstandings", (Serializable) empty);
             editPointActivity.launch(editPoint);
         });
 

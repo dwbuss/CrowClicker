@@ -63,7 +63,7 @@ public class FfActivity extends AppCompatActivity {
             tv.setPadding(5, 15, 0, 15);
             tv.setBackgroundColor(Color.parseColor("#f8f8f8"));
             tv.setText(String.valueOf(row.get(i)));
-            tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+            //tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             tv.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
             tr.addView(tv);
         }
@@ -87,7 +87,7 @@ public class FfActivity extends AppCompatActivity {
                     value = String.valueOf(dataRow.get(ii));
                 }
                 tv.setText(value);
-                tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+          //      tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
                 newRow.addView(tv);
             }
             mTableLayout.addView(newRow, trParams);

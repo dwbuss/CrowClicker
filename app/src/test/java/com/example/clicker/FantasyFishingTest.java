@@ -32,17 +32,20 @@ Result -    Dan          Tony        Jeff
     @Before
     public void before() {
         List<Object> header = new ArrayList<>();
+        header.add( "Selection" );
         header.add( "Dan" );
         header.add( "Tony" );
         header.add( "Jeff" );
         sheetData.add( header );
         List<Object> row1 = new ArrayList<>();
+        row1.add( "1" );
         row1.add( "S. Gateway (F)" );
         row1.add( "Adams (C)" );
         row1.add( "New Spot(V)" );
         sheetData.add( row1 );
 
         List<Object> row2 = new ArrayList<>();
+        row2.add( "2" );
         row2.add( "3 Point" );
         row2.add( "Carey's" );
         row2.add( "Chase(C,V)" );
@@ -93,38 +96,38 @@ Result -    Dan          Tony        Jeff
         // date, angler, size , location, owner , ... anglers
         row1.add( "June 6" );
         row1.add( "Amy" );
-        row1.add( "41" );
+        row1.add( "41.75" );
         row1.add( "Carey's" );
         row1.add( "Tony" );
         row1.add( "" );
-        row1.add( "41.0" );
+        row1.add( "41.75" );
         row1.add( "" );
         row1.add( "" );
-        assertEquals( row1, ff.scoreCatch( "Amy", "Carey's", "41", "Tony", "June 6", false, false, false ) );
+        assertEquals( row1, ff.scoreCatch( "Amy", "Carey's", "41.75", "Tony", "June 6", false, false, false ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
         row1.add( "June 6" );
         row1.add( "Tony" );
-        row1.add( "41" );
+        row1.add( "41.25" );
         row1.add( "Carey's" );
         row1.add( "Tony" );
         row1.add( "" );
-        row1.add( "51.0" );
+        row1.add( "51.25" );
         row1.add( "" );
         row1.add( " Video" );
-        assertEquals( row1, ff.scoreCatch( "Tony", "Carey's", "41", "Tony", "June 6", true, false, false ) );
+        assertEquals( row1, ff.scoreCatch( "Tony", "Carey's", "41.25", "Tony", "June 6", true, false, false ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
         row1.add( "June 6" );
         row1.add( "Dan" );
-        row1.add( "41" );
+        row1.add( "41.75" );
         row1.add( "S. Gateway (F)" );
         row1.add( "Dan" );
-        row1.add( "82.0" );
+        row1.add( "83.5" );
         row1.add( "" );
         row1.add( "" );
         row1.add( " Franchise" );
-        assertEquals( row1, ff.scoreCatch( "Dan", "S. Gateway (F)", "41", "Dan", "June 6", false, false, false ) );
+        assertEquals( row1, ff.scoreCatch( "Dan", "S. Gateway (F)", "41.75", "Dan", "June 6", false, false, false ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
         row1.add( "June 6" );
@@ -141,14 +144,14 @@ Result -    Dan          Tony        Jeff
         // date, angler, size , location, owner , ... anglers
         row1.add( "June 6" );
         row1.add( "Dan" );
-        row1.add( "41" );
+        row1.add( "41.25" );
         row1.add( "Carey's" );
         row1.add( "Dan" );
-        row1.add( "32.5" );
+        row1.add( "32.75" );
         row1.add( "20.5" );
         row1.add( "" );
         row1.add( " Video LifeVest" );
-        assertEquals( row1, ff.scoreCatch( "Dan", "Carey's", "41", "Dan", "June 6", true, false, true ) );
+        assertEquals( row1, ff.scoreCatch( "Dan", "Carey's", "41.25", "Dan", "June 6", true, false, true ) );
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
         row1.add( "June 6" );
@@ -177,14 +180,63 @@ Result -    Dan          Tony        Jeff
         // date, angler, size , location, owner , ... anglers
         row1.add( "June 6" );
         row1.add( "Tony" );
-        row1.add( "42" );
+        row1.add( "42.75" );
         row1.add( "S. Gateway (F)" );
         row1.add( "Dan" );
-        row1.add( "42.0" );
-        row1.add( "33.0" );
+        row1.add( "42.5" );
+        row1.add( "33.5" );
         row1.add( "" );
         row1.add( " Video Northern LifeVest Franchise" );
-        assertEquals( row1, ff.scoreCatch( "Tony", "S. Gateway (F)", "42", "Dan", "June 6", true, true, true ) );
+        assertEquals( row1, ff.scoreCatch( "Tony", "S. Gateway (F)", "42.75", "Dan", "June 6", true, true, true ) );
+        row1 = new ArrayList<>();
+        // date, angler, size , location, owner , ... anglers
+        row1.add( "June 6" );
+        row1.add( "Tony" );
+        row1.add( "30" );
+        row1.add( "Chase(C,V)" );
+        row1.add( "Tony" );
+        row1.add( "" );
+        row1.add( "40.0" );
+        row1.add( "" );
+        row1.add( " Virgin Community" );
+        assertEquals( row1, ff.scoreCatch( "Tony", "Chase(C,V)", "30", "Tony", "June 6", false, false, false ) );
+        row1 = new ArrayList<>();
+        // date, angler, size , location, owner , ... anglers
+        row1.add( "June 6" );
+        row1.add( "Tony" );
+        row1.add( "30.25" );
+        row1.add( "New Spot(V)" );
+        row1.add( "Tony" );
+        row1.add( "" );
+        row1.add( "25.25" );
+        row1.add( "15.0" );
+        row1.add( " Virgin" );
+        assertEquals( row1, ff.scoreCatch( "Tony", "New Spot(V)", "30.25", "Tony", "June 6", false, false, false ) );
+        row1 = new ArrayList<>();
+        // date, angler, size , location, owner , ... anglers
+        row1.add( "June 6" );
+        row1.add( "Calvin" );
+        row1.add( "32" );
+        row1.add( "S. Gateway (F)" );
+        row1.add( "Dan" );
+        row1.add( "" );
+        row1.add( "" );
+        row1.add( "" );
+        row1.add( " Franchise" );
+        assertEquals( row1, ff.scoreCatch( "Calvin", "S. Gateway (F)", "32", "Dan", "June 6", false, false, false ) );
+        row1 = new ArrayList<>();
+        // date, angler, size , location, owner , ... anglers
+        row1.add( "June 6" );
+        row1.add( "Dan" );
+        row1.add( "41.25" );
+        row1.add( "Carey's" );
+        row1.add( "Dan" );
+        row1.add( "32.75" );
+        row1.add( "20.5" );
+        row1.add( "" );
+        row1.add( " Video LifeVest" );
+        assertEquals( row1, ff.scoreCatch( "Dan", "Carey's", "41.25", "Dan", "June 6", true, false, true ) );
+
     }
 }
 

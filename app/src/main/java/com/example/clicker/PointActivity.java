@@ -210,8 +210,7 @@ public class PointActivity extends AppCompatActivity {
         };
         List<Object> ffResult = new LinkedList<>();
         if (!binding.ffOwnerSpots.getSelectedItem().toString().trim().isEmpty() &&
-                !binding.ffSpots.getSelectedItem().toString().trim().isEmpty() &&
-                point.getFishSizeAsDouble() >= 40) {
+                !binding.ffSpots.getSelectedItem().toString().trim().isEmpty() ) {
             String location = binding.ffSpots.getSelectedItem().toString().trim();
             ffResult = ff.scoreCatch(point.getName(), location.substring(0, location.indexOf(":")).trim(), point.getFishSize(), binding.ffOwnerSpots.getSelectedItem().toString().trim(),
                     point.timeStampAsString(), binding.video.isChecked(), binding.northern.isChecked(), binding.vest.isChecked());

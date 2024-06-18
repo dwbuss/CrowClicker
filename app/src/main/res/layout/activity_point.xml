@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".PointActivity">
 
@@ -571,9 +570,9 @@
                 android:layout_weight="1"
                 android:onClick="saveButton"
                 android:text="Save"
-                android:textStyle="bold"
                 android:textColor="#000000"
-                android:textSize="10sp" />
+                android:textSize="10sp"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btnDelete"
@@ -583,9 +582,9 @@
                 android:layout_weight="1"
                 android:onClick="deleteButton"
                 android:text="Delete"
-                android:textStyle="bold"
                 android:textColor="#000000"
                 android:textSize="10sp"
+                android:textStyle="bold"
                 android:visibility="visible" />
 
             <Button
@@ -596,9 +595,9 @@
                 android:layout_weight="1"
                 android:onClick="weatherButton"
                 android:text="Weather"
-                android:textStyle="bold"
                 android:textColor="#000000"
                 android:textSize="10sp"
+                android:textStyle="bold"
                 android:visibility="visible" />
 
             <Button
@@ -610,8 +609,8 @@
                 android:onClick="pushButton"
                 android:text="Save/Push"
                 android:textColor="#000000"
-                android:textStyle="bold"
                 android:textSize="10sp"
+                android:textStyle="bold"
                 android:visibility="visible" />
 
             <Button
@@ -622,9 +621,9 @@
                 android:layout_weight="1"
                 android:onClick="cancelButton"
                 android:text="Cancel"
-                android:textStyle="bold"
                 android:textColor="#000000"
-                android:textSize="10sp" />
+                android:textSize="10sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout

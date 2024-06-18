@@ -98,6 +98,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final static int ALL_PERMISSIONS_RESULT = 101;
     private final List<Point> pointList = new ArrayList<>();
     private final float zoomLevel = 10;
+    private final ActivityResultLauncher<String[]> permissionRequest =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                result.entrySet().stream()
+                        .forEach(stringBooleanEntry -> Log.i(TAG, String.format("Permission request %s was %s.",
+                                                                                stringBooleanEntry.getKey(),
+                                                                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
+            });
+    OvershootInterpolator interpolator = new OvershootInterpolator();
+    SupportMapFragment mapFragment;
+    TileOverlay satelliteOptions;
+    FantasyFishing ff = null;
     private final GoogleMap.OnMapLongClickListener onMyMapLongClickListener = latLng -> {
         String[] contactTypes = ContactType.asStringArray();
         new AlertDialog.Builder(MainActivity.this)
@@ -109,17 +120,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     addPoint(ContactType.valueOf(contactTypes[which]), loc);
                 }).show();
     };
-    private final ActivityResultLauncher<String[]> permissionRequest =
-            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
-                result.entrySet().stream()
-                        .forEach(stringBooleanEntry -> Log.i(TAG, String.format("Permission request %s was %s.",
-                                stringBooleanEntry.getKey(),
-                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
-            });
-
-    OvershootInterpolator interpolator = new OvershootInterpolator();
-    SupportMapFragment mapFragment;
-    TileOverlay satelliteOptions;
     private PointsHelper pointsHelper;
     private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
         @Override
@@ -237,7 +237,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private SheetAccess sheets;
     private Point gotoPoint = null;
     private boolean isMenuOpen = false;
-    FantasyFishing ff = null;
 
     private static String getExternalStoragePath(Context mContext, boolean is_removable) {
         StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
@@ -351,11 +350,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String bait = data.getQueryParameter("bait");
                 String lake = data.getQueryParameter("lake");
                 gotoPoint = new Point(-1,
-                        name == null ? "Angler" : name,
-                        type == null ? ContactType.FOLLOW.toString() : type,
-                        longitude, latitude,
-                        bait == null ? "NA" : bait,
-                        lake);
+                                      name == null ? "Angler" : name,
+                                      type == null ? ContactType.FOLLOW.toString() : type,
+                                      longitude, latitude,
+                                      bait == null ? "NA" : bait,
+                                      lake);
             }
         }
         initView();
@@ -475,11 +474,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (prefs.getBoolean("ViewLabels", true))
             return pointBox.query(Point_.timeStamp.greater(today.getTime())
-                            .or(Point_.name.equal(label)))
+                                          .or(Point_.name.equal(label)))
                     .build().find();
         else
             return pointBox.query(Point_.timeStamp.greater(today.getTime())
-                            .and(Point_.name.notEqual(label)))
+                                          .and(Point_.name.notEqual(label)))
                     .build().find();
     }
 
@@ -534,14 +533,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(point.getLat(), point.getLon()))
-                    .title("Hold to Edit")
-                    .draggable(true)
-                    .anchor(0.5f, 0.5f)
-                    .visible(false)
-                    .flat(true)
-                    .zIndex(0)
-                    .icon(getMarker(point)));
+                                              .position(new LatLng(point.getLat(), point.getLon()))
+                                              .title("Hold to Edit")
+                                              .draggable(true)
+                                              .anchor(0.5f, 0.5f)
+                                              .visible(false)
+                                              .flat(true)
+                                              .zIndex(0)
+                                              .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
                 m.setVisible(true);

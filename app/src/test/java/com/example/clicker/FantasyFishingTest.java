@@ -3,11 +3,11 @@ package com.example.clicker;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FantasyFishingTest {
     List<List<Object>> sheetData = new ArrayList<>();
@@ -88,10 +88,10 @@ Result -    Dan          Tony        Jeff
     }
 
     @Test
-    public void testOnlyOneVirgin(){
+    public void testOnlyOneVirgin() {
 
 
-       standings = new ArrayList<>();
+        standings = new ArrayList<>();
         List<Object> srow1 = new ArrayList<>();
         srow1.add("Date");
         srow1.add("Angler");
@@ -132,6 +132,7 @@ Result -    Dan          Tony        Jeff
 
 
     }
+
     @Test
     public void testScoreCatch() {
         List<String> row1 = new ArrayList<>();

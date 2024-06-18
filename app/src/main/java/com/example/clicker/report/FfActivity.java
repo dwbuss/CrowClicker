@@ -3,7 +3,6 @@ package com.example.clicker.report;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -49,7 +48,7 @@ public class FfActivity extends AppCompatActivity {
         final TableRow tr = new TableRow(this);
         tr.setId(id);
         TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
-                TableLayout.LayoutParams.WRAP_CONTENT);
+                                                                         TableLayout.LayoutParams.WRAP_CONTENT);
         trParams.setMargins(leftRowMargin, topRowMargin, rightRowMargin, bottomRowMargin);
         tr.setPadding(0, 0, 0, 0);
         tr.setLayoutParams(trParams);
@@ -58,7 +57,7 @@ public class FfActivity extends AppCompatActivity {
         for (int i = 0; i < row.size(); i++) {
             final TextView tv = new TextView(this);
             tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.WRAP_CONTENT));
+                                                         TableRow.LayoutParams.WRAP_CONTENT));
             tv.setGravity(Gravity.LEFT);
             tv.setPadding(5, 15, 0, 15);
             tv.setBackgroundColor(Color.parseColor("#f8f8f8"));
@@ -72,14 +71,14 @@ public class FfActivity extends AppCompatActivity {
 
         for (int i = 1; i < data.size(); i++) {
             final TableRow newRow = new TableRow(this);
-            newRow.setId(id+i);
+            newRow.setId(id + i);
             newRow.setPadding(0, 0, 0, 0);
             newRow.setLayoutParams(trParams);
             List<Object> dataRow = data.get(i);
             for (int ii = 0; ii < dataRow.size(); ii++) {
                 final TextView tv = new TextView(this);
                 tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                        TableRow.LayoutParams.WRAP_CONTENT));
+                                                             TableRow.LayoutParams.WRAP_CONTENT));
                 tv.setGravity(Gravity.LEFT);
                 tv.setPadding(5, 15, 0, 15);
                 String value = "";
@@ -87,7 +86,7 @@ public class FfActivity extends AppCompatActivity {
                     value = String.valueOf(dataRow.get(ii));
                 }
                 tv.setText(value);
-          //      tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+                //      tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
                 newRow.addView(tv);
             }
             mTableLayout.addView(newRow, trParams);

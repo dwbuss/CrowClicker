@@ -17,8 +17,6 @@ import com.example.clicker.objectbo.Point;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.security.cert.Extension;
-
 /**
  * Instrumented test, which will execute on an Android device.
  *

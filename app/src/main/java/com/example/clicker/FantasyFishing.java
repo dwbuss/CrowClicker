@@ -16,12 +16,12 @@ public final class FantasyFishing {
     private List<List<Object>> standingsData;
     private Map<String, Integer> anglerIndex;
 
-    public void setStandings(List<List<Object>> ffSheet) {
-        standingsData = ffSheet;
-    }
-
     public List<List<Object>> getStandings() {
         return standingsData;
+    }
+
+    public void setStandings(List<List<Object>> ffSheet) {
+        standingsData = ffSheet;
     }
 
     public void loadAnglers(List<List<Object>> ffSheet) {
@@ -245,12 +245,12 @@ public final class FantasyFishing {
         return Arrays.asList(newRow);
     }
 
-    public void setAnglerData(List<List<Object>> values) {
-        anglerData = values;
-    }
-
     public List<List<Object>> getAnglerData() {
         return anglerData;
+    }
+
+    public void setAnglerData(List<List<Object>> values) {
+        anglerData = values;
     }
 
 }

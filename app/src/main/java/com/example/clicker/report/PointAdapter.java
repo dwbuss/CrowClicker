@@ -12,7 +12,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.clicker.ContactType;
-import com.example.clicker.FantasyFishing;
 import com.example.clicker.MainActivity;
 import com.example.clicker.PointActivity;
 import com.example.clicker.R;
@@ -42,8 +41,8 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointHolder>
                                                        int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_item,
-                parent,
-                false);
+                                                                  parent,
+                                                                  false);
         return new PointHolder(v);
     }
 

@@ -279,12 +279,12 @@ public class SheetAccess {
                         int rowNumber = Integer.parseInt(findRowNumberFromSpreadSheetForPointBySheetId(point));
                         Request request = new Request()
                                 .setDeleteDimension(new DeleteDimensionRequest()
-                                        .setRange(new DimensionRange()
-                                                .setSheetId(Integer.parseInt(getSheetId(point.getLake())))
-                                                .setDimension("ROWS")
-                                                .setStartIndex(rowNumber - 1)
-                                                .setEndIndex(rowNumber)
-                                        )
+                                                            .setRange(new DimensionRange()
+                                                                              .setSheetId(Integer.parseInt(getSheetId(point.getLake())))
+                                                                              .setDimension("ROWS")
+                                                                              .setStartIndex(rowNumber - 1)
+                                                                              .setEndIndex(rowNumber)
+                                                            )
                                 );
                         List<Request> requests = new ArrayList<Request>();
                         requests.add(request);

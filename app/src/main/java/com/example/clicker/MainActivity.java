@@ -47,6 +47,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.Point_;
@@ -357,7 +358,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                       lake);
             }
         }
+       final SwipeRefreshLayout pullToRefresh = findViewById(R.id.refreshLayout);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                pullToRefresh.setRefreshing(true);
+                refreshData(); // your code
+                pullToRefresh.setRefreshing(false);
+            }
+        });
         initView();
+    }
+
+    private void refreshData() {
+        sheets.loadStandings("2024FFResults", ff);
+        sheets.loadAnglers("2024FF", ff);
+        String lake = PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", "");
+        sheets.syncSheet(lake);
+        Toast.makeText(this, "Background sync for " + lake + " started.", Toast.LENGTH_LONG).show();
     }
 
     public void openCamera(View view) {

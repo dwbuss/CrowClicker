@@ -638,7 +638,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_weight="3"
                 android:checked="true"
-                android:text="Notify" />
+                android:text="Send Text" />
         </LinearLayout>
 
     </LinearLayout>

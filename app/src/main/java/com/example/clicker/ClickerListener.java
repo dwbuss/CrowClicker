@@ -52,10 +52,10 @@ public class ClickerListener extends Flic2ButtonListener {
             return;
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean friendly = prefs.getBoolean("Friendly", true);
+        boolean mature = prefs.getBoolean("Mature", false);
 
         ContactType contactType = actionType.getType();
-        int soundBite = contactType.lookupSoundBite(friendly);
+        int soundBite = contactType.lookupSoundBite(mature);
         MediaPlayer song = MediaPlayer.create(context, soundBite);
         song.start();
 

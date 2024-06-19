@@ -26,8 +26,8 @@ public enum ContactType {
         return names;
     }
 
-    int lookupSoundBite(boolean isFriendly) {
-        return (isFriendly) ? this.friendly : bites[(int) (System.currentTimeMillis() % bites.length)];
+    int lookupSoundBite(boolean isMature) {
+        return (isMature) ? bites[(int) (System.currentTimeMillis() % bites.length)] : this.friendly;
     }
 
     public final String getMessageFragment() {

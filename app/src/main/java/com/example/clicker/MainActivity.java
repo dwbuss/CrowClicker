@@ -35,6 +35,7 @@ import android.view.animation.Animation;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -99,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final static int ALL_PERMISSIONS_RESULT = 101;
     private final List<Point> pointList = new ArrayList<>();
     private final float zoomLevel = 10;
+
+    View mapView;
     private final ActivityResultLauncher<String[]> permissionRequest =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
                 result.entrySet().stream()
@@ -308,6 +311,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        mapView = mapFragment.getView();
         locationManager = ((LocationManager) this.getSystemService(Context.LOCATION_SERVICE));
         try {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -511,8 +516,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void addFromClick(ContactType type) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean friendly = prefs.getBoolean("Friendly", true);
-        int soundBite = type.lookupSoundBite(friendly);
+        boolean mature = prefs.getBoolean("Mature", false);
+        int soundBite = type.lookupSoundBite(mature);
         MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
         song.start();
         addPoint(type);
@@ -689,6 +694,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnMarkerDragListener(onMarkerDragListener);
         mMap.setOnInfoWindowLongClickListener(onInfoWindowLongClickListener);
         mMap.setOnCameraMoveListener(onCameraMoverListener);
+        if (mapView != null &&
+                mapView.findViewById(Integer.parseInt("1")) != null) {
+            // Get the button view
+            View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+            // and next place it, on bottom right (as Google Maps app)
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)
+                    locationButton.getLayoutParams();
+            // position on right bottom
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+            layoutParams.setMargins(0, 0, 30, 300);
+        }
 
         addCrowLayer();
         List<Point> points = filterPoints();

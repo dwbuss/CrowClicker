@@ -58,10 +58,10 @@
             android:title="View Labels"
             app:useSimpleSummaryProvider="true" />
         <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="Friendly"
+            android:defaultValue="false"
+            android:key="Mature"
             android:persistent="true"
-            android:title="Friendly Sound Clips"
+            android:title="Mature Audio Clips"
             app:useSimpleSummaryProvider="true" />
         <CheckBoxPreference
             android:defaultValue="true"

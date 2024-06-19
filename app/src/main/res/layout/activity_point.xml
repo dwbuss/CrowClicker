@@ -520,7 +520,7 @@
             <CheckBox
                 android:id="@+id/video"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
                 android:checked="false"
@@ -529,7 +529,7 @@
             <CheckBox
                 android:id="@+id/vest"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
                 android:checked="false"
@@ -538,7 +538,7 @@
             <CheckBox
                 android:id="@+id/northern"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
                 android:layout_weight="25"
                 android:checked="false"

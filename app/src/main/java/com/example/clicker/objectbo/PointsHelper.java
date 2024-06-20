@@ -154,7 +154,7 @@ public class PointsHelper {
     }
 
     public List<Point> getAllLabels(String lake) {
-        QueryCondition<Point> baseQuery = Point_.name.equal("label").and(Point_.lake.equal(lake));
+        QueryCondition<Point> baseQuery = Point_.name.equal("label").or(Point_.name.equal("FF")).and(Point_.lake.equal(lake));
         return pointBox.query(baseQuery).build().find();
     }
 

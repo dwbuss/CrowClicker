@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -98,16 +99,16 @@ public class PointActivity extends AppCompatActivity {
                 Calendar cal = Calendar.getInstance(Locale.US);
                 cal.setTime(point.getTimeStamp());
                 DatePickerDialog datePickerDialog = new DatePickerDialog(PointActivity.this,
-                                                                         new DatePickerDialog.OnDateSetListener() {
+                        new DatePickerDialog.OnDateSetListener() {
 
-                                                                             @Override
-                                                                             public void onDateSet(DatePicker view, int year,
-                                                                                                   int monthOfYear, int dayOfMonth) {
-                                                                                 cal.set(year, monthOfYear, dayOfMonth);
-                                                                                 point.setTimeStamp(cal.getTime());
-                                                                                 binding.timeStamp.setText(point.timeStampAsString());
-                                                                             }
-                                                                         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                cal.set(year, monthOfYear, dayOfMonth);
+                                point.setTimeStamp(cal.getTime());
+                                binding.timeStamp.setText(point.timeStampAsString());
+                            }
+                        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
             }
         });
@@ -117,18 +118,18 @@ public class PointActivity extends AppCompatActivity {
                 Calendar cal = Calendar.getInstance(Locale.US);
                 cal.setTime(point.getTimeStamp());
                 TimePickerDialog timePickerDialog = new TimePickerDialog(PointActivity.this,
-                                                                         new TimePickerDialog.OnTimeSetListener() {
+                        new TimePickerDialog.OnTimeSetListener() {
 
-                                                                             @Override
-                                                                             public void onTimeSet(TimePicker view, int hourOfDay,
-                                                                                                   int minute) {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay,
+                                                  int minute) {
 
-                                                                                 cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                                                                                 cal.set(Calendar.MINUTE, minute);
-                                                                                 point.setTimeStamp(cal.getTime());
-                                                                                 binding.timeStamp.setText(point.timeStampAsString());
-                                                                             }
-                                                                         }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(PointActivity.this));
+                                cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                cal.set(Calendar.MINUTE, minute);
+                                point.setTimeStamp(cal.getTime());
+                                binding.timeStamp.setText(point.timeStampAsString());
+                            }
+                        }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(PointActivity.this));
                 timePickerDialog.show();
             }
         });
@@ -139,6 +140,8 @@ public class PointActivity extends AppCompatActivity {
         binding.setPoint(point);
         sheets = new SheetAccess(this);
         populateForm();
+        if (point.getAirTemp().isEmpty())
+            setWeather(this);
     }
 
     @Override
@@ -161,9 +164,9 @@ public class PointActivity extends AppCompatActivity {
         if (shouldNotify) {
             ContentResolver contentResolver = getContentResolver();
             SEND_MESSAGE(point.getMessage(),
-                         ContactType.valueOf(point.getContactType()),
-                         PreferenceManager.getDefaultSharedPreferences(this),
-                         contentResolver);
+                    ContactType.valueOf(point.getContactType()),
+                    PreferenceManager.getDefaultSharedPreferences(this),
+                    contentResolver);
         }
         lastAction = SAVE_ACTION;
         finish();
@@ -210,7 +213,7 @@ public class PointActivity extends AppCompatActivity {
                 !binding.ffSpots.getSelectedItem().toString().trim().isEmpty()) {
             String location = binding.ffSpots.getSelectedItem().toString().trim();
             ffResult = ff.scoreCatch(point.getName(), location.substring(0, location.indexOf(":")).trim(), point.getFishSize(), binding.ffOwnerSpots.getSelectedItem().toString().trim(),
-                                     point.timeStampAsString(), binding.video.isChecked(), binding.northern.isChecked(), binding.vest.isChecked());
+                    point.timeStampAsString(), binding.video.isChecked(), binding.northern.isChecked(), binding.vest.isChecked());
         }
         sheets.storePoint(point, ffResult, callback);
         lastAction = PUSH_ACTION;
@@ -218,8 +221,12 @@ public class PointActivity extends AppCompatActivity {
 
     public void weatherButton(View v) {
         updatePoint();
+        setWeather(v.getContext());
+    }
+
+    private void setWeather(Context context) {
         try {
-            final Weather weather = new Weather(v.getContext());
+            final Weather weather = new Weather(context);
             weather.populate(point.getLat(), point.getLon(), point.getTimeStamp(), this, new ClickerCallback() {
                 @Override
                 public void onSuccess() {
@@ -232,7 +239,7 @@ public class PointActivity extends AppCompatActivity {
                     point.setWindDir(weather.windDir);
                     point.setWindGust(weather.windGust);
                     point.setPrecipProbability(weather.precipProbability);
-                    Toast.makeText(getApplicationContext(), "Weather data updated.  Remember to SAVE or SAVE/PUSH to store the new weather data.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Weather data updated.", Toast.LENGTH_SHORT).show();
                     binding.invalidateAll();
                 }
 

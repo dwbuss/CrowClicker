@@ -151,7 +151,7 @@ public class Solunar {
         if (!isMajor && !isMinor) {
             if (Integer.parseInt(moonDegree) > 0) {
                 // convert times - Date.from(moon.getRise().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(cal.getTime()) < 0
-                if (moonOverHeadDt.compareTo(cal.getTime()) > 0)
+                if (moonOverHeadDt != null && moonOverHeadDt.compareTo(cal.getTime()) > 0)
                     moonState = "M1";
                 else
                     moonState = "M2";

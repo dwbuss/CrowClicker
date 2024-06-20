@@ -10,6 +10,7 @@ import com.example.clicker.ObjectBoxApp;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -154,12 +155,17 @@ public class PointsHelper {
     }
 
     public List<Point> getAllLabels(String lake) {
-        QueryCondition<Point> baseQuery = Point_.name.equal("label").or(Point_.name.equal("FF")).and(Point_.lake.equal(lake));
+        QueryCondition<Point> baseQuery = Point_.name.equal("label").and(Point_.lake.equal(lake));
         return pointBox.query(baseQuery).build().find();
     }
 
     public List<Point> getAllPointsOf(ContactType type, String lake) {
         QueryCondition<Point> baseQuery = Point_.contactType.equal(type.toString()).and(Point_.lake.equal(lake));
+        return pointBox.query(baseQuery).build().find();
+    }
+
+    public Collection<Point> getAllFFs(String lake) {
+        QueryCondition<Point> baseQuery = Point_.name.equal("FF").and(Point_.lake.equal(lake));
         return pointBox.query(baseQuery).build().find();
     }
 }

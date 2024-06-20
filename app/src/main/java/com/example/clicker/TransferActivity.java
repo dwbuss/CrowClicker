@@ -108,6 +108,9 @@ public class TransferActivity extends AppCompatActivity {
                             }
                             if (point.getName().trim().equals("label"))
                                 os.println(String.format(waypoint, point.getLat(), point.getLon(), point.getTimeStamp().toInstant().toString(), point.getNotes(), suffix, point.getNotes(), icon));
+                            else if (point.getName().trim().equals("FF")) {
+                                os.println(String.format(waypoint, point.getLat(), point.getLon(), point.getTimeStamp().toInstant().toString(), point.getNotes(), suffix, point.getNotes(), "Beverage"));
+                            }
                             else
                                 os.println(String.format(waypoint, point.getLat(), point.getLon(), point.getTimeStamp().toInstant().toString(), point.getName(), suffix, point.getNotes(), icon));
                             counter++;

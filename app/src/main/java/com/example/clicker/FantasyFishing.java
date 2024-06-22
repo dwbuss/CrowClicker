@@ -88,7 +88,7 @@ public final class FantasyFishing {
     public List<Object> scoreCatch(String angler, String location, String size, String owner, String date, boolean videoCaptured, boolean isNorthern, boolean lifeVest) {
         // date, angler, size , location, owner , ... anglers
         int columnOffset = 5;
-        if((anglers == null || anglers.isEmpty()) return  new ArrayList<>();;
+        if(anglers == null || anglers.isEmpty()) return  new ArrayList<>();;
         int bonusColumn = columnOffset + anglers.size();
         String[] newRow = new String[bonusColumn + 1];
         for (int i = columnOffset; i < newRow.length; i++)

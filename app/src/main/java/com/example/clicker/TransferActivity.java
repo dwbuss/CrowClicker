@@ -33,13 +33,14 @@ import java.util.List;
 
 public class TransferActivity extends AppCompatActivity {
 
-    private static final String[] exportChoices = {"Follows", "Contacts", "Catches", "Labels"};
+    private static final String[] exportChoices = {"Follows", "Contacts", "Catches", "Labels", "FF Spots"};
     private static final int EXPORT_FOLLOWS_INDEX = 0;
     private static final int EXPORT_CONTACTS_INDEX = 1;
     private static final int EXPORT_CATCHES_INDEX = 2;
     private static final int EXPORT_LABELS_INDEX = 3;
+    private static final int EXPORT_FF_INDEX = 4;
     private static final String TAG = "TransferActivity";
-    private final boolean[] checkedItems = {false, false, true, false};
+    private final boolean[] checkedItems = {false, false, true, false, false};
     ActivityResultLauncher<Intent> importFromTSVActivity = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -106,10 +107,15 @@ public class TransferActivity extends AppCompatActivity {
                                 icon = "Flag";
                                 suffix = "-F";
                             }
-                            if (point.getName().trim().equals("label"))
+                            if (point.getName().trim().equals("label")) {
+                                icon = "Diamond";
+                                suffix = "";
                                 os.println(String.format(waypoint, point.getLat(), point.getLon(), point.getTimeStamp().toInstant().toString(), point.getNotes(), suffix, point.getNotes(), icon));
-                            else if (point.getName().trim().equals("FF")) {
-                                os.println(String.format(waypoint, point.getLat(), point.getLon(), point.getTimeStamp().toInstant().toString(), point.getNotes(), suffix, point.getNotes(), "Beverage"));
+                            }
+                            if (point.getName().trim().equals("FF")) {
+                                suffix = "";
+                                icon = "Beverage";
+                                os.println(String.format(waypoint, point.getLat(), point.getLon(), point.getTimeStamp().toInstant().toString(), point.getNotes(), suffix, point.getNotes(), icon));
                             }
                             else
                                 os.println(String.format(waypoint, point.getLat(), point.getLon(), point.getTimeStamp().toInstant().toString(), point.getName(), suffix, point.getNotes(), icon));
@@ -137,7 +143,10 @@ public class TransferActivity extends AppCompatActivity {
             points.addAll(pointsHelper.getAllPointsOf(ContactType.CONTACT, lake));
         if (checkedItems[EXPORT_FOLLOWS_INDEX])
             points.addAll(pointsHelper.getAllPointsOf(ContactType.FOLLOW, lake));
-        if (checkedItems[EXPORT_LABELS_INDEX]) points.addAll(pointsHelper.getAllLabels(lake));
+        if (checkedItems[EXPORT_LABELS_INDEX])
+            points.addAll(pointsHelper.getAllLabels(lake));
+        if (checkedItems[EXPORT_FF_INDEX])
+            points.addAll(pointsHelper.getAllFFs(lake));
         return points;
     }
 

@@ -155,7 +155,7 @@ public class Solunar {
                     moonState = "M1";
                 else
                     moonState = "M2";
-                if ((moon.getRise() != null) && (Date.from(moon.getRise().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(cal.getTime()) < 0 &&
+                if ((moonOverHeadDt !=null) && (moon.getRise() != null) && (Date.from(moon.getRise().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(cal.getTime()) < 0 &&
                         Date.from(moon.getRise().toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant()).compareTo(moonOverHeadDt) > 0))
                     moonState = "M1";
             } else {

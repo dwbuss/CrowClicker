@@ -78,17 +78,23 @@ public class Weather {
                                      try {
                                          JSONObject reader = new JSONObject(response);
                                          JSONObject main = reader.getJSONArray("days").getJSONObject(0);
-                                         temperature = String.valueOf((int) Double.parseDouble(main.getString("temp")));
+                                         if (!main.getString("temp").equals("null"))
+                                             temperature = String.valueOf((int) Double.parseDouble(main.getString("temp")));
+                                         if (!main.getString("feelslike").equals("null"))
                                          feelsLike = String.valueOf((int) Double.parseDouble(main.getString("feelslike")));
-                                         dewPoint = String.valueOf((int) Double.parseDouble(main.getString("dew")));
-                                         windSpeed = String.valueOf((int) Double.parseDouble(main.getString("windspeed")));
+                                         if (!main.getString("dew").equals("null"))
+                                             dewPoint = String.valueOf((int) Double.parseDouble(main.getString("dew")));
+                                         if (!main.getString("windspeed").equals("null"))
+                                             windSpeed = String.valueOf((int) Double.parseDouble(main.getString("windspeed")));
                                          windDir = getCardinalDirection(main.getDouble("winddir"));
                                          String windgust = main.getString("windgust");
                                          windGust = String.valueOf((int) Double.parseDouble(!windgust.equals("null") ? windgust : "0"));
-                                         date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("datetimeEpoch"))));
+                                         if (!main.getString("datetimeEpoch").equals("null"))
+                                             date = new SimpleDateFormat("MM-dd-yyyy h:mm a").format(new Date(1000 * Long.parseLong(main.getString("datetimeEpoch"))));
                                          precipProbability = main.getString("precipprob");
                                          humidity = main.getString("humidity");
-                                         pressure = String.valueOf((int) Double.parseDouble(main.getString("pressure")));
+                                         if (!main.getString("pressure").equals("null"))
+                                             pressure = String.valueOf((int) Double.parseDouble(main.getString("pressure")));
                                          cloudCover = main.getString("cloudcover");
                                      } catch (JSONException e) {
                                          Log.e(TAG, "Failure to create SheetAccess", e);

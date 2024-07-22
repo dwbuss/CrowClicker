@@ -140,7 +140,7 @@ public class PointActivity extends AppCompatActivity {
         binding.setPoint(point);
         sheets = new SheetAccess(this);
         populateForm();
-        if (point.getAirTemp().isEmpty())
+        if (point.getAirTemp().isEmpty() && !point.getName().equals("FF"))
             setWeather(this);
     }
 

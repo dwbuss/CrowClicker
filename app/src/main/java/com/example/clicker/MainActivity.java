@@ -460,7 +460,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         isMenuOpen = !isMenuOpen;
         FloatingActionButton fabMain = findViewById(R.id.fabMain);
         fabMain.animate().setInterpolator(interpolator).rotation(120f).setDuration(300).start();
-
+        MediaPlayer openBottle = MediaPlayer.create(getApplicationContext(), R.raw.cc_bottle_cap);
+        openBottle.start();
 
         ((FloatingActionButton) findViewById(R.id.settingButton)).show();
         ((FloatingActionButton) findViewById(R.id.layersButton)).show();

@@ -446,14 +446,21 @@ public final class Point implements Parcelable {
                 pressure + "\t" + (humidity.isEmpty() ? " " : humidity) + "\t" + lake;
     }
 
-    public String getMessage() {
-        final String format = "%1$s %2$s a %3$s.%n%4$s%nhttps://maps.google.com/maps?q=%5$f,%6$f";
-        if (contactType.equalsIgnoreCase(ContactType.CATCH.toString())) {
-            return String.format("%1$s %2$s a %3$s on a %4$s.%n%5$s%nhttps://maps.google.com/maps?q=%6$f,%7$f", getName().trim(), ContactType.CATCH.getMessageFragment(), getFishSize().trim(), getBait().trim(), getNotes().trim(), getLat(), getLon());
-        } else if (contactType.equalsIgnoreCase(ContactType.FOLLOW.toString()))
-            return String.format(format, getName().trim(), ContactType.FOLLOW.getMessageFragment(), getBait().trim(), getNotes().trim(), getLat(), getLon());
+    private String getSinglularModifier(String bait) {
+        if (bait.equals("Rubber") || bait.equals("Blades") || bait.equals("T.I.T.S"))
+            return "";
         else
-            return String.format(format, getName().trim(), ContactType.CONTACT.getMessageFragment(), getBait().trim(), getNotes().trim(), getLat(), getLon());
+            return " a";
+    }
+
+    public String getMessage() {
+        final String format = "%1$s %2$s%3$s %4$s.%n%5$s%nhttps://maps.google.com/maps?q=%6$f,%7$f";
+        if (contactType.equalsIgnoreCase(ContactType.CATCH.toString())) {
+            return String.format("%1$s %2$s a %3$s on%4$s %5$s.%n%6$s%nhttps://maps.google.com/maps?q=%7$f,%8$f", getName().trim(), ContactType.CATCH.getMessageFragment(), getFishSize().trim(), getSinglularModifier(getBait().trim()), getBait().trim(), getNotes().trim(), getLat(), getLon());
+        } else if (contactType.equalsIgnoreCase(ContactType.FOLLOW.toString()))
+            return String.format(format, getName().trim(), ContactType.FOLLOW.getMessageFragment(), getSinglularModifier(getBait().trim()), getBait().trim(), getNotes().trim(), getLat(), getLon());
+        else
+            return String.format(format, getName().trim(), ContactType.CONTACT.getMessageFragment(), getSinglularModifier(getBait().trim()), getBait().trim(), getNotes().trim(), getLat(), getLon());
     }
 
     public List<List<Object>> getSheetBody() {

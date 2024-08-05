@@ -80,6 +80,11 @@
             app:key="manage_data_storage"
             app:summary="Check this setting if map layers are not displaying."
             app:title="Manage Storage Permissions" />
+        <Preference
+            android:icon="@android:drawable/ic_menu_info_details"
+            app:key="manage_notifications"
+            app:summary="Check this setting to allow the application to provide Android notifications."
+            app:title="Manage Android Notifications" />
     </PreferenceCategory>
     <PreferenceCategory
         app:key="notifications_category"

@@ -34,6 +34,9 @@ public class MyReceiver extends BroadcastReceiver {
             solunar.populate(loc, cal);
             String event = solunar.getEventNotification(solunar.parseTime(cal.getTime())).trim();
             if (!event.isEmpty()) {
+                MediaPlayer player = MediaPlayer.create(context, findSound(context, event));
+                player.start();
+
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
                                                                                     NOTIFICATION_CHANNEL_ID)
                         .setSmallIcon(R.drawable.cc_notification)
@@ -47,17 +50,10 @@ public class MyReceiver extends BroadcastReceiver {
                 NotificationManager notificationmanager = (NotificationManager) context
                         .getSystemService(Context.NOTIFICATION_SERVICE);
                 NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-                AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                        .build();
                 assert notificationmanager != null;
                 notificationmanager.createNotificationChannel(notificationChannel);
                 // Build Notification with Notification Manager
                 notificationmanager.notify(1, builder.build());
-
-                MediaPlayer player = MediaPlayer.create(context, findSound(context, event));
-                player.start();
             }
         }
     }

@@ -56,6 +56,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         } else {
             pref.setVisible(false);
         }
+        Preference notifications = findPreference("manage_notifications");
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            notifications.setVisible(true);
+            notifications.setOnPreferenceClickListener(preference -> {
+                Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        .putExtra(Settings.EXTRA_APP_PACKAGE, getActivity().getPackageName());
+                startActivity(intent);
+                return true;
+            });
+        } else {
+            notifications.setVisible(false);
+        }
         configureCatchNotificationChoices("Catch Notification");
         configureCatchNotificationChoices("Follow Notification");
         configureCatchNotificationChoices("Lost Notification");

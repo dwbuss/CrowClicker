@@ -2,8 +2,11 @@ package com.example.clicker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +21,7 @@ import androidx.preference.PreferenceManager;
 import com.example.clicker.databinding.ActivityTransferBinding;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.apache.commons.io.IOUtils;
 
@@ -26,6 +30,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.URI;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -234,5 +239,17 @@ public class TransferActivity extends AppCompatActivity {
             chooseFile = Intent.createChooser(chooseFile, "Select Export data as GPX");
             exportToGPXActivity.launch(chooseFile);
         }).show();
+    }
+    public void downloadApk(View view) {
+        DownloadManager dm = (DownloadManager) getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = Uri.parse("https://drive.google.com/uc?id=1ZtuheA8KUsXiHFJuSrBsDKZRGU2ZpyG2&export=download");
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+        request.setDestinationInExternalFilesDir(getApplicationContext(), "Downloads", "clicker.apk");
+        assert dm != null;
+        dm.enqueue(request);
+        Snackbar sb = (Snackbar) Snackbar
+                .make(findViewById(android.R.id.content), "Downloading...", Snackbar.LENGTH_LONG);
+        sb.show();
     }
 }

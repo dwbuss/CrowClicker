@@ -178,4 +178,36 @@
         android:background="?android:attr/listDivider"
         app:layout_constraintTop_toBottomOf="@id/gpxButton" />
 
+    <TextView
+        android:id="@+id/apkButtonView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Use this to download latest app."
+        app:layout_constraintEnd_toStartOf="@+id/apkButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider6" />
+
+    <Button
+        android:id="@+id/apkButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:onClick="downloadApk"
+        android:text="Download"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider6" />
+
+    <View
+        android:id="@+id/divider7"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@id/apkButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

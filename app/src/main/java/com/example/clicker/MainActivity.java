@@ -332,9 +332,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         sheets = new SheetAccess(getApplicationContext());
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
         ff = new FantasyFishing();
-        sheets.loadStandings("2024FFResults", ff);
-        sheets.loadAnglers("2024FF", ff);
-
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("ViewFF", true)) {
+            sheets.loadStandings("2024FFResults", ff);
+            sheets.loadAnglers("2024FF", ff);
+        }
         getLocation();
 
         //Check if we came from a maps url
@@ -373,8 +374,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void refreshData() {
-        sheets.loadStandings("2024FFResults", ff);
-        sheets.loadAnglers("2024FF", ff);
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("ViewFF", true)) {
+            sheets.loadStandings("2024FFResults", ff);
+            sheets.loadAnglers("2024FF", ff);
+        }
         String lake = PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", "");
         sheets.syncSheet(lake);
         Toast.makeText(this, "Background sync for " + lake + " started.", Toast.LENGTH_LONG).show();

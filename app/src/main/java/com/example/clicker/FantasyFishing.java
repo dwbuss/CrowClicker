@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -11,10 +12,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class FantasyFishing {
 
-    Map<String, List<FfSpot>> anglers;
-    private List<List<Object>> anglerData;
-    private List<List<Object>> standingsData;
-    private Map<String, Integer> anglerIndex;
+    Map<String, List<FfSpot>> anglers = new HashMap<>();
+    private List<List<Object>> anglerData = new LinkedList<>();
+    private List<List<Object>> standingsData = new LinkedList<>();
+    private Map<String, Integer> anglerIndex = new HashMap<>();
 
     public List<List<Object>> getStandings() {
         return standingsData;
@@ -68,7 +69,8 @@ public final class FantasyFishing {
     public String[] getLocations() {
         List<String> locations = new ArrayList<>();
         locations.add("");
-        if (anglers == null || anglers.isEmpty()) return locations.toArray(new String[locations.size()]);
+        if (anglers == null || anglers.isEmpty())
+            return locations.toArray(new String[locations.size()]);
         anglers.entrySet().stream().forEach(ffSpots -> {
             ffSpots.getValue().stream().forEach(spot -> locations.add(spot.name + " : " + ffSpots.getKey()));
         });
@@ -78,7 +80,8 @@ public final class FantasyFishing {
     public String[] getOwners() {
         List<String> owners = new ArrayList<>();
         owners.add("");
-        if (anglers == null || anglers.isEmpty()) return  owners.toArray(new String[owners.size()]);;
+        if (anglers == null || anglers.isEmpty()) return owners.toArray(new String[owners.size()]);
+        ;
         anglers.keySet().forEach(x -> {
             owners.add(x);
         });
@@ -88,7 +91,8 @@ public final class FantasyFishing {
     public List<Object> scoreCatch(String angler, String location, String size, String owner, String date, boolean videoCaptured, boolean isNorthern, boolean lifeVest) {
         // date, angler, size , location, owner , ... anglers
         int columnOffset = 5;
-        if(anglers == null || anglers.isEmpty()) return  new ArrayList<>();;
+        if (anglers == null || anglers.isEmpty()) return new ArrayList<>();
+        ;
         int bonusColumn = columnOffset + anglers.size();
         String[] newRow = new String[bonusColumn + 1];
         for (int i = columnOffset; i < newRow.length; i++)

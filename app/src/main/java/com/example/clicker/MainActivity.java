@@ -460,9 +460,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         isMenuOpen = !isMenuOpen;
         FloatingActionButton fabMain = findViewById(R.id.fabMain);
         fabMain.animate().setInterpolator(interpolator).rotation(120f).setDuration(300).start();
-        MediaPlayer openBottle = MediaPlayer.create(getApplicationContext(), R.raw.cc_bottle_cap);
-        openBottle.start();
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean silence = prefs.getBoolean("Silence", false);
+        if (!silence) {
+            MediaPlayer openBottle = MediaPlayer.create(getApplicationContext(), R.raw.cc_bottle_cap);
+            openBottle.start();
+        }
         ((FloatingActionButton) findViewById(R.id.settingButton)).show();
         ((FloatingActionButton) findViewById(R.id.layersButton)).show();
         ((FloatingActionButton) findViewById(R.id.tripReportButton)).show();
@@ -528,10 +532,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void addFromClick(ContactType type) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean mature = prefs.getBoolean("Mature", false);
-        int soundBite = type.lookupSoundBite(mature);
-        MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
-        song.start();
+        boolean silence = prefs.getBoolean("Silence", false);
+        if (!silence) {
+            boolean mature = prefs.getBoolean("Mature", false);
+            int soundBite = type.lookupSoundBite(mature);
+            MediaPlayer song = MediaPlayer.create(getApplicationContext(), soundBite);
+            song.start();
+        }
         addPoint(type);
     }
 

@@ -70,6 +70,12 @@
             android:title="Mature Audio Clips"
             app:useSimpleSummaryProvider="true" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="Silence"
+            android:persistent="true"
+            android:title="Silence Audio Clips"
+            app:useSimpleSummaryProvider="true" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="MapLocation"
             android:persistent="true"

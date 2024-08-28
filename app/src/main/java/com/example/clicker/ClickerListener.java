@@ -52,13 +52,14 @@ public class ClickerListener extends Flic2ButtonListener {
             return;
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean mature = prefs.getBoolean("Mature", false);
-
         ContactType contactType = actionType.getType();
-        int soundBite = contactType.lookupSoundBite(mature);
-        MediaPlayer song = MediaPlayer.create(context, soundBite);
-        song.start();
-
+        boolean silence = prefs.getBoolean("Silence", false);
+        if (!silence) {
+            boolean mature = prefs.getBoolean("Mature", false);
+            int soundBite = contactType.lookupSoundBite(mature);
+            MediaPlayer song = MediaPlayer.create(context, soundBite);
+            song.start();
+        }
         String lure = prefs.getString("CurrentBait", "");
         if (actionType.equals(ButtonPressActions.FOLLOW_ON_BLADES))
             lure = "Blades";

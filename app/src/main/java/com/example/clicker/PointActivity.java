@@ -226,6 +226,18 @@ public class PointActivity extends AppCompatActivity {
 
     private void setWeather(Context context) {
         try {
+            // TODO: check for internet connection
+            /*
+            ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+boolean connected = (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+            connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED);
+Warning: If you are connected to a WiFi network that doesn't include internet access or requires browser-based authentication, connected will still be true.
+
+You will need this permission in your manifest:
+
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+             */
             final Weather weather = new Weather(context);
             weather.populate(point.getLat(), point.getLon(), point.getTimeStamp(), this, new ClickerCallback() {
                 @Override

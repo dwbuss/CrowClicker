@@ -8,12 +8,13 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
-import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
 
 import androidx.core.app.NotificationCompat;
+import androidx.preference.PreferenceManager;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -34,11 +35,14 @@ public class MyReceiver extends BroadcastReceiver {
             solunar.populate(loc, cal);
             String event = solunar.getEventNotification(solunar.parseTime(cal.getTime())).trim();
             if (!event.isEmpty()) {
-                MediaPlayer player = MediaPlayer.create(context, findSound(context, event));
-                player.start();
-
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                boolean silence = prefs.getBoolean("Silence", false);
+                if (!silence) {
+                    MediaPlayer player = MediaPlayer.create(context, findSound(context, event));
+                    player.start();
+                }
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
-                                                                                    NOTIFICATION_CHANNEL_ID)
+                        NOTIFICATION_CHANNEL_ID)
                         .setSmallIcon(R.drawable.cc_notification)
                         .setTicker(event)
                         .setContentTitle("Solunar Event")

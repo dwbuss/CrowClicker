@@ -653,7 +653,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Paint strokePaint = new Paint();
                 strokePaint.setTextAlign(Paint.Align.LEFT);
                 strokePaint.setARGB(255, 255, 255, 255);
-                strokePaint.setTextSize(23.0f);
+                strokePaint.setTextSize(40.0f);
                 strokePaint.setTypeface(Typeface.DEFAULT_BOLD);
                 strokePaint.setStyle(Paint.Style.STROKE);
                 strokePaint.setStrokeWidth(4);
@@ -661,7 +661,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Paint textPaint = new Paint();
                 textPaint.setARGB(255, 0, 0, 0);
                 textPaint.setTextAlign(Paint.Align.LEFT);
-                textPaint.setTextSize(23.0f);
+                textPaint.setTextSize(40.0f);
                 textPaint.setTypeface(Typeface.DEFAULT_BOLD);
                 Paint.FontMetrics fm = textPaint.getFontMetrics();
                 float height2 = fm.bottom - fm.top + fm.leading;

@@ -33,13 +33,16 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".TransferActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode= "singleInstance"/>
         <activity
             android:name=".StatisticsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode= "singleInstance"/>
         <activity
             android:name=".PointActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode= "singleInstance"/>
 
         <service
             android:name=".Flic2Service"
@@ -59,12 +62,17 @@
 
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />
-        <activity android:name=".ForecastActivity" />
-        <activity android:name=".report.ReportActivity" />
-        <activity android:name=".report.FfActivity" />
+            android:label="@string/title_activity_settings"
+            android:launchMode= "singleInstance"/>
+        <activity android:name=".ForecastActivity"
+            android:launchMode= "singleInstance"/>
+        <activity android:name=".report.ReportActivity"
+            android:launchMode= "singleInstance"/>
+        <activity android:name=".report.FfActivity"
+            android:launchMode= "singleInstance"/>
         <activity
             android:name=".MainActivity"
+            android:launchMode= "singleInstance"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

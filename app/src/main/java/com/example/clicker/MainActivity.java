@@ -70,6 +70,7 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.Serializable;
@@ -270,13 +271,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        initView();
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
         if (getIntent().hasExtra("gotoPoint")) {
             gotoPoint = getIntent().getParcelableExtra("gotoPoint");
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gotoPoint.getLat(), gotoPoint.getLon()), 16.0f));
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private void requestPermissions() {

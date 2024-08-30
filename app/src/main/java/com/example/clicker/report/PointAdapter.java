@@ -63,7 +63,6 @@ public class PointAdapter extends RecyclerView.Adapter<PointAdapter.PointHolder>
 
         holder.map.setOnClickListener(v -> {
             Intent gotoMap = new Intent(v.getContext(), MainActivity.class);
-            gotoMap.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //? not working or needed
             gotoMap.putExtra("gotoPoint", point);
             v.getContext().startActivity(gotoMap);
         });

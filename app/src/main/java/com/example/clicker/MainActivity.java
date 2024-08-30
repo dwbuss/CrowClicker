@@ -283,6 +283,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onResume() {
         super.onResume();
+        initView();
+        if (getIntent().hasExtra("gotoPoint")) {
+            gotoPoint = getIntent().getParcelableExtra("gotoPoint");
+        }
     }
 
     private void requestPermissions() {

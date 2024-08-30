@@ -28,22 +28,35 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".TransferActivity"
             android:exported="false"
-            android:launchMode= "singleInstance"/>
+            android:parentActivityName=".SettingsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clicker.SettingsActivity"/>
+        </activity>
+
         <activity
             android:name=".StatisticsActivity"
             android:exported="false"
-            android:launchMode= "singleInstance"/>
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clicker.MainActivity"/>
+        </activity>
+
         <activity
             android:name=".PointActivity"
             android:exported="false"
-            android:launchMode= "singleInstance"/>
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clicker.MainActivity"/>
+        </activity>
 
         <service
             android:name=".Flic2Service"
@@ -64,13 +77,32 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:launchMode= "singleInstance"/>
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clicker.MainActivity"/>
+        </activity>
         <activity android:name=".ForecastActivity"
-            android:launchMode= "singleInstance"/>
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clicker.MainActivity"/>
+        </activity>
         <activity android:name=".report.ReportActivity"
-            android:launchMode= "singleInstance"/>
+            android:noHistory="true"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clicker.MainActivity"/>
+        </activity>
+
         <activity android:name=".report.FfActivity"
-            android:launchMode= "singleInstance"/>
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.clicker.MainActivity"/>
+        </activity>
+
         <activity
             android:name=".MainActivity"
             android:launchMode= "singleInstance"
@@ -81,10 +113,8 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:host="maps.google.com"
                     android:scheme="https" />

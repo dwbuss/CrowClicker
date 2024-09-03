@@ -1,13 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Reply Preference -->
-    <string-array name="reply_entries">
-        <item>Reply</item>
-        <item>Reply to all</item>
+    <string-array name="bait_array">
+        <item>Blades</item>
+        <item>Crank Bait</item>
+        <item>Glider</item>
+        <item>Jig</item>
+        <item>T.I.T.S</item>
+        <item>Jerk Bait</item>
+        <item>Rubber</item>
+        <item>Spoon</item>
+        <item>Swim Bait</item>
+        <item>Top Water</item>
+        <item>Flasher/Fly</item>
     </string-array>
 
-    <string-array name="reply_values">
-        <item>reply</item>
-        <item>reply_all</item>
+    <string-array name="contact_array">
+        <item>CONTACT</item>
+        <item>CATCH</item>
+        <item>FOLLOW</item>
+    </string-array>
+
+    <string-array name="contact_button_actions">
+        <item>CONTACT</item>
+        <item>CATCH</item>
+        <item>FOLLOW</item>
+        <item>FOLLOW_ON_BLADES</item>
+        <item>FOLLOW_ON_RUBBER</item>
+    </string-array>
+
+    <string-array name="species_array">
+        <item>Muskellunge</item>
+        <item>Pike</item>
+        <item>Walleye</item>
+        <item>Largemouth Bass</item>
+        <item>Smallmouth Bass</item>
+        <item>Crappie</item>
+        <item>Perch</item>
+        <item>Panfish</item>
+        <item>King Salmon</item>
+        <item>Coho Salmon</item>
+        <item>Lake Trout</item>
+        <item>Rainbow Trout</item>
+        <item>Other</item>
     </string-array>
 </resources>

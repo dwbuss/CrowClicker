@@ -81,7 +81,6 @@ public final class FantasyFishing {
         List<String> owners = new ArrayList<>();
         owners.add("");
         if (anglers == null || anglers.isEmpty()) return owners.toArray(new String[owners.size()]);
-        ;
         anglers.keySet().forEach(x -> {
             owners.add(x);
         });

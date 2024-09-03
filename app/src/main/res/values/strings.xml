@@ -2,46 +2,4 @@
 <resources>
     <string name="app_name">Crow Clicker</string>
     <string name="title_activity_settings">Settings</string>
-
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string-array name="bait_array">
-        <item>Blades</item>
-        <item>Crank Bait</item>
-        <item>Glider</item>
-        <item>Jig</item>
-        <item>T.I.T.S</item>
-        <item>Jerk Bait</item>
-        <item>Rubber</item>
-        <item>Spoon</item>
-        <item>Swim Bait</item>
-        <item>Top Water</item>
-        <item>Flasher/Fly</item>
-    </string-array>
-    <string-array name="contact_array">
-        <item>CONTACT</item>
-        <item>CATCH</item>
-        <item>FOLLOW</item>
-    </string-array>
-
-    <string-array name="contact_button_actions">
-        <item>CONTACT</item>
-        <item>CATCH</item>
-        <item>FOLLOW</item>
-        <item>FOLLOW_ON_BLADES</item>
-        <item>FOLLOW_ON_RUBBER</item>
-    </string-array>
-
 </resources>

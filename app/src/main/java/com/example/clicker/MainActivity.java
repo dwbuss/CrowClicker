@@ -70,7 +70,6 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.Serializable;
@@ -86,7 +85,6 @@ import java.util.Map;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
-import io.objectbox.query.Query;
 import io.objectbox.query.QueryBuilder;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -104,15 +102,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final static int ALL_PERMISSIONS_RESULT = 101;
     private final List<Point> pointList = new ArrayList<>();
     private final float zoomLevel = 10;
-
-    View mapView;
     private final ActivityResultLauncher<String[]> permissionRequest =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
                 result.entrySet().stream()
                         .forEach(stringBooleanEntry -> Log.i(TAG, String.format("Permission request %s was %s.",
-                                stringBooleanEntry.getKey(),
-                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
+                                                                                stringBooleanEntry.getKey(),
+                                                                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
             });
+    View mapView;
     OvershootInterpolator interpolator = new OvershootInterpolator();
     SupportMapFragment mapFragment;
     TileOverlay satelliteOptions;
@@ -364,11 +361,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String bait = data.getQueryParameter("bait");
                 String lake = data.getQueryParameter("lake");
                 gotoPoint = new Point(-1,
-                        name == null ? "Angler" : name,
-                        type == null ? ContactType.FOLLOW.toString() : type,
-                        longitude, latitude,
-                        bait == null ? "NA" : bait,
-                        lake);
+                                      name == null ? "Angler" : name,
+                                      type == null ? ContactType.FOLLOW.toString() : type,
+                                      longitude, latitude,
+                                      bait == null ? "NA" : bait,
+                                      lake);
             }
         }
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.refreshLayout);
@@ -515,21 +512,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (prefs.getBoolean("ViewLabels", true)) {
             if (prefs.getBoolean("ViewFF", true))
                 query = pointBox.query(Point_.timeStamp.greater(today.getTime())
-                        .or(Point_.name.equal(label))
-                        .or(Point_.name.equal(ff)));
+                                               .or(Point_.name.equal(label))
+                                               .or(Point_.name.equal(ff)));
             else
                 query = pointBox.query(Point_.timeStamp.greater(today.getTime())
-                        .or(Point_.name.equal(label))
-                        .and(Point_.name.notEqual(ff)));
+                                               .or(Point_.name.equal(label))
+                                               .and(Point_.name.notEqual(ff)));
         } else {
             if (prefs.getBoolean("ViewFF", true))
                 query = pointBox.query(Point_.timeStamp.greater(today.getTime())
-                        .or(Point_.name.equal(ff))
-                        .and(Point_.name.notEqual(label)));
+                                               .or(Point_.name.equal(ff))
+                                               .and(Point_.name.notEqual(label)));
             else
                 query = pointBox.query(Point_.timeStamp.greater(today.getTime())
-                        .and(Point_.name.notEqual(label))
-                        .and(Point_.name.notEqual(ff)));
+                                               .and(Point_.name.notEqual(label))
+                                               .and(Point_.name.notEqual(ff)));
         }
         return query.build().find();
     }
@@ -588,14 +585,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(point.getLat(), point.getLon()))
-                    .title("Hold to Edit")
-                    .draggable(true)
-                    .anchor(0.5f, 0.5f)
-                    .visible(false)
-                    .flat(true)
-                    .zIndex(0)
-                    .icon(getMarker(point)));
+                                              .position(new LatLng(point.getLat(), point.getLon()))
+                                              .title("Hold to Edit")
+                                              .draggable(true)
+                                              .anchor(0.5f, 0.5f)
+                                              .visible(false)
+                                              .flat(true)
+                                              .zIndex(0)
+                                              .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
                 m.setVisible(true);

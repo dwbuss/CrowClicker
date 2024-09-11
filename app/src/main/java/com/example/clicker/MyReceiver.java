@@ -42,7 +42,7 @@ public class MyReceiver extends BroadcastReceiver {
                     player.start();
                 }
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context,
-                        NOTIFICATION_CHANNEL_ID)
+                                                                                    NOTIFICATION_CHANNEL_ID)
                         .setSmallIcon(R.drawable.cc_notification)
                         .setTicker(event)
                         .setContentTitle("Solunar Event")

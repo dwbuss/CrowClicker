@@ -81,7 +81,7 @@ public class Weather {
                                          if (!main.getString("temp").equals("null"))
                                              temperature = String.valueOf((int) Double.parseDouble(main.getString("temp")));
                                          if (!main.getString("feelslike").equals("null"))
-                                         feelsLike = String.valueOf((int) Double.parseDouble(main.getString("feelslike")));
+                                             feelsLike = String.valueOf((int) Double.parseDouble(main.getString("feelslike")));
                                          if (!main.getString("dew").equals("null"))
                                              dewPoint = String.valueOf((int) Double.parseDouble(main.getString("dew")));
                                          if (!main.getString("windspeed").equals("null"))

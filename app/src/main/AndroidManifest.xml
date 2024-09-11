@@ -37,7 +37,7 @@
             android:parentActivityName=".SettingsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clicker.SettingsActivity"/>
+                android:value="com.example.clicker.SettingsActivity" />
         </activity>
 
         <activity
@@ -46,7 +46,7 @@
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clicker.MainActivity"/>
+                android:value="com.example.clicker.MainActivity" />
         </activity>
 
         <activity
@@ -55,7 +55,7 @@
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clicker.MainActivity"/>
+                android:value="com.example.clicker.MainActivity" />
         </activity>
 
         <service
@@ -80,41 +80,46 @@
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clicker.MainActivity"/>
+                android:value="com.example.clicker.MainActivity" />
         </activity>
-        <activity android:name=".ForecastActivity"
+        <activity
+            android:name=".ForecastActivity"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clicker.MainActivity"/>
+                android:value="com.example.clicker.MainActivity" />
         </activity>
-        <activity android:name=".report.ReportActivity"
+        <activity
+            android:name=".report.ReportActivity"
             android:noHistory="true"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clicker.MainActivity"/>
+                android:value="com.example.clicker.MainActivity" />
         </activity>
 
-        <activity android:name=".report.FfActivity"
+        <activity
+            android:name=".report.FfActivity"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.clicker.MainActivity"/>
+                android:value="com.example.clicker.MainActivity" />
         </activity>
 
         <activity
             android:name=".MainActivity"
-            android:launchMode= "singleInstance"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="maps.google.com"
                     android:scheme="https" />

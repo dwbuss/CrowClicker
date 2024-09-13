@@ -99,16 +99,16 @@ public class PointActivity extends AppCompatActivity {
                 Calendar cal = Calendar.getInstance(Locale.US);
                 cal.setTime(point.getTimeStamp());
                 DatePickerDialog datePickerDialog = new DatePickerDialog(PointActivity.this,
-                        new DatePickerDialog.OnDateSetListener() {
+                                                                         new DatePickerDialog.OnDateSetListener() {
 
-                            @Override
-                            public void onDateSet(DatePicker view, int year,
-                                                  int monthOfYear, int dayOfMonth) {
-                                cal.set(year, monthOfYear, dayOfMonth);
-                                point.setTimeStamp(cal.getTime());
-                                binding.timeStamp.setText(point.timeStampAsString());
-                            }
-                        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+                                                                             @Override
+                                                                             public void onDateSet(DatePicker view, int year,
+                                                                                                   int monthOfYear, int dayOfMonth) {
+                                                                                 cal.set(year, monthOfYear, dayOfMonth);
+                                                                                 point.setTimeStamp(cal.getTime());
+                                                                                 binding.timeStamp.setText(point.timeStampAsString());
+                                                                             }
+                                                                         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
             }
         });
@@ -118,18 +118,18 @@ public class PointActivity extends AppCompatActivity {
                 Calendar cal = Calendar.getInstance(Locale.US);
                 cal.setTime(point.getTimeStamp());
                 TimePickerDialog timePickerDialog = new TimePickerDialog(PointActivity.this,
-                        new TimePickerDialog.OnTimeSetListener() {
+                                                                         new TimePickerDialog.OnTimeSetListener() {
 
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay,
-                                                  int minute) {
+                                                                             @Override
+                                                                             public void onTimeSet(TimePicker view, int hourOfDay,
+                                                                                                   int minute) {
 
-                                cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                                cal.set(Calendar.MINUTE, minute);
-                                point.setTimeStamp(cal.getTime());
-                                binding.timeStamp.setText(point.timeStampAsString());
-                            }
-                        }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(PointActivity.this));
+                                                                                 cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                                                                 cal.set(Calendar.MINUTE, minute);
+                                                                                 point.setTimeStamp(cal.getTime());
+                                                                                 binding.timeStamp.setText(point.timeStampAsString());
+                                                                             }
+                                                                         }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(PointActivity.this));
                 timePickerDialog.show();
             }
         });
@@ -141,7 +141,7 @@ public class PointActivity extends AppCompatActivity {
         sheets = new SheetAccess(this);
         populateForm();
         if (point.getAirTemp().isEmpty() && !point.getName().equals("FF"))
-           setWeather(this);
+            setWeather(this);
     }
 
     @Override
@@ -164,9 +164,9 @@ public class PointActivity extends AppCompatActivity {
         if (shouldNotify) {
             ContentResolver contentResolver = getContentResolver();
             SEND_MESSAGE(point.getMessage(),
-                    ContactType.valueOf(point.getContactType()),
-                    PreferenceManager.getDefaultSharedPreferences(this),
-                    contentResolver);
+                         ContactType.valueOf(point.getContactType()),
+                         PreferenceManager.getDefaultSharedPreferences(this),
+                         contentResolver);
         }
         lastAction = SAVE_ACTION;
         finish();
@@ -213,7 +213,7 @@ public class PointActivity extends AppCompatActivity {
                 !binding.ffSpots.getSelectedItem().toString().trim().isEmpty()) {
             String location = binding.ffSpots.getSelectedItem().toString().trim();
             ffResult = ff.scoreCatch(point.getName(), location.substring(0, location.indexOf(":")).trim(), point.getFishSize(), binding.ffOwnerSpots.getSelectedItem().toString().trim(),
-                    point.timeStampAsString(), binding.video.isChecked(), binding.northern.isChecked(), binding.vest.isChecked());
+                                     point.timeStampAsString(), binding.video.isChecked(), binding.northern.isChecked(), binding.vest.isChecked());
         }
         sheets.storePoint(point, ffResult, callback);
         lastAction = PUSH_ACTION;

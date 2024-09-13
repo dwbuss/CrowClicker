@@ -19,7 +19,6 @@ import androidx.preference.PreferenceManager;
 import com.example.clicker.databinding.ActivityTransferBinding;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
-import com.google.android.material.snackbar.Snackbar;
 
 import org.apache.commons.io.IOUtils;
 

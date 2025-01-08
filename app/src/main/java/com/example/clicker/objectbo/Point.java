@@ -454,10 +454,12 @@ public final class Point implements Parcelable {
     }
 
     public String getMessage() {
-
         DateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.US);
-
         String time = timeFormat.format(Calendar.getInstance().getTime());
+        return getMessage(time);
+    }
+
+    public String getMessage(String time) {
         final String format = "%1$s %2$s%3$s %4$s.%n%5$s%n%8$s%nhttps://maps.google.com/maps?q=%6$f,%7$f";
         if (contactType.equalsIgnoreCase(ContactType.CATCH.toString())) {
             return String.format("%1$s %2$s a %3$s on%4$s %5$s.%n%6$s%n%9$s%nhttps://maps.google.com/maps?q=%7$f,%8$f", getName().trim(), ContactType.CATCH.getMessageFragment(), getFishSize().trim(), getSinglularModifier(getBait().trim()), getBait().trim(), getNotes().trim(), getLat(), getLon(), time);

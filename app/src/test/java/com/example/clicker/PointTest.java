@@ -28,21 +28,21 @@ public class PointTest {
     public void testGetPluralMessageFollow() throws ParseException {
         String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tFOLLOW\t61.5°\t\tRubber\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow";
         Point point = new Point(csvRecord);
-        assertEquals("Dan saw one on Rubber.\n\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage());
+        assertEquals("Dan saw one on Rubber.\n\n8:02 pm\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage("8:02 pm"));
     }
 
     @Test
     public void testGetPluralMessageCatch() throws ParseException {
         String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tCATCH\t61.5°\t\tBlades\t39\tTypical pike!\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow";
         Point point = new Point(csvRecord);
-        assertEquals("Dan caught a 39 on Blades.\nTypical pike!\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage());
+        assertEquals("Dan caught a 39 on Blades.\nTypical pike!\n8:04 pm\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage("8:04 pm"));
     }
 
     @Test
     public void testGetPluralMessageContact() throws ParseException {
         String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tCONTACT\t61.5°\t\tT.I.T.S\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow";
         Point point = new Point(csvRecord);
-        assertEquals("Dan lost one on T.I.T.S.\n\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage());
+        assertEquals("Dan lost one on T.I.T.S.\n\n8:03 pm\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage("8:03 pm"));
     }
 
     public void testGetSingularMessageFollow() throws ParseException {
@@ -55,14 +55,14 @@ public class PointTest {
     public void testGetSingluarMessageCatch() throws ParseException {
         String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tCATCH\t61.5°\t\tSpoon\t39\tTypical pike!\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow";
         Point point = new Point(csvRecord);
-        assertEquals("Dan caught a 39 on a Spoon.\nTypical pike!\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage());
+        assertEquals("Dan caught a 39 on a Spoon.\nTypical pike!\n8:03 pm\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage("8:03 pm"));
     }
 
     @Test
     public void testGetSingluarMessageContact() throws ParseException {
         String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tCONTACT\t61.5°\t\tJig\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow";
         Point point = new Point(csvRecord);
-        assertEquals("Dan lost one on a Jig.\n\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage());
+        assertEquals("Dan lost one on a Jig.\n\n7:55 pm\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage("7:55 pm"));
     }
 
     @Test

@@ -51,6 +51,14 @@
             android:persistent="true"
             android:title="Select current or default bait"
             app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/species_array"
+            android:entryValues="@array/species_array"
+            android:key="Species"
+            android:persistent="true"
+            android:title="Select current or default species"
+            app:useSimpleSummaryProvider="true" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="ViewLabels"

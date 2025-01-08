@@ -360,12 +360,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String type = data.getQueryParameter("type");
                 String bait = data.getQueryParameter("bait");
                 String lake = data.getQueryParameter("lake");
+                String species = data.getQueryParameter("species");
+
                 gotoPoint = new Point(-1,
                                       name == null ? "Angler" : name,
                                       type == null ? ContactType.FOLLOW.toString() : type,
                                       longitude, latitude,
                                       bait == null ? "NA" : bait,
-                                      lake);
+                                      lake,
+                                      species);
             }
         }
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.refreshLayout);
@@ -573,7 +576,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void addPoint(ContactType contactType, Location loc) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        final Point point = new Point(0, prefs.getString("Username", null), contactType.toString(), loc.getLongitude(), loc.getLatitude(), prefs.getString("CurrentBait", null), prefs.getString("Lake", null));
+        final Point point = new Point(0, prefs.getString("Username", null), contactType.toString(), loc.getLongitude(), loc.getLatitude(), prefs.getString("CurrentBait", null), prefs.getString("Lake", null), prefs.getString("Species", null));
         Intent addPoint = new Intent(MainActivity.this, PointActivity.class);
         addPoint.putExtra("point", point);
         addPoint.putExtra("shouldNotify", true);

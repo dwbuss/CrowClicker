@@ -64,8 +64,9 @@ public final class Point implements Parcelable {
     private String pressure = "";
     private String humidity = "";
     private String lake = "";
+    private String species = "";
 
-    public Point(long id, long sheetId, String name, double lon, double lat, Date timeStamp, String contactType, String airTemp, String waterTemp, String bait, String fishSize, String notes, String windSpeed, String windGust, String windDir, String precipProbability, String cloudCover, String dewPoint, String pressure, String humidity, String lake) {
+    public Point(long id, long sheetId, String name, double lon, double lat, Date timeStamp, String contactType, String airTemp, String waterTemp, String bait, String fishSize, String notes, String windSpeed, String windGust, String windDir, String precipProbability, String cloudCover, String dewPoint, String pressure, String humidity, String lake, String species) {
         this.id = id;
         this.sheetId = sheetId;
         this.name = name;
@@ -87,6 +88,7 @@ public final class Point implements Parcelable {
         this.pressure = pressure;
         this.humidity = humidity;
         this.lake = lake;
+        this.species = species;
     }
 
     private Point(Parcel in) {
@@ -112,6 +114,7 @@ public final class Point implements Parcelable {
         pressure = in.readString();
         humidity = in.readString();
         lake = in.readString();
+        species = in.readString();
     }
 
     public Point(JSONObject jsonObject) throws ParseException, JSONException {
@@ -134,6 +137,7 @@ public final class Point implements Parcelable {
         pressure = jsonObject.optString("pressure");
         humidity = jsonObject.optString("humidity");
         lake = jsonObject.optString("lake");
+        species = jsonObject.optString("species");
     }
 
     public Point(String csvRecord) throws ParseException {
@@ -156,9 +160,10 @@ public final class Point implements Parcelable {
         pressure = parts[15];
         humidity = parts[16];
         lake = parts[17];
+        species = parts[18];
     }
 
-    public Point(long id, String name, String contactType, double lon, double lat, String bait, String lake) {
+    public Point(long id, String name, String contactType, double lon, double lat, String bait, String lake, String species) {
         this.id = id;
         this.name = name;
         this.timeStamp = Calendar.getInstance(Locale.US).getTime();
@@ -167,6 +172,7 @@ public final class Point implements Parcelable {
         this.contactType = contactType;
         this.bait = bait;
         this.lake = lake;
+        this.species = species;
     }
 
     public Point(List row) throws ParseException, InvalidObjectException {
@@ -176,7 +182,7 @@ public final class Point implements Parcelable {
     }
 
     public static String CSV_HEADER() {
-        return "id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\tlake\n";
+        return "id\tname\tlon\tlat\ttimeStamp\tcontactType\tairTemp\twaterTemp\tbait\tfishSize\tnotes\twindSpeed\twindDir\tcloudCover\tdewPoint\tpressure\thumidity\tlake\tspecies\n";
     }
 
     @Override
@@ -215,6 +221,7 @@ public final class Point implements Parcelable {
         parcel.writeString(pressure);
         parcel.writeString(humidity);
         parcel.writeString(lake);
+        parcel.writeString(species);
     }
 
     private void populatePoint(List row) throws InvalidObjectException {
@@ -332,6 +339,10 @@ public final class Point implements Parcelable {
         this.lake = lake;
     }
 
+    public String getSpecies() { return species; }
+
+    public void setSpecies(String species) { this.species = species; }
+
     public String getFishSize() {
         return fishSize;
     }
@@ -443,7 +454,7 @@ public final class Point implements Parcelable {
         return id + "\t" + name + "\t" + lon + "\t" + lat + "\t" + osLocalizedDateFormat.format(timeStamp) + "\t" + contactType + "\t" +
                 airTemp + "\t" + waterTemp + "\t" + bait + "\t" + fishSize + "\t" + notes + "\t" +
                 windSpeed + "\t" + windDir + "\t" + cloudCover + "\t" + dewPoint + "\t" +
-                pressure + "\t" + (humidity.isEmpty() ? " " : humidity) + "\t" + lake;
+                pressure + "\t" + (humidity.isEmpty() ? " " : humidity) + "\t" + lake + "\t" + (species.isEmpty() ? " ":species);
     }
 
     private String getSinglularModifier(String bait) {
@@ -462,7 +473,7 @@ public final class Point implements Parcelable {
     public String getMessage(String time) {
         final String format = "%1$s %2$s%3$s %4$s.%n%5$s%n%8$s%nhttps://maps.google.com/maps?q=%6$f,%7$f";
         if (contactType.equalsIgnoreCase(ContactType.CATCH.toString())) {
-            return String.format("%1$s %2$s a %3$s on%4$s %5$s.%n%6$s%n%9$s%nhttps://maps.google.com/maps?q=%7$f,%8$f", getName().trim(), ContactType.CATCH.getMessageFragment(), getFishSize().trim(), getSinglularModifier(getBait().trim()), getBait().trim(), getNotes().trim(), getLat(), getLon(), time);
+            return String.format("%1$s %2$s a %3$s\" %10$s on%4$s %5$s.%n%6$s%n%9$s%nhttps://maps.google.com/maps?q=%7$f,%8$f", getName().trim(), ContactType.CATCH.getMessageFragment(), getFishSize().trim(), getSinglularModifier(getBait().trim()), getBait().trim(), getNotes().trim(), getLat(), getLon(), time, getSpecies().trim());
         } else if (contactType.equalsIgnoreCase(ContactType.FOLLOW.toString()))
             return String.format(format, getName().trim(), ContactType.FOLLOW.getMessageFragment(), getSinglularModifier(getBait().trim()), getBait().trim(), getNotes().trim(), getLat(), getLon(), time);
         else

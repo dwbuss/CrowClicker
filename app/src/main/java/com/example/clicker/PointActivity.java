@@ -272,14 +272,22 @@ You will need this permission in your manifest:
         binding.contactType.setAdapter(contactAdapter);
         binding.contactType.setSelection(Arrays.asList(contactTypes).indexOf(point.getContactType()));
 
+        String[] species = getResources().getStringArray(R.array.species_array);
+        ArrayAdapter<String> species_adapter = new ArrayAdapter<>(binding.getRoot().getContext(), android.R.layout.simple_spinner_item, species);
+        species_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.species.setAdapter(species_adapter);
+        binding.species.setSelection(Arrays.asList(species).indexOf(point.getSpecies()));
+
         String[] baits = getResources().getStringArray(R.array.bait_array);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(binding.getRoot().getContext(), android.R.layout.simple_spinner_item, baits);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.bait.setAdapter(adapter);
         binding.bait.setSelection(Arrays.asList(baits).indexOf(point.getBait()));
+
         ArrayAdapter<String> ffadapter = new ArrayAdapter<>(binding.getRoot().getContext(), android.R.layout.simple_spinner_item, ffLocations);
         ffadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.ffSpots.setAdapter(ffadapter);
+
         ArrayAdapter<String> ffOwneradapter = new ArrayAdapter<>(binding.getRoot().getContext(), android.R.layout.simple_spinner_item, ffOwners);
         ffOwneradapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.ffOwnerSpots.setAdapter(ffOwneradapter);
@@ -300,9 +308,16 @@ You will need this permission in your manifest:
         }
 
         point.setBait(binding.bait.getSelectedItem().toString().trim());
+        point.setSpecies(binding.species.getSelectedItem().toString().trim());
+
         String fishSize = binding.fishSize.getText().toString().trim();
         if (!fishSize.isEmpty())
             point.setFishSize(String.format("%.2f", Double.parseDouble(fishSize)));
+
+        String girth = binding.girth.getText().toString().trim();
+        if (!girth.isEmpty())
+            point.setGirth(String.format("%.2f", Double.parseDouble(girth)));
+
         point.setAirTemp(binding.airtemp.getText().toString().trim());
         point.setWaterTemp(binding.watertemp.getText().toString().trim());
         point.setWindSpeed(binding.windSpeed.getText().toString().trim());

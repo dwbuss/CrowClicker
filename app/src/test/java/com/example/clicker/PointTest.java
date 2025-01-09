@@ -26,55 +26,55 @@ import java.util.stream.Collectors;
 public class PointTest {
     @Test
     public void testGetPluralMessageFollow() throws ParseException {
-        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tFOLLOW\t61.5°\t\tRubber\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\t ";
+        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tFOLLOW\t61.5°\t\tRubber\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\t \t ";
         Point point = new Point(csvRecord);
         assertEquals("Dan saw one on Rubber.\n\n8:02 pm\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage("8:02 pm"));
     }
 
     @Test
     public void testGetPluralMessageCatch() throws ParseException {
-        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tCATCH\t61.5°\t\tBlades\t39\tTypical pike!\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\tMuskellunge";
+        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tCATCH\t61.5°\t\tBlades\t39\tTypical pike!\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\tMuskellunge\t20";
         Point point = new Point(csvRecord);
         assertEquals("Dan caught a 39\" Muskellunge on Blades.\nTypical pike!\n8:04 pm\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage("8:04 pm"));
     }
 
     @Test
     public void testGetPluralMessageContact() throws ParseException {
-        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tCONTACT\t61.5°\t\tT.I.T.S\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\t ";
+        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tCONTACT\t61.5°\t\tT.I.T.S\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\t \t ";
         Point point = new Point(csvRecord);
         assertEquals("Dan lost one on T.I.T.S.\n\n8:03 pm\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage("8:03 pm"));
     }
 
     public void testGetSingularMessageFollow() throws ParseException {
-        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tFOLLOW\t61.5°\t\tGlider\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\t ";
+        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tFOLLOW\t61.5°\t\tGlider\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\t \t ";
         Point point = new Point(csvRecord);
         assertEquals("Dan saw one on a Glider.\n\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage());
     }
 
     @Test
     public void testGetSingluarMessageCatch() throws ParseException {
-        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tCATCH\t61.5°\t\tSpoon\t39\tTypical pike!\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\tPike";
+        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tCATCH\t61.5°\t\tSpoon\t39\tTypical pike!\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\tPike\t \t ";
         Point point = new Point(csvRecord);
         assertEquals("Dan caught a 39\" Pike on a Spoon.\nTypical pike!\n8:03 pm\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage("8:03 pm"));
     }
 
     @Test
     public void testGetSingluarMessageContact() throws ParseException {
-        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tCONTACT\t61.5°\t\tJig\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\t ";
+        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tCONTACT\t61.5°\t\tJig\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\t \t ";
         Point point = new Point(csvRecord);
         assertEquals("Dan lost one on a Jig.\n\n7:55 pm\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage("7:55 pm"));
     }
 
     @Test
     public void testCreatePoint() throws ParseException {
-        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tFOLLOW\t61.5°\t\tdusa\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\t ";
+        String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tFOLLOW\t61.5°\t\tdusa\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\t \t ";
         Point point = new Point(csvRecord);
         assertEquals("Dan", point.getName());
     }
 
     @Test
     public void testReadTSVWeather() throws Exception {
-        String tsvRecord = "44938\tMatt\t-93.90544229\t49.22708605\t08-09-2022 9:12 AM\tCONTACT\t69\t\tRubber\t\t\t13\tSW\t0.25\t65\t1012\t0.89\tCrow\t ";
+        String tsvRecord = "44938\tMatt\t-93.90544229\t49.22708605\t08-09-2022 9:12 AM\tCONTACT\t69\t\tRubber\t\t\t13\tSW\t0.25\t65\t1012\t0.89\tCrow\t \t ";
         Point p = new Point(tsvRecord);
         assertEquals("Matt", p.getName());
         assertEquals("", p.getFishSize());
@@ -83,7 +83,7 @@ public class PointTest {
     @Test
     public void testReadTSVNoWeather() throws Exception {
         //                 "44938\tMatt\t-93.90544229\t49.22708605\t08-09-2022 9:12 AM\tCONTACT\t69\t\tRubber\t\t\t13\tSW\t0.25\t65\t1012\t0.89";
-        String tsvRecord = "35145\tJeff\t-93.95221551\t49.21974587\t08-07-2022 2:26 PM\tCONTACT\t\t\tBlades\t\t\t\t\t\t\t\t\t \t ";
+        String tsvRecord = "35145\tJeff\t-93.95221551\t49.21974587\t08-07-2022 2:26 PM\tCONTACT\t\t\tBlades\t\t\t\t\t\t\t\t\t \t \t \t ";
         Point p = new Point(tsvRecord);
         assertEquals("Jeff", p.getName());
         assertEquals("", p.getFishSize());
@@ -103,13 +103,15 @@ public class PointTest {
     @Test
     public void importRow() throws ParseException, InvalidObjectException {
         //  [Row, Verified, Angler, Length, Girth, Lake, Date, Time, Bait, Anglers, Coordinates, Latitude, Longitude, Notes, Temperature, Feels Like, Wind Speed, Wind Gust, Wind Dir, Pressure, Humidity, Dew Point, Cloud Cover, Precip %, Moon Phase, Is Major, Is Minor]
-        List row = Arrays.asList("2, ,Tony,35.75, , Crow, 9/17/2021, 9:25 AM, blade blade, 4, -10447030.528943 6306926.152734499, 49.18861458, -93.84727198,   , 54, 54, 14, 27, NW, 1013, 0.64, 42, 0.11, 0, 4 - Waxing Gibbous, FALSE, FALSE".split(","));
+        List row = Arrays.asList("2, ,Tony,35.75,15, Crow, 9/17/2021, 9:25 AM, blade blade, 4,Muskellunge, 49.18861458, -93.84727198,   , 54, 54, 14, 27, NW, 1013, 0.64, 42, 0.11, 0, 4 - Waxing Gibbous, FALSE, FALSE".split(","));
         Point point = new Point(row);
         assertEquals("49.18861458", Double.toString(point.getLat()));
         assertEquals("-93.84727198", Double.toString(point.getLon()));
         assertEquals("Tony", point.getName());
         assertEquals("35.75", point.getFishSize());
         assertEquals("09-17-2021 9:25 AM", point.timeStampAsString());
+        assertEquals("15", point.getGirth());
+        assertEquals("Muskellunge", point.getSpecies());
         //row = Arrays.asList("Row, Verified, Angler, Length, Girth, Lake, Date, Time, Bait, Anglers, Coordinates, Latitude, Longitude, Notes, Temperature, Feels Like, Wind Speed, Wind Gust, Wind Dir, Pressure, Humidity, Dew Point, Cloud Cover, Precip %, Moon Phase, Is Major, Is Minor".split(","));
         //point = new Point(row);
         //row = Arrays.asList("2, , Tony, 35.75, , Crow, 9/17/2021, 9:25 AM, blade blade, 4, -10447030.528943,6306926.152734499, , ,   , 54, 54, 14, 27, NW, 1013, 0.64, 42, 0.11, 0, 4 - Waxing Gibbous, FALSE, FALSE".split(","));

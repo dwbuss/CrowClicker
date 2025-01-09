@@ -360,6 +360,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String type = data.getQueryParameter("type");
                 String bait = data.getQueryParameter("bait");
                 String lake = data.getQueryParameter("lake");
+
                 gotoPoint = new Point(-1,
                                       name == null ? "Angler" : name,
                                       type == null ? ContactType.FOLLOW.toString() : type,

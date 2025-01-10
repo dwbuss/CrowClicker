@@ -66,7 +66,7 @@ public class ClickerListener extends Flic2ButtonListener {
         if (actionType.equals(ButtonPressActions.FOLLOW_ON_RUBBER))
             lure = "Rubber";
 
-        final Point point = new Point(0, prefs.getString("Username", null), contactType.toString(), loc.getLongitude(), loc.getLatitude(), lure, prefs.getString("Lake", ""));
+        final Point point = new Point(0, prefs.getString("Username", null), contactType.toString(), loc.getLongitude(), loc.getLatitude(), lure, prefs.getString("Lake", ""), prefs.getString("Species", ""));
         helper.addOrUpdatePoint(point);
         PointActivity.SEND_MESSAGE(point.getMessage(), contactType, prefs, context.getContentResolver());
     }

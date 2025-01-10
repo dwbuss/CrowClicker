@@ -168,7 +168,7 @@ public final class Point implements Parcelable {
         girth = parts[19];
     }
 
-    public Point(long id, String name, String contactType, double lon, double lat, String bait, String lake) {
+    public Point(long id, String name, String contactType, double lon, double lat, String bait, String lake, String species) {
         this.id = id;
         this.name = name;
         this.timeStamp = Calendar.getInstance(Locale.US).getTime();
@@ -178,7 +178,6 @@ public final class Point implements Parcelable {
         this.bait = bait;
         this.lake = lake;
         this.species = species;
-        this.girth = girth;
     }
 
     public Point(List row) throws ParseException, InvalidObjectException {

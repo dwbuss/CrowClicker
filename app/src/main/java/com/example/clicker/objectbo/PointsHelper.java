@@ -125,12 +125,19 @@ public class PointsHelper {
     }
 
     private String retrieveDaily(ContactType type, String angler, String lake) {
-        Calendar today = Calendar.getInstance(Locale.US);
-        today.set(Calendar.HOUR_OF_DAY, 0);
-        today.set(Calendar.MINUTE, 0);
         Calendar[] trip_range = new Calendar[2];
-        trip_range[0] = today;
-        trip_range[1] = today;
+        trip_range[0] = Calendar.getInstance(Locale.US);
+        trip_range[0].set(Calendar.HOUR_OF_DAY, 0);
+        trip_range[0].set(Calendar.MINUTE, 0);
+        trip_range[0].set(Calendar.SECOND, 0);
+        trip_range[0].set(Calendar.MILLISECOND, 0);
+
+        trip_range[1] = Calendar.getInstance(Locale.US);
+        trip_range[1].set(Calendar.HOUR_OF_DAY, 23);
+        trip_range[1].set(Calendar.MINUTE, 59);
+        trip_range[1].set(Calendar.SECOND, 59);
+        trip_range[1].set(Calendar.MILLISECOND, 999);
+
         return retrieveFor(trip_range, type, angler, lake);
     }
 

@@ -53,16 +53,16 @@ public class PointsHelper {
         return retrieveDaily(ContactType.FOLLOW, angler, prefs.getString("Lake", ""));
     }
 
-    public String getTripCatch(int tripLength) {
-        return retrieveTrip(tripLength, ContactType.CATCH, prefs.getString("Lake", ""));
+    public String getTripCatch(Calendar[] trip_range) {
+        return retrieveTrip(trip_range, ContactType.CATCH, prefs.getString("Lake", ""));
     }
 
-    public String getTripContact(int tripLength) {
-        return retrieveTrip(tripLength, ContactType.CONTACT, prefs.getString("Lake", ""));
+    public String getTripContact(Calendar[] trip_range) {
+        return retrieveTrip(trip_range, ContactType.CONTACT, prefs.getString("Lake", ""));
     }
 
-    public String getTripFollow(int tripLength) {
-        return retrieveTrip(tripLength, ContactType.FOLLOW, prefs.getString("Lake", ""));
+    public String getTripFollow(Calendar[] trip_range) {
+        return retrieveTrip(trip_range, ContactType.FOLLOW, prefs.getString("Lake", ""));
     }
 
     public String getTotalCatch(String lake) {
@@ -109,16 +109,12 @@ public class PointsHelper {
         return pointBox.query().build().find();
     }
 
-    public ArrayList<Point> getPointsForTrip(int tripLength, String lake) {
-        Calendar today = Calendar.getInstance(Locale.US);
-        today.set(Calendar.HOUR_OF_DAY, 0);
-        today.set(Calendar.MINUTE, 0);
-        today.add(Calendar.DATE, -tripLength);
+    public ArrayList<Point> getPointsForTrip(Calendar[] trip_range, String lake) {
         int flags = QueryBuilder.NULLS_LAST | QueryBuilder.DESCENDING;
 
         List<Point> tempPoints = pointBox.query(Point_.lake.equal(lake))
                 .order(Point_.timeStamp, flags)
-                .greater(Point_.timeStamp, today.getTime())
+                .between(Point_.timeStamp, trip_range[0].getTime(), trip_range[1].getTime())
                 .build().find();
         ArrayList<Point> points = new ArrayList<>();
         for (Point p : tempPoints) {
@@ -132,21 +128,20 @@ public class PointsHelper {
         Calendar today = Calendar.getInstance(Locale.US);
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
-        return retrieveFor(today, type, angler, lake);
+        Calendar[] trip_range = new Calendar[2];
+        trip_range[0] = today;
+        trip_range[1] = today;
+        return retrieveFor(trip_range, type, angler, lake);
     }
 
-    private String retrieveTrip(int tripLength, ContactType type, String lake) {
-        Calendar today = Calendar.getInstance(Locale.US);
-        today.set(Calendar.HOUR_OF_DAY, 0);
-        today.set(Calendar.MINUTE, 0);
-        today.add(Calendar.DATE, -tripLength);
-        return retrieveFor(today, type, null, lake);
+    private String retrieveTrip(Calendar[] trip_range, ContactType type, String lake) {
+        return retrieveFor(trip_range, type, null, lake);
     }
 
-    private String retrieveFor(Calendar date, ContactType type, String angler, String lake) {
+    private String retrieveFor(Calendar[] trip_range, ContactType type, String angler, String lake) {
         boolean haveAngler = (angler != null && !angler.trim().isEmpty());
         QueryCondition<Point> baseQuery = Point_.contactType.equal(type.toString())
-                .and(Point_.timeStamp.greater(date.getTime()))
+                .and(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime()))
                 .and(Point_.lake.equal(lake))
                 .and(Point_.name.notEqual("FF"));
         if (haveAngler)

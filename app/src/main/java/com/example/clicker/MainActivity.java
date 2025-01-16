@@ -75,6 +75,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -503,31 +504,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         String label = "label";
         String ff = "FF";
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int tripLength = Integer.parseInt(prefs.getString("TripLength", "0"));
-        Calendar today = Calendar.getInstance(Locale.US);
-        today.set(Calendar.HOUR_OF_DAY, 0);
-        today.set(Calendar.MINUTE, 0);
-        today.add(Calendar.DATE, -tripLength);
+        Calendar[] trip_range = DateRangePreference.parseDateRange(prefs.getString("my_date_range_preference", "2020-01-01,2020-12-31"));
         BoxStore boxStore = ((ObjectBoxApp) getApplicationContext()).getBoxStore();
         Box<Point> pointBox = boxStore.boxFor(Point.class);
 
         QueryBuilder<Point> query;
         if (prefs.getBoolean("ViewLabels", true)) {
             if (prefs.getBoolean("ViewFF", true))
-                query = pointBox.query(Point_.timeStamp.greater(today.getTime())
+                query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
                                                .or(Point_.name.equal(label))
                                                .or(Point_.name.equal(ff)));
             else
-                query = pointBox.query(Point_.timeStamp.greater(today.getTime())
+                query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
                                                .or(Point_.name.equal(label))
                                                .and(Point_.name.notEqual(ff)));
         } else {
             if (prefs.getBoolean("ViewFF", true))
-                query = pointBox.query(Point_.timeStamp.greater(today.getTime())
+                query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
                                                .or(Point_.name.equal(ff))
                                                .and(Point_.name.notEqual(label)));
             else
-                query = pointBox.query(Point_.timeStamp.greater(today.getTime())
+                query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
                                                .and(Point_.name.notEqual(label))
                                                .and(Point_.name.notEqual(ff)));
         }

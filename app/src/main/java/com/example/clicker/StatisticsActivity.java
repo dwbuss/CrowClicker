@@ -13,6 +13,7 @@ import com.example.clicker.databinding.ActivityStatisticsBinding;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
 
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,11 +52,11 @@ public class StatisticsActivity extends AppCompatActivity {
         binding.dailyContact.setText(pointsHelper.getDailyContact());
         binding.dailyFollow.setText(pointsHelper.getDailyFollow());
 
-        int tripLength = Integer.parseInt(prefs.getString("TripLength", "0"));
+        Calendar[] trip_range = DateRangePreference.parseDateRange(prefs.getString("my_date_range_preference", "2020-01-01,2020-12-31"));
 
-        binding.tripCatch.setText(pointsHelper.getTripCatch(tripLength));
-        binding.tripContact.setText(pointsHelper.getTripContact(tripLength));
-        binding.tripFollow.setText(pointsHelper.getTripFollow(tripLength));
+        binding.tripCatch.setText(pointsHelper.getTripCatch(trip_range));
+        binding.tripContact.setText(pointsHelper.getTripContact(trip_range));
+        binding.tripFollow.setText(pointsHelper.getTripFollow(trip_range));
 
         binding.totalCatch.setText(pointsHelper.getTotalCatch(lake));
         binding.totalContact.setText(pointsHelper.getTotalContact(lake));
@@ -64,9 +65,10 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private void buildLeaderBoard() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int tripLength = Integer.parseInt(prefs.getString("TripLength", "0"));
 
-        List<Point> points = pointsHelper.getPointsForTrip(tripLength, prefs.getString("Lake", ""));
+        Calendar[] trip_range = DateRangePreference.parseDateRange(prefs.getString("my_date_range_preference", "2020-01-01,2020-12-31"));
+
+        List<Point> points = pointsHelper.getPointsForTrip(trip_range, prefs.getString("Lake", ""));
 
         // Top anglers by inches caught
         String max = maxLen(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));

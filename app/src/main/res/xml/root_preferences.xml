@@ -37,12 +37,9 @@
             android:persistent="true"
             android:title="Lake"
             app:useSimpleSummaryProvider="true" />
-        <EditTextPreference
-            android:defaultValue="14"
-            android:key="TripLength"
-            android:persistent="true"
-            android:title="Trip Length in Days"
-            app:useSimpleSummaryProvider="true" />
+        <com.example.clicker.DateRangePreference
+                android:key="my_date_range_preference"
+                android:defaultValue="2025-01-01,2025-01-31"/>
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/bait_array"

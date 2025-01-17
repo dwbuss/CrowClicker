@@ -3,6 +3,7 @@ package com.example.clicker;
 import static java.util.stream.Collectors.joining;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -12,7 +13,15 @@ import androidx.preference.PreferenceManager;
 import com.example.clicker.databinding.ActivityStatisticsBinding;
 import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.MPPointF;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -27,6 +36,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private static final String TAG = "StatisticsActivity";
     private ActivityStatisticsBinding binding;
     private PointsHelper pointsHelper;
+    private PieChart chart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +46,66 @@ public class StatisticsActivity extends AppCompatActivity {
         pointsHelper = new PointsHelper(this);
         updateCounts();
         buildLeaderBoard();
+    }
+
+    private void displayChart(Map<String, Long> data) {
+        chart = findViewById(R.id.baitChart);
+        //chart.setUsePercentValues(true);
+        chart.getDescription().setEnabled(false);
+
+        chart.setDragDecelerationFrictionCoef(0.95f);
+
+        chart.setRotationAngle(0);
+        // enable rotation of the chart by touch
+        chart.setRotationEnabled(true);
+        chart.setHighlightPerTapEnabled(true);
+        chart.getLegend().setEnabled(false);
+
+        chart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
+
+        // entry label styling
+        chart.setEntryLabelColor(Color.BLACK);
+        chart.setEntryLabelTextSize(10f);
+
+        List<PieEntry> entries = data.entrySet().stream()
+                .map(entry -> new PieEntry(entry.getValue().floatValue(), entry.getKey()))
+                .collect(Collectors.toList());
+
+        PieDataSet dataSet = new PieDataSet(entries, "Catch Breakdown by Bait");
+
+        dataSet.setDrawIcons(false);
+
+        dataSet.setSliceSpace(3f);
+        dataSet.setIconsOffset(new MPPointF(0, 40));
+        dataSet.setSelectionShift(5f);
+
+        ArrayList<Integer> colors = new ArrayList<>();
+        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.JOYFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.COLORFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.LIBERTY_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.PASTEL_COLORS)
+            colors.add(c);
+
+        colors.add(ColorTemplate.getHoloBlue());
+
+        dataSet.setColors(colors);
+
+        PieData pdata = new PieData(dataSet);
+        //pdata.setValueFormatter(new PercentFormatter());
+        pdata.setValueTextSize(10f);
+
+        chart.setData(pdata);
+        chart.highlightValues(null);
+        chart.invalidate();
     }
 
     private void updateCounts() {
@@ -89,6 +159,11 @@ public class StatisticsActivity extends AppCompatActivity {
         // Top anglers by follows
         String mostFollows = mostFollows(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
         binding.mostFollows.setText(mostFollows);
+
+        // Catches only
+        // Map<String, Long> baits = points.stream().filter(point -> point.getContactType().equals(ContactType.CATCH.toString())).collect(Collectors.groupingBy(Point::getBait, Collectors.counting()));
+        Map<String, Long> baits = points.stream().collect(Collectors.groupingBy(Point::getBait, Collectors.counting()));
+        displayChart(baits);
     }
 
     private Map<String, Double> average(List<Point> points) {

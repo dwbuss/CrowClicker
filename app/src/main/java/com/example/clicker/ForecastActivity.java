@@ -75,6 +75,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
                 CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE, CombinedChart.DrawOrder.CANDLE
         });
         renderData();
+
         btnDatePicker = findViewById(R.id.btn_date);
         btnTimePicker = findViewById(R.id.btn_time);
 

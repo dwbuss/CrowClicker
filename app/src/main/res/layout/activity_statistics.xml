@@ -229,6 +229,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider2" />
+    <TextView
+        android:id="@+id/tripDateRange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="00/00/0000 - 00/00/000"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/leaderboardTitle" />
 
     <TextView
         android:id="@+id/mostInchesTitle"
@@ -240,7 +253,7 @@
         android:text="Max"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/leaderboardTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tripDateRange" />
 
     <TextView
         android:id="@+id/maxLen"
@@ -265,7 +278,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintEnd_toStartOf="@+id/mostCatchesTitle"
         app:layout_constraintStart_toEndOf="@+id/mostInchesTitle"
-        app:layout_constraintTop_toBottomOf="@+id/leaderboardTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/tripDateRange" />
 
     <TextView
         android:id="@+id/averageLen"
@@ -290,7 +303,7 @@
         android:text="Count"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/leaderboardTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/tripDateRange" />
 
     <TextView
         android:id="@+id/mostCatches"
@@ -330,7 +343,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:gravity="center"
-        android:text="1\n2\n3\n4\n5"
+        android:text="1\n2\n3\n"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mostLossesTitle" />
 
@@ -353,14 +366,14 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:gravity="center"
-        android:text="1\n2\n3\n4\n5"
+        android:text="1\n2\n3\n"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mostFollowsTitle" />
 
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/baitChart"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"

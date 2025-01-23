@@ -21,6 +21,7 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -123,6 +124,8 @@ public class StatisticsActivity extends AppCompatActivity {
         binding.dailyFollow.setText(pointsHelper.getDailyFollow());
 
         Calendar[] trip_range = DateRangePreference.parseDateRange(prefs.getString("my_date_range_preference", "2020-01-01,2020-12-31"));
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+        binding.tripDateRange.setText(String.format("%s - %s", format.format(trip_range[0].getTime()), format.format(trip_range[1].getTime())));
 
         binding.tripCatch.setText(pointsHelper.getTripCatch(trip_range));
         binding.tripContact.setText(pointsHelper.getTripContact(trip_range));
@@ -161,9 +164,17 @@ public class StatisticsActivity extends AppCompatActivity {
         binding.mostFollows.setText(mostFollows);
 
         // Catches only
-        // Map<String, Long> baits = points.stream().filter(point -> point.getContactType().equals(ContactType.CATCH.toString())).collect(Collectors.groupingBy(Point::getBait, Collectors.counting()));
-        Map<String, Long> baits = points.stream().collect(Collectors.groupingBy(Point::getBait, Collectors.counting()));
-        displayChart(baits);
+        // Map<String, Long> baits = points.stream().filter(point -> point.getContactType().equals(ContactType.CATCH.toString())).collect(Collectors.groupingBy(point -> point.getBait().trim(), Collectors.counting()));
+        Map<String, Long> baits = points.stream().collect(Collectors.groupingBy(point -> point.getBait().trim(), Collectors.counting()));
+
+        Map<String, Long> sortedBaits = baits.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new));
+        displayChart(sortedBaits);
     }
 
     private Map<String, Double> average(List<Point> points) {

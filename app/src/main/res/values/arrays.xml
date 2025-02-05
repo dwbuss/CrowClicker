@@ -2,15 +2,15 @@
 <resources>
     <string-array name="bait_array">
         <item>Blades</item>
-        <item>Crank Bait</item>
-        <item>Glider</item>
-        <item>Jig</item>
+        <item>Rubber</item>
         <item>T.I.T.S</item>
         <item>Jerk Bait</item>
-        <item>Rubber</item>
-        <item>Spoon</item>
+        <item>Crank Bait</item>
         <item>Swim Bait</item>
+        <item>Glide Bait</item>
         <item>Top Water</item>
+        <item>Jig</item>
+        <item>Spoon</item>
         <item>Flasher/Fly</item>
     </string-array>
 

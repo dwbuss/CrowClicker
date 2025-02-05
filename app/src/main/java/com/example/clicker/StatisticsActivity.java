@@ -130,18 +130,24 @@ public class StatisticsActivity extends AppCompatActivity {
         for (int c : ColorTemplate.PASTEL_COLORS)
             colorList.add(c);
 
+        Log.d(TAG, "Color list size: " + colorList.size());
+
         Map<String, Integer> baitColors = new HashMap<>();
         String[] baits = getResources().getStringArray(R.array.bait_array);
         for (int i = 0; i < baits.length; i++) {
             baitColors.put(baits[i], colorList.get(i));
         }
+        baitColors.put("Unknown", Color.LTGRAY);
 
         Map<String, Integer> colorMap = new LinkedHashMap<>(keys.size());
         for (String key : keys) {
             String[] parts = key.split(":");
             String bait = parts[0];
             String contactType = parts[1];
-            int baseColor = baitColors.get(bait).intValue();
+
+            Log.d(TAG, "Bait: " + bait + " Contact: " + contactType);
+
+            int baseColor = baitColors.get(bait.isBlank() ? "Unknown" : bait).intValue();
 
             // Generate shades for CATCH, FOLLOW, and CONTACT
             int catchColor = baseColor;

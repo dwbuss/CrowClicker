@@ -3,6 +3,7 @@ package com.example.clicker;
 import static java.util.stream.Collectors.joining;
 
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -132,12 +133,14 @@ public class StatisticsActivity extends AppCompatActivity {
 
         Log.d(TAG, "Color list size: " + colorList.size());
 
-        Map<String, Integer> baitColors = new HashMap<>();
         String[] baits = getResources().getStringArray(R.array.bait_array);
+        TypedArray baitColors = getResources().obtainTypedArray(R.array.bait_colors);
+        Map<String, Integer> colors = new HashMap<>();
         for (int i = 0; i < baits.length; i++) {
-            baitColors.put(baits[i], colorList.get(i));
+            colors.put(baits[i], baitColors.getColor(i, Color.BLACK));
         }
-        baitColors.put("Unknown", Color.LTGRAY);
+        colors.put("Unknown", Color.LTGRAY);
+        baitColors.recycle();
 
         Map<String, Integer> colorMap = new LinkedHashMap<>(keys.size());
         for (String key : keys) {
@@ -147,7 +150,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
             Log.d(TAG, "Bait: " + bait + " Contact: " + contactType);
 
-            int baseColor = baitColors.get(bait.isBlank() ? "Unknown" : bait).intValue();
+            int baseColor = colors.get(bait.isBlank() ? "Unknown" : bait).intValue();
 
             // Generate shades for CATCH, FOLLOW, and CONTACT
             int catchColor = baseColor;

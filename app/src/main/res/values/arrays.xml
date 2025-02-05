@@ -14,6 +14,20 @@
         <item>Flasher/Fly</item>
     </string-array>
 
+    <array name="bait_colors">
+        <item>@color/blades_color</item>
+        <item>@color/rubber_color</item>
+        <item>@color/tits_color</item>
+        <item>@color/jerk_color</item>
+        <item>@color/crank_color</item>
+        <item>@color/swim_color</item>
+        <item>@color/glide_color</item>
+        <item>@color/top_water_color</item>
+        <item>@color/jig_color</item>
+        <item>@color/spoon_color</item>
+        <item>@color/flasher_color</item>
+    </array>
+
     <string-array name="contact_array">
         <item>CONTACT</item>
         <item>CATCH</item>

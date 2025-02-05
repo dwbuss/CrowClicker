@@ -75,7 +75,6 @@ import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -369,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                       longitude, latitude,
                                       bait == null ? "NA" : bait,
                                       lake,
-                                      species == null ? "NA": species);
+                                      species == null ? "NA" : species);
             }
         }
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.refreshLayout);

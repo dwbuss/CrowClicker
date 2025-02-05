@@ -52,7 +52,6 @@ public class PointActivity extends AppCompatActivity {
     private FantasyFishing ff;
     private String[] ffLocations = new String[]{""};
     private String[] ffOwners = new String[]{""};
-    ;
 
     public static void SEND_MESSAGE(String message, ContactType action, SharedPreferences prefs, ContentResolver resolver) {
         String notification;

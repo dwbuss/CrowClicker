@@ -20,15 +20,17 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.DefaultValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.MPPointF;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -40,6 +42,19 @@ public class StatisticsActivity extends AppCompatActivity {
     private PointsHelper pointsHelper;
     private PieChart chart;
 
+    public static int adjustColor(int color, float factor) {
+        int alpha = Color.alpha(color);
+        int red = Math.round(Color.red(color) * factor);
+        int green = Math.round(Color.green(color) * factor);
+        int blue = Math.round(Color.blue(color) * factor);
+
+        red = Math.min(red, 255);
+        green = Math.min(green, 255);
+        blue = Math.min(blue, 255);
+
+        return Color.argb(alpha, red, green, blue);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +65,7 @@ public class StatisticsActivity extends AppCompatActivity {
         buildLeaderBoard();
     }
 
-    private void displayChart(Map<String, Long> data, int total) {
+    private void displayPieChart(Map<String, Long> data, int total) {
         chart = findViewById(R.id.baitChart);
         //chart.setUsePercentValues(true);
         chart.getDescription().setEnabled(false);
@@ -63,54 +78,90 @@ public class StatisticsActivity extends AppCompatActivity {
         chart.setHighlightPerTapEnabled(true);
         chart.getLegend().setEnabled(false);
 
+        chart.setHoleRadius(30f);
+        chart.setDrawHoleEnabled(true);
+        chart.setDrawSlicesUnderHole(false);
+        chart.setTransparentCircleRadius(0);
+
         chart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
 
         // entry label styling
         chart.setEntryLabelColor(Color.BLACK);
-        chart.setEntryLabelTextSize(10f);
+        chart.setEntryLabelTextSize(12f);
 
         chart.setCenterTextColor(Color.BLACK);
         chart.setCenterText("Total:\n" + total);
 
         List<PieEntry> entries = data.entrySet().stream()
-                .map(entry -> new PieEntry(entry.getValue().floatValue(), entry.getKey()))
-                .collect(Collectors.toList());
+                .map(entry -> {
+                         PieEntry pieEntry = new PieEntry(entry.getValue().floatValue(), entry.getKey());
+                         return pieEntry;
+                     }
+                ).collect(Collectors.toList());
 
         PieDataSet dataSet = new PieDataSet(entries, "Catch Breakdown by Bait");
+        Map<String, Integer> colorMap = generateBaitColors(data.keySet());
+        dataSet.setColors(new ArrayList<>(colorMap.values()));
 
-        dataSet.setDrawIcons(false);
-
-        dataSet.setSliceSpace(3f);
-        dataSet.setIconsOffset(new MPPointF(0, 40));
-        dataSet.setSelectionShift(5f);
-
-        ArrayList<Integer> colors = new ArrayList<>();
-        for (int c : ColorTemplate.VORDIPLOM_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.JOYFUL_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.COLORFUL_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.LIBERTY_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.PASTEL_COLORS)
-            colors.add(c);
-
-        colors.add(ColorTemplate.getHoloBlue());
-
-        dataSet.setColors(colors);
+        dataSet.setSliceSpace(5f);
 
         PieData pdata = new PieData(dataSet);
         pdata.setValueFormatter(new DefaultValueFormatter(0));
-        pdata.setValueTextSize(10f);
+        pdata.setValueTextSize(12f);
+        pdata.setValueTextColor(Color.BLACK);
 
         chart.setData(pdata);
         chart.highlightValues(null);
         chart.invalidate();
+    }
+
+    private Map<String, Integer> generateBaitColors(Set<String> keys) {
+
+        List<Integer> colorList = new ArrayList<>();
+        // Add some predefined colors
+        for (int c : ColorTemplate.JOYFUL_COLORS)
+            colorList.add(c);
+        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+            colorList.add(c);
+        for (int c : ColorTemplate.LIBERTY_COLORS)
+            colorList.add(c);
+        for (int c : ColorTemplate.COLORFUL_COLORS)
+            colorList.add(c);
+        for (int c : ColorTemplate.PASTEL_COLORS)
+            colorList.add(c);
+
+        Map<String, Integer> baitColors = new HashMap<>();
+        String[] baits = getResources().getStringArray(R.array.bait_array);
+        for (int i = 0; i < baits.length; i++) {
+            baitColors.put(baits[i], colorList.get(i));
+        }
+
+        Map<String, Integer> colorMap = new LinkedHashMap<>(keys.size());
+        for (String key : keys) {
+            String[] parts = key.split(":");
+            String bait = parts[0];
+            String contactType = parts[1];
+            int baseColor = baitColors.get(bait).intValue();
+
+            // Generate shades for CATCH, FOLLOW, and CONTACT
+            int catchColor = baseColor;
+            int followColor = adjustColor(baseColor, 0.85f); // Slightly darker
+            int contactColor = adjustColor(baseColor, 0.7f); // Even darker
+
+            // Assign colors based on contact type
+            switch (contactType) {
+                case "CATCH":
+                    colorMap.put(key, catchColor);
+                    break;
+                case "FOLLOW":
+                    colorMap.put(key, followColor);
+                    break;
+                case "CONTACT":
+                    colorMap.put(key, contactColor);
+                    break;
+            }
+        }
+        return colorMap;
     }
 
     private void updateCounts() {
@@ -174,16 +225,8 @@ public class StatisticsActivity extends AppCompatActivity {
         // Map<String, Long> all_contact_baits = points.stream().collect(Collectors.groupingBy(point -> point.getBait().trim(), Collectors.counting()));
 
         // Bait and Contact
-        Map<String, Long> baits = points.stream().collect(Collectors.groupingBy(point -> point.getBait().trim() + ":" + point.getContactType().trim(), Collectors.counting()));
-
-        Map<String, Long> sortedBaits = baits.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new));
-        displayChart(sortedBaits, points.size());
+        Map<String, Long> baits = points.stream().collect(Collectors.groupingBy(point -> point.getBait().trim() + ":" + point.getContactType().trim(), TreeMap::new, Collectors.counting()));
+        displayPieChart(baits, points.size());
     }
 
     private Map<String, Double> average(List<Point> points) {

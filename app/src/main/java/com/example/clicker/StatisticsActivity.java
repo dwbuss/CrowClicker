@@ -18,6 +18,7 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.DefaultValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 
@@ -49,7 +50,7 @@ public class StatisticsActivity extends AppCompatActivity {
         buildLeaderBoard();
     }
 
-    private void displayChart(Map<String, Long> data) {
+    private void displayChart(Map<String, Long> data, int total) {
         chart = findViewById(R.id.baitChart);
         //chart.setUsePercentValues(true);
         chart.getDescription().setEnabled(false);
@@ -67,6 +68,9 @@ public class StatisticsActivity extends AppCompatActivity {
         // entry label styling
         chart.setEntryLabelColor(Color.BLACK);
         chart.setEntryLabelTextSize(10f);
+
+        chart.setCenterTextColor(Color.BLACK);
+        chart.setCenterText("Total:\n" + total);
 
         List<PieEntry> entries = data.entrySet().stream()
                 .map(entry -> new PieEntry(entry.getValue().floatValue(), entry.getKey()))
@@ -101,7 +105,7 @@ public class StatisticsActivity extends AppCompatActivity {
         dataSet.setColors(colors);
 
         PieData pdata = new PieData(dataSet);
-        //pdata.setValueFormatter(new PercentFormatter());
+        pdata.setValueFormatter(new DefaultValueFormatter(0));
         pdata.setValueTextSize(10f);
 
         chart.setData(pdata);
@@ -164,17 +168,22 @@ public class StatisticsActivity extends AppCompatActivity {
         binding.mostFollows.setText(mostFollows);
 
         // Catches only
-        // Map<String, Long> baits = points.stream().filter(point -> point.getContactType().equals(ContactType.CATCH.toString())).collect(Collectors.groupingBy(point -> point.getBait().trim(), Collectors.counting()));
-        Map<String, Long> baits = points.stream().collect(Collectors.groupingBy(point -> point.getBait().trim(), Collectors.counting()));
+        // Map<String, Long> caught_baits = points.stream().filter(point -> point.getContactType().equals(ContactType.CATCH.toString())).collect(Collectors.groupingBy(point -> point.getBait().trim(), Collectors.counting()));
+
+        // Just bait, all contacts combined
+        // Map<String, Long> all_contact_baits = points.stream().collect(Collectors.groupingBy(point -> point.getBait().trim(), Collectors.counting()));
+
+        // Bait and Contact
+        Map<String, Long> baits = points.stream().collect(Collectors.groupingBy(point -> point.getBait().trim() + ":" + point.getContactType().trim(), Collectors.counting()));
 
         Map<String, Long> sortedBaits = baits.entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue(Comparator.reverseOrder()))
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
                         (e1, e2) -> e1,
                         LinkedHashMap::new));
-        displayChart(sortedBaits);
+        displayChart(sortedBaits, points.size());
     }
 
     private Map<String, Double> average(List<Point> points) {

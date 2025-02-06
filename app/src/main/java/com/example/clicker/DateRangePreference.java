@@ -19,10 +19,10 @@ public class DateRangePreference extends Preference {
 
     public static final String DATE_RANGE_FORMAT = "yyyy-MM-dd";
     private final SimpleDateFormat dateFormat;
-    private String startDate;
-    private String endDate;
     private final Calendar startCalendar;
     private final Calendar endCalendar;
+    private String startDate;
+    private String endDate;
 
     public DateRangePreference(Context context, AttributeSet attrs) {
         super(context, attrs);

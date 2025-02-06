@@ -136,8 +136,8 @@ public class Weather {
                                          for (int y = 0; y < dailyData.length(); y++) {
                                              JSONObject day = dailyData.getJSONObject(y);
                                              String dt = day.getString("datetime");
-                                             sunPoints.add(sdf.parse(dt+" "+day.getString("sunrise")).getTime());
-                                             sunPoints.add(sdf.parse(dt+" "+day.getString("sunset")).getTime());
+                                             sunPoints.add(sdf.parse(dt + " " + day.getString("sunrise")).getTime());
+                                             sunPoints.add(sdf.parse(dt + " " + day.getString("sunset")).getTime());
                                              JSONArray hours = day.getJSONArray("hours");
                                              for (int i = 0; i < hours.length(); i++) {
                                                  JSONObject hour = hours.getJSONObject(i);

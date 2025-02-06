@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -19,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -32,6 +34,7 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -87,7 +90,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     public void renderData() {
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setValueFormatter(new xFormatter());
+        xAxis.setValueFormatter(new XAxisDateFormatter());
         xAxis.setLabelRotationAngle(90f);
         xAxis.setDrawGridLines(false);
         LimitLine line = new LimitLine(cal.getTime().getTime());
@@ -95,7 +98,6 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         line.setLineWidth(2);
         line.setLabel(new SimpleDateFormat("E HH:mm").format(cal.getTime()));
         xAxis.addLimitLine(line);
-
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.removeAllLimitLines();
@@ -110,20 +112,24 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         rightAxis.setDrawLimitLinesBehindData(false);
         rightAxis.setDrawLabels(false);
         rightAxis.setDrawGridLines(false);
-
     }
 
     private void setData() {
         XAxis xAxis = mChart.getXAxis();
         if (weather.sunPoints != null) {
+            Log.d(TAG, "Sun points: " + weather.sunPoints.size());
             weather.sunPoints.stream().forEach(point -> {
                 LimitLine limit = new LimitLine(point);
                 if (new SimpleDateFormat("a").format(new Date(point)).equalsIgnoreCase("PM")) {
                     limit.setLineColor(Color.BLACK);
-                    limit.setLabel("Set " + new SimpleDateFormat("E HH:mm").format(new Date(point)));
+                    String label = "Set " + new SimpleDateFormat("E HH:mm").format(new Date(point));
+                    Log.d(TAG, "PM Label: " + label);
+                    limit.setLabel(label);
                 } else {
                     limit.setLineColor(Color.RED);
-                    limit.setLabel("Rise " + new SimpleDateFormat("E HH:mm").format(new Date(point)));
+                    String label = "Rise " + new SimpleDateFormat("E HH:mm").format(new Date(point));
+                    Log.d(TAG, "AM Label: " + label);
+                    limit.setLabel(label);
                 }
                 limit.setLineWidth(2);
                 xAxis.addLimitLine(limit);
@@ -183,9 +189,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         pressuerSet.setFormLineWidth(1f);
         pressuerSet.setFormSize(15.0f);
         pressuerSet.setDrawValues(true);
-        pressuerSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            return String.format("%.2f", (float) (value * .029529980164712));
-        });
+        pressuerSet.setValueFormatter(new PressureFormatter());
 
         LineDataSet moonSet = new LineDataSet(moonValues, "Moon Data");
         moonSet.setDrawIcons(false);
@@ -207,19 +211,13 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         BarDataSet windSet = new BarDataSet(windValues, "Wind");
         windSet.setValueTextColor(Color.rgb(60, 220, 78));
         windSet.setValueTextSize(10f);
-        windSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            BarEntry v = windSet.getEntryForIndex(dataSetIndex);
-            return ((Float) value).intValue() + " " + v.getData();
-        });
+        windSet.setValueFormatter(new WindFormatter());
         windSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
 
         BarDataSet gustSet = new BarDataSet(guestValues, "Gust");
         gustSet.setValueTextColor(Color.rgb(61, 165, 255));
         gustSet.setValueTextSize(10f);
-        gustSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            BarEntry v = gustSet.getEntryForIndex(dataSetIndex);
-            return ((Float) value).intValue() + " " + v.getData();
-        });
+        gustSet.setValueFormatter(new WindFormatter());
         gustSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
 
         CandleData candleData = new CandleData();
@@ -336,6 +334,28 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
                                                                          }
                                                                      }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(ForecastActivity.this));
             timePickerDialog.show();
+        }
+    }
+
+    class PressureFormatter extends ValueFormatter {
+        @Override
+        public String getCandleLabel(CandleEntry entry) {
+            return String.format("%.2f", (float) (entry.getY() * .029529980164712));
+        }
+    }
+
+    class WindFormatter extends ValueFormatter {
+        @Override
+        public String getBarLabel(BarEntry v) {
+            return ((Float) v.getY()).intValue() + " " + v.getData();
+        }
+    }
+
+    class XAxisDateFormatter extends ValueFormatter {
+        @Override
+        public String getAxisLabel(float value, AxisBase axis) {
+            SimpleDateFormat f = new SimpleDateFormat("MM/dd h:mm a");
+            return f.format(new Date((long) value));
         }
     }
 }

@@ -72,7 +72,7 @@ public class StatisticsActivity extends AppCompatActivity implements OnChartValu
         chart.setDrawSlicesUnderHole(false);
         chart.setTransparentCircleRadius(0);
 
-        chart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
+        chart.animateY(1400, Easing.EaseInOutQuad);
 
         // add a selection listener
         chart.setOnChartValueSelectedListener(this);

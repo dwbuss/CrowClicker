@@ -85,9 +85,9 @@ public class StatisticsActivity extends AppCompatActivity implements OnChartValu
         chart.setCenterText("Total:\n" + total);
         chart.setHardwareAccelerationEnabled(true);
 
-        List<PieEntry> entries = data.entrySet().stream().
-                map(entry -> new PieEntry(entry.getValue().floatValue(), entry.getKey())).
-                collect(Collectors.toList());
+        List<PieEntry> entries = data.entrySet().stream()
+                .map(entry -> new PieEntry(entry.getValue().floatValue(), entry.getKey()))
+                .collect(Collectors.toList());
 
         PieDataSet dataSet = new PieDataSet(entries, "Catch Breakdown by Bait");
         Map<String, Integer> colorMap = generateBaitColors(data.keySet());
@@ -260,7 +260,8 @@ public class StatisticsActivity extends AppCompatActivity implements OnChartValu
         Map<String, Long> baits = pointsForTrip.stream().filter(point -> {
             if (bait.isBlank())
                 return point.getBait().isBlank();
-            return point.getBait().equals(bait); }).collect(Collectors.groupingBy(point -> point.getContactType().trim(), Collectors.counting()));
+            return point.getBait().equals(bait);
+        }).collect(Collectors.groupingBy(point -> point.getContactType().trim(), Collectors.counting()));
 
         // create a dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

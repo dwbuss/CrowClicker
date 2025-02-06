@@ -84,7 +84,7 @@ public class StatisticsActivity extends AppCompatActivity {
         chart.setDrawSlicesUnderHole(false);
         chart.setTransparentCircleRadius(0);
 
-        chart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
+        chart.animateY(1400, Easing.EaseInOutQuad);
 
         // entry label styling
         chart.setEntryLabelColor(Color.BLACK);

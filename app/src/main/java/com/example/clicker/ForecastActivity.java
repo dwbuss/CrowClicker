@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -89,7 +90,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     public void renderData() {
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        //xAxis.setValueFormatter(new xFormatter());
+        xAxis.setValueFormatter(new XAxisDateFormatter());
         xAxis.setLabelRotationAngle(90f);
         xAxis.setDrawGridLines(false);
         LimitLine line = new LimitLine(cal.getTime().getTime());
@@ -97,8 +98,6 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         line.setLineWidth(2);
         line.setLabel(new SimpleDateFormat("E HH:mm").format(cal.getTime()));
         xAxis.addLimitLine(line);
-        xAxis.setDrawLimitLinesBehindData(false);
-
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.removeAllLimitLines();
@@ -113,7 +112,6 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         rightAxis.setDrawLimitLinesBehindData(false);
         rightAxis.setDrawLabels(false);
         rightAxis.setDrawGridLines(false);
-
     }
 
     private void setData() {
@@ -350,6 +348,14 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         @Override
         public String getBarLabel(BarEntry v) {
             return ((Float) v.getY()).intValue() + " " + v.getData();
+        }
+    }
+
+    class XAxisDateFormatter extends ValueFormatter {
+        @Override
+        public String getAxisLabel(float value, AxisBase axis) {
+            SimpleDateFormat f = new SimpleDateFormat("MM/dd h:mm a");
+            return f.format(new Date((long) value));
         }
     }
 }

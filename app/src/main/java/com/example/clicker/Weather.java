@@ -130,13 +130,11 @@ public class Weather {
         return new StringRequest(Request.Method.GET, url,
                                  response -> {
                                      try {
-                                         Log.i(TAG, response);
                                          JSONObject reader = new JSONObject(response);
                                          JSONArray dailyData = reader.getJSONArray("days");
 
                                          for (int y = 0; y < dailyData.length(); y++) {
                                              JSONObject day = dailyData.getJSONObject(y);
-                                             Log.d(TAG, day.toString());
                                              String dt = day.getString("datetime");
                                              sunPoints.add(sdf.parse(dt+" "+day.getString("sunrise")).getTime());
                                              sunPoints.add(sdf.parse(dt+" "+day.getString("sunset")).getTime());

@@ -126,7 +126,7 @@ public class Weather {
 
     private StringRequest pullPressure(String url, ClickerCallback callback, double lat, double lon) {
         Log.i(TAG, url);
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return new StringRequest(Request.Method.GET, url,
                                  response -> {
                                      try {
@@ -136,8 +136,10 @@ public class Weather {
 
                                          for (int y = 0; y < dailyData.length(); y++) {
                                              JSONObject day = dailyData.getJSONObject(y);
-                                             sunPoints.add(sdf.parse(day.getString("sunrise")).getTime());
-                                             sunPoints.add(sdf.parse(day.getString("sunset")).getTime());
+                                             Log.d(TAG, day.toString());
+                                             String dt = day.getString("datetime");
+                                             sunPoints.add(sdf.parse(dt+" "+day.getString("sunrise")).getTime());
+                                             sunPoints.add(sdf.parse(dt+" "+day.getString("sunset")).getTime());
                                              JSONArray hours = day.getJSONArray("hours");
                                              for (int i = 0; i < hours.length(); i++) {
                                                  JSONObject hour = hours.getJSONObject(i);

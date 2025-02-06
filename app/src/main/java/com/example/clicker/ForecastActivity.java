@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -95,6 +96,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         line.setLineWidth(2);
         line.setLabel(new SimpleDateFormat("E HH:mm").format(cal.getTime()));
         xAxis.addLimitLine(line);
+        xAxis.setDrawLimitLinesBehindData(false);
 
 
         YAxis leftAxis = mChart.getAxisLeft();
@@ -116,14 +118,19 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     private void setData() {
         XAxis xAxis = mChart.getXAxis();
         if (weather.sunPoints != null) {
+            Log.d(TAG, "Sun points: " + weather.sunPoints.size());
             weather.sunPoints.stream().forEach(point -> {
                 LimitLine limit = new LimitLine(point);
                 if (new SimpleDateFormat("a").format(new Date(point)).equalsIgnoreCase("PM")) {
                     limit.setLineColor(Color.BLACK);
-                    limit.setLabel("Set " + new SimpleDateFormat("E HH:mm").format(new Date(point)));
+                    String label = "Set " + new SimpleDateFormat("E HH:mm").format(new Date(point));
+                    Log.d(TAG, "PM Label: " + label);
+                    limit.setLabel(label);
                 } else {
                     limit.setLineColor(Color.RED);
-                    limit.setLabel("Rise " + new SimpleDateFormat("E HH:mm").format(new Date(point)));
+                    String label = "Rise " + new SimpleDateFormat("E HH:mm").format(new Date(point));
+                    Log.d(TAG, "AM Label: " + label);
+                    limit.setLabel(label);
                 }
                 limit.setLineWidth(2);
                 xAxis.addLimitLine(limit);

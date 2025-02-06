@@ -46,19 +46,6 @@ public class StatisticsActivity extends AppCompatActivity implements OnChartValu
     private PieChart chart;
     private List<Point> pointsForTrip;
 
-    public static int adjustColor(int color, float factor) {
-        int alpha = Color.alpha(color);
-        int red = Math.round(Color.red(color) * factor);
-        int green = Math.round(Color.green(color) * factor);
-        int blue = Math.round(Color.blue(color) * factor);
-
-        red = Math.min(red, 255);
-        green = Math.min(green, 255);
-        blue = Math.min(blue, 255);
-
-        return Color.argb(alpha, red, green, blue);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +58,6 @@ public class StatisticsActivity extends AppCompatActivity implements OnChartValu
 
     private void displayPieChart(Map<String, Long> data, int total) {
         chart = findViewById(R.id.baitChart);
-        //chart.setUsePercentValues(true);
         chart.getDescription().setEnabled(false);
 
         chart.setDragDecelerationFrictionCoef(0.95f);
@@ -99,12 +85,9 @@ public class StatisticsActivity extends AppCompatActivity implements OnChartValu
         chart.setCenterTextColor(Color.BLACK);
         chart.setCenterText("Total:\n" + total);
 
-        List<PieEntry> entries = data.entrySet().stream()
-                .map(entry -> {
-                         PieEntry pieEntry = new PieEntry(entry.getValue().floatValue(), entry.getKey());
-                         return pieEntry;
-                     }
-                ).collect(Collectors.toList());
+        List<PieEntry> entries = data.entrySet().stream().
+                map(entry -> new PieEntry(entry.getValue().floatValue(), entry.getKey())).
+                collect(Collectors.toList());
 
         PieDataSet dataSet = new PieDataSet(entries, "Catch Breakdown by Bait");
         Map<String, Integer> colorMap = generateBaitColors(data.keySet());
@@ -119,7 +102,6 @@ public class StatisticsActivity extends AppCompatActivity implements OnChartValu
         pdata.setHighlightEnabled(true);
 
         chart.setData(pdata);
-        //chart.highlightValues(null);
         chart.invalidate();
     }
 

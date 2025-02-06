@@ -38,8 +38,8 @@
             android:title="Lake"
             app:useSimpleSummaryProvider="true" />
         <com.example.clicker.DateRangePreference
-                android:key="my_date_range_preference"
-                android:defaultValue="2025-01-01,2025-01-31"/>
+            android:defaultValue="2025-01-01,2025-01-31"
+            android:key="my_date_range_preference" />
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/bait_array"

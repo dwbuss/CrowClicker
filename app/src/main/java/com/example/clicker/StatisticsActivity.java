@@ -2,6 +2,7 @@ package com.example.clicker;
 
 import static java.util.stream.Collectors.joining;
 
+import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -16,11 +17,13 @@ import com.example.clicker.objectbo.Point;
 import com.example.clicker.objectbo.PointsHelper;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.DefaultValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,30 +34,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class StatisticsActivity extends AppCompatActivity {
+public class StatisticsActivity extends AppCompatActivity implements OnChartValueSelectedListener {
 
     private static final String TAG = "StatisticsActivity";
     private ActivityStatisticsBinding binding;
     private PointsHelper pointsHelper;
     private PieChart chart;
-
-    public static int adjustColor(int color, float factor) {
-        int alpha = Color.alpha(color);
-        int red = Math.round(Color.red(color) * factor);
-        int green = Math.round(Color.green(color) * factor);
-        int blue = Math.round(Color.blue(color) * factor);
-
-        red = Math.min(red, 255);
-        green = Math.min(green, 255);
-        blue = Math.min(blue, 255);
-
-        return Color.argb(alpha, red, green, blue);
-    }
+    private List<Point> pointsForTrip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +58,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private void displayPieChart(Map<String, Long> data, int total) {
         chart = findViewById(R.id.baitChart);
-        //chart.setUsePercentValues(true);
         chart.getDescription().setEnabled(false);
-
         chart.setDragDecelerationFrictionCoef(0.95f);
 
         chart.setRotationAngle(0);
@@ -86,19 +74,20 @@ public class StatisticsActivity extends AppCompatActivity {
 
         chart.animateY(1400, Easing.EaseInOutQuad);
 
+        // add a selection listener
+        chart.setOnChartValueSelectedListener(this);
+
         // entry label styling
         chart.setEntryLabelColor(Color.BLACK);
         chart.setEntryLabelTextSize(12f);
 
         chart.setCenterTextColor(Color.BLACK);
         chart.setCenterText("Total:\n" + total);
+        chart.setHardwareAccelerationEnabled(true);
 
         List<PieEntry> entries = data.entrySet().stream()
-                .map(entry -> {
-                         PieEntry pieEntry = new PieEntry(entry.getValue().floatValue(), entry.getKey());
-                         return pieEntry;
-                     }
-                ).collect(Collectors.toList());
+                .map(entry -> new PieEntry(entry.getValue().floatValue(), entry.getKey()))
+                .collect(Collectors.toList());
 
         PieDataSet dataSet = new PieDataSet(entries, "Catch Breakdown by Bait");
         Map<String, Integer> colorMap = generateBaitColors(data.keySet());
@@ -110,28 +99,13 @@ public class StatisticsActivity extends AppCompatActivity {
         pdata.setValueFormatter(new DefaultValueFormatter(0));
         pdata.setValueTextSize(12f);
         pdata.setValueTextColor(Color.BLACK);
+        pdata.setHighlightEnabled(true);
 
         chart.setData(pdata);
-        chart.highlightValues(null);
         chart.invalidate();
     }
 
     private Map<String, Integer> generateBaitColors(Set<String> keys) {
-
-        List<Integer> colorList = new ArrayList<>();
-        // Add some predefined colors
-        for (int c : ColorTemplate.JOYFUL_COLORS)
-            colorList.add(c);
-        for (int c : ColorTemplate.VORDIPLOM_COLORS)
-            colorList.add(c);
-        for (int c : ColorTemplate.LIBERTY_COLORS)
-            colorList.add(c);
-        for (int c : ColorTemplate.COLORFUL_COLORS)
-            colorList.add(c);
-        for (int c : ColorTemplate.PASTEL_COLORS)
-            colorList.add(c);
-
-        Log.d(TAG, "Color list size: " + colorList.size());
 
         String[] baits = getResources().getStringArray(R.array.bait_array);
         TypedArray baitColors = getResources().obtainTypedArray(R.array.bait_colors);
@@ -144,31 +118,9 @@ public class StatisticsActivity extends AppCompatActivity {
 
         Map<String, Integer> colorMap = new LinkedHashMap<>(keys.size());
         for (String key : keys) {
-            String[] parts = key.split(":");
-            String bait = parts[0];
-            String contactType = parts[1];
-
-            Log.d(TAG, "Bait: " + bait + " Contact: " + contactType);
-
+            String bait = key;
             int baseColor = colors.get(bait.isBlank() ? "Unknown" : bait).intValue();
-
-            // Generate shades for CATCH, FOLLOW, and CONTACT
-            int catchColor = baseColor;
-            int followColor = adjustColor(baseColor, 0.85f); // Slightly darker
-            int contactColor = adjustColor(baseColor, 0.7f); // Even darker
-
-            // Assign colors based on contact type
-            switch (contactType) {
-                case "CATCH":
-                    colorMap.put(key, catchColor);
-                    break;
-                case "FOLLOW":
-                    colorMap.put(key, followColor);
-                    break;
-                case "CONTACT":
-                    colorMap.put(key, contactColor);
-                    break;
-            }
+            colorMap.put(key, baseColor);
         }
         return colorMap;
     }
@@ -204,38 +156,37 @@ public class StatisticsActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         Calendar[] trip_range = DateRangePreference.parseDateRange(prefs.getString("my_date_range_preference", "2020-01-01,2020-12-31"));
-
-        List<Point> points = pointsHelper.getPointsForTrip(trip_range, prefs.getString("Lake", ""));
+        pointsForTrip = pointsHelper.getPointsForTrip(trip_range, prefs.getString("Lake", ""));
 
         // Top anglers by inches caught
-        String max = maxLen(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        String max = maxLen(pointsForTrip).entrySet().stream().limit(10).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
         binding.maxLen.setText(max);
 
         // Top anglers by average caught
-        String averageLen = average(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        String averageLen = average(pointsForTrip).entrySet().stream().limit(10).map(entry -> String.format("%s: %.2f\"", entry.getKey(), entry.getValue())).collect(joining("\n"));
         binding.averageLen.setText(averageLen);
 
         // Top anglers by catches
-        String mostCatches = mostCatches(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        String mostCatches = mostCatches(pointsForTrip).entrySet().stream().limit(10).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
         binding.mostCatches.setText(mostCatches);
 
         // Top anglers who lost fish
-        String mostLosses = mostLosses(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        String mostLosses = mostLosses(pointsForTrip).entrySet().stream().limit(10).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
         binding.mostLosses.setText(mostLosses);
 
         // Top anglers by follows
-        String mostFollows = mostFollows(points).entrySet().stream().limit(10).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
+        String mostFollows = mostFollows(pointsForTrip).entrySet().stream().limit(10).map(entry -> String.format("%s: %d", entry.getKey(), entry.getValue())).collect(joining("\n"));
         binding.mostFollows.setText(mostFollows);
 
         // Catches only
         // Map<String, Long> caught_baits = points.stream().filter(point -> point.getContactType().equals(ContactType.CATCH.toString())).collect(Collectors.groupingBy(point -> point.getBait().trim(), Collectors.counting()));
 
         // Just bait, all contacts combined
-        // Map<String, Long> all_contact_baits = points.stream().collect(Collectors.groupingBy(point -> point.getBait().trim(), Collectors.counting()));
+        Map<String, Long> all_contact_baits = pointsForTrip.stream().collect(Collectors.groupingBy(point -> point.getBait().trim(), Collectors.counting()));
 
         // Bait and Contact
-        Map<String, Long> baits = points.stream().collect(Collectors.groupingBy(point -> point.getBait().trim() + ":" + point.getContactType().trim(), TreeMap::new, Collectors.counting()));
-        displayPieChart(baits, points.size());
+        // Map<String, Long> baits = points.stream().collect(Collectors.groupingBy(point -> point.getBait().trim() + ":" + point.getContactType().trim(), TreeMap::new, Collectors.counting()));
+        displayPieChart(all_contact_baits, pointsForTrip.size());
     }
 
     private Map<String, Double> average(List<Point> points) {
@@ -297,5 +248,38 @@ public class StatisticsActivity extends AppCompatActivity {
                 .sorted(Map.Entry.<String, Long>comparingByValue()
                                 .reversed()).forEachOrdered(e -> topFollows.put(e.getKey(), e.getValue()));
         return topFollows;
+    }
+
+    @Override
+    public void onValueSelected(Entry e, Highlight h) {
+        if (e == null)
+            return;
+        PieEntry se = (PieEntry) e;
+        String bait = se.getLabel();
+
+        Map<String, Long> baits = pointsForTrip.stream().filter(point -> {
+            if (bait.isBlank())
+                return point.getBait().isBlank();
+            return point.getBait().equals(bait);
+        }).collect(Collectors.groupingBy(point -> point.getContactType().trim(), Collectors.counting()));
+
+        // create a dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(bait.isBlank() ? "Unknown Bait" : bait + " Breakdown");
+
+        StringBuilder baitBreakdown = new StringBuilder();
+        for (Map.Entry<String, Long> entry : baits.entrySet()) {
+            baitBreakdown.append(entry.getKey()).append(" = ").append(entry.getValue()).append("\n");
+        }
+
+        builder.setMessage(baitBreakdown.toString());
+        builder.setPositiveButton("RETURN", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public void onNothingSelected() {
+
     }
 }

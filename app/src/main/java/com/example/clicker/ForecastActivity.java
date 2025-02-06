@@ -74,6 +74,8 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         mChart.setDrawBarShadow(false);
         mChart.setDrawBarShadow(false);
         mChart.setHighlightFullBarEnabled(false);
+        mChart.getDescription().setEnabled(false);
+        mChart.setHardwareAccelerationEnabled(true);
         mChart.setDrawOrder(new CombinedChart.DrawOrder[]{
                 CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE, CombinedChart.DrawOrder.CANDLE
         });

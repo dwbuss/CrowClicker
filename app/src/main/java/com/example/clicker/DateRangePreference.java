@@ -18,11 +18,11 @@ import java.util.Locale;
 public class DateRangePreference extends Preference {
 
     public static final String DATE_RANGE_FORMAT = "yyyy-MM-dd";
+    private final SimpleDateFormat dateFormat;
     private String startDate;
     private String endDate;
-    private Calendar startCalendar;
-    private Calendar endCalendar;
-    private final SimpleDateFormat dateFormat;
+    private final Calendar startCalendar;
+    private final Calendar endCalendar;
 
     public DateRangePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -30,6 +30,36 @@ public class DateRangePreference extends Preference {
         endCalendar = Calendar.getInstance();
         dateFormat = new SimpleDateFormat(DATE_RANGE_FORMAT, Locale.US);
         setTitle("Date Range");
+    }
+
+    public static final Calendar[] parseDateRange(String dateRange) {
+        String[] dates = dateRange.split(",");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_RANGE_FORMAT, Locale.US);
+        Calendar[] calendars = new Calendar[2];
+        calendars[0] = Calendar.getInstance(Locale.US);
+        calendars[1] = Calendar.getInstance(Locale.US);
+
+        try {
+            Date start = dateFormat.parse(dates[0]);
+            Date end = dateFormat.parse(dates[1]);
+
+            // Update start calendar
+            calendars[0].setTime(start);
+            calendars[0].set(Calendar.HOUR_OF_DAY, 0);
+            calendars[0].set(Calendar.MINUTE, 0);
+            calendars[0].set(Calendar.SECOND, 0);
+            calendars[0].set(Calendar.MILLISECOND, 0);
+
+            // Update end calendar
+            calendars[1].setTime(end);
+            calendars[1].set(Calendar.HOUR_OF_DAY, 23);
+            calendars[1].set(Calendar.MINUTE, 59);
+            calendars[1].set(Calendar.SECOND, 59);
+            calendars[1].set(Calendar.MILLISECOND, 999);
+        } catch (ParseException e) {
+            throw (new RuntimeException("Invalid date format", e));
+        }
+        return calendars;
     }
 
     @Override
@@ -136,36 +166,5 @@ public class DateRangePreference extends Preference {
         } catch (ParseException e) {
             setSummary("Invalid date format");
         }
-    }
-
-    public static final Calendar[] parseDateRange(String dateRange) {
-        String[] dates = dateRange.split(",");
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_RANGE_FORMAT, Locale.US);
-        Calendar[] calendars = new Calendar[2];
-        calendars[0] = Calendar.getInstance(Locale.US);
-        calendars[1] = Calendar.getInstance(Locale.US);
-
-        try {
-            Date start = dateFormat.parse(dates[0]);
-            Date end = dateFormat.parse(dates[1]);
-
-            // Update start calendar
-            calendars[0].setTime(start);
-            calendars[0].set(Calendar.HOUR_OF_DAY, 0);
-            calendars[0].set(Calendar.MINUTE, 0);
-            calendars[0].set(Calendar.SECOND, 0);
-            calendars[0].set(Calendar.MILLISECOND, 0);
-
-            // Update end calendar
-            calendars[1].setTime(end);
-            calendars[1].set(Calendar.HOUR_OF_DAY, 23);
-            calendars[1].set(Calendar.MINUTE, 59);
-            calendars[1].set(Calendar.SECOND, 59);
-            calendars[1].set(Calendar.MILLISECOND, 999);
-        }
-        catch (ParseException e) {
-            throw ( new RuntimeException("Invalid date format", e));
-        }
-        return calendars;
     }
 }

@@ -3,4 +3,17 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <!-- Bait Colors -->
+    <color name="blades_color">#009688</color>
+    <color name="rubber_color">#F44336</color>
+    <color name="tits_color">#8BC34A</color>
+    <color name="jerk_color">#D2B48C</color>
+    <color name="crank_color">#2196F3</color>
+    <color name="swim_color">#FFD700</color>
+    <color name="glide_color">#FFA07A</color>
+    <color name="top_water_color">#9D75E6</color>
+    <color name="jig_color">#76E8E8</color>
+    <color name="spoon_color">#3F51B5</color>
+    <color name="flasher_color">#BAD8BA</color>
 </resources>

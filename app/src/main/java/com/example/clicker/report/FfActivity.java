@@ -28,7 +28,7 @@ public class FfActivity extends AppCompatActivity {
 
         List<List<Object>> ffData = (List<List<Object>>) getIntent().getSerializableExtra("ffstandings");
 
-        mTableLayout = (TableLayout) findViewById(R.id.tableInvoices);
+        mTableLayout = findViewById(R.id.tableInvoices);
         mTableLayout.setStretchAllColumns(true);
 
         loadData(ffData);

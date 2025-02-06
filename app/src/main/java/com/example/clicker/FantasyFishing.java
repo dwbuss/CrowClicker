@@ -55,12 +55,12 @@ public final class FantasyFishing {
                     });
                 boolean isVirgin = false;
                 if (!alreadyVirgin.get()) {
-                    isVirgin = spotName.contains("(") ? spotName.substring(spotName.indexOf('(')).toUpperCase().contains("V") : false;
+                    isVirgin = spotName.contains("(") && spotName.substring(spotName.indexOf('(')).toUpperCase().contains("V");
                 } else {
                     isVirgin = false;
                 }
-                boolean isFranchise = spotName.contains("(") ? spotName.substring(spotName.indexOf('(')).toUpperCase().contains("F") : false;
-                boolean isCommunity = spotName.contains("(") ? spotName.substring(spotName.indexOf('(')).toUpperCase().contains("C") : false;
+                boolean isFranchise = spotName.contains("(") && spotName.substring(spotName.indexOf('(')).toUpperCase().contains("F");
+                boolean isCommunity = spotName.contains("(") && spotName.substring(spotName.indexOf('(')).toUpperCase().contains("C");
                 anglers.get(header.get(i1)).add(new FfSpot(spotName, isVirgin, isFranchise, isCommunity));
             }
         }
@@ -91,7 +91,6 @@ public final class FantasyFishing {
         // date, angler, size , location, owner , ... anglers
         int columnOffset = 5;
         if (anglers == null || anglers.isEmpty()) return new ArrayList<>();
-        ;
         int bonusColumn = columnOffset + anglers.size();
         String[] newRow = new String[bonusColumn + 1];
         for (int i = columnOffset; i < newRow.length; i++)
@@ -105,10 +104,7 @@ public final class FantasyFishing {
         if (isNorthern) newRow[bonusColumn] = newRow[bonusColumn] + " Northern";
         if (lifeVest) newRow[bonusColumn] = newRow[bonusColumn] + " LifeVest";
         boolean quarterBonus;
-        if (size.endsWith(".25") || size.endsWith(".75")) quarterBonus = true;
-        else {
-            quarterBonus = false;
-        }
+        quarterBonus = size.endsWith(".25") || size.endsWith(".75");
         Double points = Double.parseDouble(size);
         if (quarterBonus) points = points - .25;
         // load weather on push and reload ff data on pull

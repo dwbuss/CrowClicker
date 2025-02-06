@@ -347,9 +347,13 @@ public final class Point implements Parcelable {
         this.lake = lake;
     }
 
-    public String getSpecies() { return species; }
+    public String getSpecies() {
+        return species;
+    }
 
-    public void setSpecies(String species) { this.species = species; }
+    public void setSpecies(String species) {
+        this.species = species;
+    }
 
     public String getFishSize() {
         return fishSize;
@@ -359,9 +363,13 @@ public final class Point implements Parcelable {
         this.fishSize = fishSize;
     }
 
-    public String getGirth() { return girth; }
+    public String getGirth() {
+        return girth;
+    }
 
-    public void setGirth(String girth) { this.girth = girth; }
+    public void setGirth(String girth) {
+        this.girth = girth;
+    }
 
     public String getNotes() {
         return notes;
@@ -466,7 +474,7 @@ public final class Point implements Parcelable {
         return id + "\t" + name + "\t" + lon + "\t" + lat + "\t" + osLocalizedDateFormat.format(timeStamp) + "\t" + contactType + "\t" +
                 airTemp + "\t" + waterTemp + "\t" + bait + "\t" + fishSize + "\t" + notes + "\t" +
                 windSpeed + "\t" + windDir + "\t" + cloudCover + "\t" + dewPoint + "\t" +
-                pressure + "\t" + (humidity.isEmpty() ? " " : humidity) + "\t" + lake + "\t" + (species.isEmpty() ? " ":species) + "\t" + (girth.isEmpty() ? " " : girth);
+                pressure + "\t" + (humidity.isEmpty() ? " " : humidity) + "\t" + lake + "\t" + (species.isEmpty() ? " " : species) + "\t" + (girth.isEmpty() ? " " : girth);
     }
 
     private String getSinglularModifier(String bait) {
@@ -528,7 +536,8 @@ public final class Point implements Parcelable {
         if (sheetId <= 0)
             sheetId = getId();
         Solunar solunar = new Solunar();
-        Calendar cal = Calendar.getInstance(Locale.US).getInstance();
+        Calendar.getInstance(Locale.US);
+        Calendar cal = Calendar.getInstance();
         cal.setTime(getTimeStamp());
         solunar.populate(lon, lat, cal);
         return List.of(

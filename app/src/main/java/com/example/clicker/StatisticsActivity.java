@@ -59,7 +59,6 @@ public class StatisticsActivity extends AppCompatActivity implements OnChartValu
     private void displayPieChart(Map<String, Long> data, int total) {
         chart = findViewById(R.id.baitChart);
         chart.getDescription().setEnabled(false);
-
         chart.setDragDecelerationFrictionCoef(0.95f);
 
         chart.setRotationAngle(0);
@@ -84,6 +83,7 @@ public class StatisticsActivity extends AppCompatActivity implements OnChartValu
 
         chart.setCenterTextColor(Color.BLACK);
         chart.setCenterText("Total:\n" + total);
+        chart.setHardwareAccelerationEnabled(true);
 
         List<PieEntry> entries = data.entrySet().stream().
                 map(entry -> new PieEntry(entry.getValue().floatValue(), entry.getKey())).
@@ -257,10 +257,14 @@ public class StatisticsActivity extends AppCompatActivity implements OnChartValu
         PieEntry se = (PieEntry) e;
         String bait = se.getLabel();
 
-        Map<String, Long> baits = pointsForTrip.stream().filter(point -> point.getBait().equals(bait)).collect(Collectors.groupingBy(point -> point.getContactType().trim(), Collectors.counting()));
+        Map<String, Long> baits = pointsForTrip.stream().filter(point -> {
+            if (bait.isBlank())
+                return point.getBait().isBlank();
+            return point.getBait().equals(bait); }).collect(Collectors.groupingBy(point -> point.getContactType().trim(), Collectors.counting()));
+
         // create a dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(bait + " Breakdown");
+        builder.setTitle(bait.isBlank() ? "Unknown Bait" : bait + " Breakdown");
 
         StringBuilder baitBreakdown = new StringBuilder();
         for (Map.Entry<String, Long> entry : baits.entrySet()) {

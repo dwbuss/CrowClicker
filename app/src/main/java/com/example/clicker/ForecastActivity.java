@@ -33,6 +33,7 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -88,7 +89,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
     public void renderData() {
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setValueFormatter(new xFormatter());
+        //xAxis.setValueFormatter(new xFormatter());
         xAxis.setLabelRotationAngle(90f);
         xAxis.setDrawGridLines(false);
         LimitLine line = new LimitLine(cal.getTime().getTime());
@@ -190,9 +191,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         pressuerSet.setFormLineWidth(1f);
         pressuerSet.setFormSize(15.0f);
         pressuerSet.setDrawValues(true);
-        pressuerSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            return String.format("%.2f", (float) (value * .029529980164712));
-        });
+        pressuerSet.setValueFormatter(new PressureFormatter());
 
         LineDataSet moonSet = new LineDataSet(moonValues, "Moon Data");
         moonSet.setDrawIcons(false);
@@ -214,19 +213,13 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         BarDataSet windSet = new BarDataSet(windValues, "Wind");
         windSet.setValueTextColor(Color.rgb(60, 220, 78));
         windSet.setValueTextSize(10f);
-        windSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            BarEntry v = windSet.getEntryForIndex(dataSetIndex);
-            return ((Float) value).intValue() + " " + v.getData();
-        });
+        windSet.setValueFormatter(new WindFormatter());
         windSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
 
         BarDataSet gustSet = new BarDataSet(guestValues, "Gust");
         gustSet.setValueTextColor(Color.rgb(61, 165, 255));
         gustSet.setValueTextSize(10f);
-        gustSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            BarEntry v = gustSet.getEntryForIndex(dataSetIndex);
-            return ((Float) value).intValue() + " " + v.getData();
-        });
+        gustSet.setValueFormatter(new WindFormatter());
         gustSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
 
         CandleData candleData = new CandleData();
@@ -343,6 +336,20 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
                                                                          }
                                                                      }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), DateFormat.is24HourFormat(ForecastActivity.this));
             timePickerDialog.show();
+        }
+    }
+
+    class PressureFormatter extends ValueFormatter {
+        @Override
+        public String getCandleLabel(CandleEntry entry) {
+            return String.format("%.2f", (float) (entry.getY() * .029529980164712));
+        }
+    }
+
+    class WindFormatter extends ValueFormatter {
+        @Override
+        public String getBarLabel(BarEntry v) {
+            return ((Float) v.getY()).intValue() + " " + v.getData();
         }
     }
 }

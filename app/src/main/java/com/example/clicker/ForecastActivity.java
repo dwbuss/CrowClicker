@@ -95,6 +95,7 @@ public class ForecastActivity extends AppCompatActivity implements View.OnClickL
         xAxis.setValueFormatter(new XAxisDateFormatter());
         xAxis.setLabelRotationAngle(90f);
         xAxis.setDrawGridLines(false);
+
         LimitLine line = new LimitLine(cal.getTime().getTime());
         line.setLineColor(Color.BLUE);
         line.setLineWidth(2);

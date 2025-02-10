@@ -642,146 +642,138 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ffLayout"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="100">
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/ffLbl"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="50"
-                    android:autoSizeMaxTextSize="18sp"
-                    android:autoSizeMinTextSize="12sp"
-                    android:autoSizeTextType="uniform"
-                    android:ellipsize="end"
-                    android:gravity="center|end"
-                    android:maxLines="1"
-                    android:text="FF Spot"
-                    android:textColor="#000000"
-                    android:textStyle="bold" />
-
-                <Spinner
-                    android:id="@+id/ffSpots"
-                    android:layout_width="200dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center|center"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="50"
-                    android:spinnerMode="dialog" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="100">
-
-                <TextView
-                    android:id="@+id/ffOwnerLbl"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="50"
-                    android:autoSizeMaxTextSize="18sp"
-                    android:autoSizeMinTextSize="12sp"
-                    android:autoSizeTextType="uniform"
-                    android:ellipsize="end"
-                    android:gravity="center|end"
-                    android:maxLines="1"
-                    android:text="Team"
-                    android:textColor="#000000"
-                    android:textStyle="bold" />
-
-                <Spinner
-                    android:id="@+id/ffOwnerSpots"
-                    android:layout_width="200dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="50"
-                    android:spinnerMode="dialog" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="75">
-
-                <!--
-                <TextView
-                    android:id="@+id/ffFiller"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:autoSizeTextType="uniform"
-                    android:autoSizeMinTextSize="12sp"
-                    android:autoSizeMaxTextSize="18sp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:layout_weight="25"
-                    android:gravity="center|center"
-                    android:text=""
-                    android:textStyle="bold" />
-    -->
-                <CheckBox
-                    android:id="@+id/video"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="25"
-                    android:autoSizeMaxTextSize="18sp"
-                    android:autoSizeMinTextSize="12sp"
-                    android:autoSizeTextType="uniform"
-                    android:checked="false"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="Video" />
-
-                <CheckBox
-                    android:id="@+id/vest"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="25"
-                    android:autoSizeMaxTextSize="18sp"
-                    android:autoSizeMinTextSize="12sp"
-                    android:autoSizeTextType="uniform"
-                    android:checked="false"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="Life Vest" />
-
-                <CheckBox
-                    android:id="@+id/northern"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="25"
-                    android:autoSizeMaxTextSize="18sp"
-                    android:autoSizeMinTextSize="12sp"
-                    android:autoSizeTextType="uniform"
-                    android:checked="false"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="40&quot;+ Northern" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_margin="15dp"
-                    android:background="@android:color/darker_gray" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
+
+                    <TextView
+                        android:id="@+id/ffLbl"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="50"
+                        android:autoSizeMaxTextSize="18sp"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeTextType="uniform"
+                        android:ellipsize="end"
+                        android:gravity="center|end"
+                        android:maxLines="1"
+                        android:text="FF Spot"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/ffSpots"
+                        android:layout_width="200dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center|center"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="50"
+                        android:spinnerMode="dialog" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
+
+                    <TextView
+                        android:id="@+id/ffOwnerLbl"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="50"
+                        android:autoSizeMaxTextSize="18sp"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeTextType="uniform"
+                        android:ellipsize="end"
+                        android:gravity="center|end"
+                        android:maxLines="1"
+                        android:text="Team"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/ffOwnerSpots"
+                        android:layout_width="200dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="50"
+                        android:spinnerMode="dialog" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="75">
+
+                    <CheckBox
+                        android:id="@+id/video"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="25"
+                        android:autoSizeMaxTextSize="18sp"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeTextType="uniform"
+                        android:checked="false"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="Video" />
+
+                    <CheckBox
+                        android:id="@+id/vest"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="25"
+                        android:autoSizeMaxTextSize="18sp"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeTextType="uniform"
+                        android:checked="false"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="Life Vest" />
+
+                    <CheckBox
+                        android:id="@+id/northern"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="25"
+                        android:autoSizeMaxTextSize="18sp"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeTextType="uniform"
+                        android:checked="false"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="40&quot;+ Northern" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_margin="15dp"
+                        android:background="@android:color/darker_gray" />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout

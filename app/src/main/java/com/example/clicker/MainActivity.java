@@ -484,7 +484,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((FloatingActionButton) findViewById(R.id.layersButton)).show();
         ((FloatingActionButton) findViewById(R.id.tripReportButton)).show();
         ((FloatingActionButton) findViewById(R.id.statsButton)).show();
-        ((FloatingActionButton) findViewById(R.id.ffButton)).show();
+        if (prefs.getBoolean("ViewFF", true))
+            ((FloatingActionButton) findViewById(R.id.ffButton)).show();
     }
 
     private void closeMenu() {

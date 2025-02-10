@@ -1,5 +1,6 @@
 package com.example.clicker.report;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -25,7 +26,7 @@ public class FfActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityFfBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         List<List<Object>> ffData = (List<List<Object>>) getIntent().getSerializableExtra("ffstandings");
 
         mTableLayout = findViewById(R.id.tableInvoices);

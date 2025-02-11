@@ -275,6 +275,7 @@
             android:layout_gravity="center"
             android:layout_margin="4dp"
             android:onClick="ffStandings"
+            android:visibility="gone"
             app:backgroundTint="#CFCFCF"
             app:fabSize="mini"
             app:srcCompat="@android:drawable/ic_menu_compass" />

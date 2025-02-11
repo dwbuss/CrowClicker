@@ -85,6 +85,9 @@ public class PointActivity extends AppCompatActivity {
         binding = ActivityPointBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         point = getIntent().getParcelableExtra("point");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        binding.ffLayout.setVisibility(prefs.getBoolean("ViewFF", true) ? View.VISIBLE : View.GONE);
+
         List<List<Object>> ffData = (List<List<Object>>) getIntent().getSerializableExtra("ffdata");
         List<List<Object>> ffStandings = (List<List<Object>>) getIntent().getSerializableExtra("ffstandings");
         ff = new FantasyFishing();
@@ -92,6 +95,7 @@ public class PointActivity extends AppCompatActivity {
         ff.loadAnglers(ffData);
         ffLocations = ff.getLocations();
         ffOwners = ff.getOwners();
+
         binding.btnDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

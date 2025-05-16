@@ -503,7 +503,7 @@ public final class Point implements Parcelable {
     private String getFishSizeFormatted() {
         if (fishSize.trim().isEmpty())
             return "";
-        return fishSize.trim()+"\" ";
+        return fishSize.trim() + "\" ";
     }
 
     public List<List<Object>> getSheetBody() {

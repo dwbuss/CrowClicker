@@ -78,6 +78,7 @@ public class PointTest {
         Point point = new Point(csvRecord);
         assertEquals("Dan caught a Muskellunge on Blades.\nTypical pike!\n8:04 pm\nhttps://maps.google.com/maps?q=49.216016,-93.858247", point.getMessage("8:04 pm"));
     }
+
     @Test
     public void testCreatePoint() throws ParseException {
         String csvRecord = "237\tDan\t-93.85824702680111\t49.21601569265263\t09-02-2021 09:11 AM\tFOLLOW\t61.5°\t\tdusa\t\t\t'''''9.72 mph\tSE\t0.99\t54.06°\t1017.2 mb\t0.77\tCrow\t \t ";

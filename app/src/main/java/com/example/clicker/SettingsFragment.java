@@ -36,7 +36,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
         Preference versionPreference = findPreference("pref_version");
-        String versionName = BuildConfig.VERSION_NAME;
+        String versionName = String.format("%s %s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE);
         versionPreference.setSummary(String.format(versionPreference.getSummary().toString(), versionName));
 
         findPreference("scan_for_buttons").setOnPreferenceClickListener(preference -> scanForButtons());

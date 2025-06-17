@@ -62,14 +62,14 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.1'
     implementation 'androidx.preference:preference:1.2.1'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'com.google.android.gms:play-services-maps:19.2.0'
     implementation 'commons-io:commons-io:2.19.0'
     implementation 'org.shredzone.commons:commons-suncalc:3.11'
-    implementation 'org.locationtech.proj4j:proj4j:1.4.0'
+    implementation 'org.locationtech.proj4j:proj4j:1.4.1'
     implementation 'com.google.api-client:google-api-client:2.8.0'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.39.0'
     implementation 'com.google.apis:google-api-services-sheets:v4-rev20230227-2.0.0'

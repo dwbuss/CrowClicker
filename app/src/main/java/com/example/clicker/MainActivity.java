@@ -833,7 +833,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         dialog.setItems(items, (dialogInterface, mapType) -> mMap.setMapType(mapType));
         dialog.show();
     }
+    public void showWeather(View view) {
+        WeatherMapFragment fragment = new WeatherMapFragment();
 
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.mainFragmentContainer, fragment)  // ensure this matches your container ID
+                .addToBackStack(null)
+                .commit();
+    }
     @SuppressLint("MissingPermission")
     public void refreshCounts() {
 

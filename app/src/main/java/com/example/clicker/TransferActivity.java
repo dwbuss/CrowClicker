@@ -237,7 +237,7 @@ public class TransferActivity extends AppCompatActivity {
     }
 
     public void downloadApk(View view) {
-        String url = "https://drive.google.com/uc?id=1ZtuheA8KUsXiHFJuSrBsDKZRGU2ZpyG2&export=download";
+        String url = "https://shawanodentalclinic.com/crow-clicker.apk";
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         startActivity(intent);
     }

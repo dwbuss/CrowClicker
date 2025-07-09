@@ -5,14 +5,14 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.11.0'
-        classpath "io.objectbox:objectbox-gradle-plugin:3.5.1"
+        classpath libs.gradle
+        classpath libs.objectbox.gradle.plugin
     }
 }
 
 plugins {
     alias(libs.plugins.android.application) apply false
-    id 'com.google.gms.google-services' version '4.4.2' apply false
+    id 'com.google.gms.google-services' version '4.4.3' apply false
 }
 
 

@@ -849,28 +849,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void addRadarOverlay(String time) {
-        TileProvider tileProvider = new UrlTileProvider(256, 256) {
-            @Override
-            public URL getTileUrl(int x, int y, int zoom) {
-                try {
-                    String url = String.format(Locale.US,
-                            "https://tilecache.rainviewer.com/v2/radar/%s/256/%d/%d/%d/2/1_1.png",
-                            time, zoom, x, y);
-                    return new URL(url);
-                } catch (MalformedURLException e) {
-                    return null;
-                }
-            }
-        };
-
-        mMap.addTileOverlay(new TileOverlayOptions()
-                .tileProvider(tileProvider)
-                .transparency(0f)
-                .zIndex(10));
-    }
-
-
     private void addCrowLayer() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean locationLocal = prefs.getBoolean("MapLocation", true);

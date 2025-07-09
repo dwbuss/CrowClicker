@@ -17,26 +17,16 @@ json = "20250517"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-appcompat = "1.7.1"
 lifecycleViewmodelKtx = "2.9.1"
 material = "1.12.0"
-constraintlayout = "2.2.1"
 mpandroidchart = "v3.1.0"
-navigationFragment = "2.9.1"
-navigationUi = "2.9.1"
-legacySupportV4 = "1.0.0"
 objectboxGradlePlugin = "4.3.0"
 okhttp = "5.1.0"
 playServicesMapsVersion = "19.2.0"
 preference = "1.2.1"
 proj4j = "1.4.1"
-recyclerview = "1.4.0"
-activity = "1.10.1"
-playServicesMaps = "19.2.0"
-playServicesOssLicenses = "17.2.0"
 ossLicenses = "0.10.6"
 playServicesLocation = "21.3.0"
-firebaseAuth = "23.2.1"
 rules = "1.6.1"
 runner = "1.6.2"
 swiperefreshlayout = "1.1.0"
@@ -60,25 +50,15 @@ json = { module = "org.json:json", version.ref = "json" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
-navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 objectbox-gradle-plugin = { module = "io.objectbox:objectbox-gradle-plugin", version.ref = "objectboxGradlePlugin" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 play-services-maps-v1920 = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMapsVersion" }
 preference = { module = "androidx.preference:preference", version.ref = "preference" }
 proj4j = { module = "org.locationtech.proj4j:proj4j", version.ref = "proj4j" }
-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
-play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
-play-services-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
-firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 rules = { module = "androidx.test:rules", version.ref = "rules" }
 runner = { module = "androidx.test:runner", version.ref = "runner" }
 swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }

@@ -27,7 +27,7 @@ android {
         compileSdk 34
         targetSdkVersion 34
         versionCode 4
-        versionName String.format("%s  %s", "4.2", new Date().format('yyyy-MM-dd'))
+        versionName String.format("%s  %s", "5.0", new Date().format('yyyy-MM-dd'))
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [mapApiKey: mapProperties['google_maps_api_key'], googleCreds: mapProperties['google_creds'], weatherKey: mapProperties['weather.key']]
     }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "664112796339",
+    "project_id": "crowclicker-ac271",
+    "storage_bucket": "crowclicker-ac271.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:664112796339:android:fbb543b1d27c6eb1c316c6",
+        "android_client_info": {
+          "package_name": "com.example.clicker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlG0KWSCdcVQ-VtPbzrD8BI58mTHx8ITY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

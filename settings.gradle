@@ -1,2 +1,23 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        gradlePluginPortal()
+    }
+    plugins {
+        id 'com.geekorum.gms.oss-licenses-plugin' version '0.10.6' apply false
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        gradlePluginPortal()
+    }
+}
+
 include ':app'
 rootProject.name='Clicker'

@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
 import android.os.storage.StorageManager;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -56,6 +57,12 @@ import com.example.clicker.objectbo.Point_;
 import com.example.clicker.objectbo.PointsHelper;
 import com.example.clicker.report.FfActivity;
 import com.example.clicker.report.ReportActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -70,6 +77,13 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.io.Serializable;
@@ -78,23 +92,31 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
 import io.objectbox.query.QueryBuilder;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private DatabaseReference databaseRef;
+    private FusedLocationProviderClient fusedLocationClient;
+    private String userId;
+    private FirebaseAuth auth;
+    private DatabaseReference usersRef;
+    private final Map<String, Marker> userMarkers = new HashMap<>();
     private static final String TAG = "MainActivity";
     private static final String KWS_SEARCH = "wakeup";
     private static final String LOST = "lost";
     private static final String FOLLOW = "follow";
     private static final String CATCH = "catch";
     private static final String MENU_SEARCH = "menu";
-    /* Keyword we are looking for to activate menu */
     private static final String KEYPHRASE = "crow clicker";
     private final static String default_notification_channel_id = "default";
     private static final int pic_id = 123;
@@ -102,18 +124,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final static int ALL_PERMISSIONS_RESULT = 101;
     private final List<Point> pointList = new ArrayList<>();
     private final float zoomLevel = 10;
-    private final ActivityResultLauncher<String[]> permissionRequest =
-            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
-                result.entrySet().stream()
-                        .forEach(stringBooleanEntry -> Log.i(TAG, String.format("Permission request %s was %s.",
-                                                                                stringBooleanEntry.getKey(),
-                                                                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
-            });
     View mapView;
     OvershootInterpolator interpolator = new OvershootInterpolator();
     SupportMapFragment mapFragment;
     TileOverlay satelliteOptions;
     FantasyFishing ff = null;
+    private SheetAccess sheets;
+    private Point gotoPoint = null;
+    private boolean isMenuOpen = false;
+    private boolean visible = false;
+    private LocationManager locationManager;
+    private MyReceiver solunarReciever;
+    private List<Marker> markers;
+    private Map<String, Float> colors;
+    private boolean follow = false;
+    private boolean northUp = false;
+    private GoogleMap mMap;
+    private PointsHelper pointsHelper;
+
+    private final ActivityResultLauncher<String[]> permissionRequest =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                result.entrySet().stream()
+                        .forEach(stringBooleanEntry -> Log.i(TAG, String.format("Permission request %s was %s.",
+                                stringBooleanEntry.getKey(),
+                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
+            });
+
     private final GoogleMap.OnMapLongClickListener onMyMapLongClickListener = latLng -> {
         String[] contactTypes = ContactType.asStringArray();
         new AlertDialog.Builder(MainActivity.this)
@@ -125,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     addPoint(ContactType.valueOf(contactTypes[which]), loc);
                 }).show();
     };
-    private PointsHelper pointsHelper;
+
     private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
         @Override
         public void onMarkerDragStart(Marker marker) {
@@ -156,10 +192,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             refreshCounts();
         }
     };
-    private Map<String, Float> colors;
-    private boolean follow = false;
-    private boolean northUp = false;
-    private GoogleMap mMap;
     LocationListener locationListenerGPS = new LocationListener() {
         @Override
         public void onLocationChanged(android.location.Location location) {
@@ -191,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         public void onProviderDisabled(String provider) {
         }
     };
+
     private final GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener = new GoogleMap.OnMyLocationButtonClickListener() {
         @Override
         public boolean onMyLocationButtonClick() {
@@ -209,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return false;
         }
     };
+
     private final GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = (new GoogleMap.OnCameraMoveStartedListener() {
         @Override
         public void onCameraMoveStarted(int reason) {
@@ -221,10 +255,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     });
-    private boolean visible = false;
-    private LocationManager locationManager;
-    private MyReceiver solunarReciever;
-    private List<Marker> markers;
+
     private final GoogleMap.OnCameraMoveListener onCameraMoverListener = new GoogleMap.OnCameraMoveListener() {
         @Override
         public void onCameraMove() {
@@ -239,9 +270,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
-    private SheetAccess sheets;
-    private Point gotoPoint = null;
-    private boolean isMenuOpen = false;
 
     private static String getExternalStoragePath(Context mContext, boolean is_removable) {
         StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
@@ -363,12 +391,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String species = data.getQueryParameter("species");
 
                 gotoPoint = new Point(-1,
-                                      name == null ? "Angler" : name,
-                                      type == null ? ContactType.FOLLOW.toString() : type,
-                                      longitude, latitude,
-                                      bait == null ? "NA" : bait,
-                                      lake,
-                                      species == null ? "NA" : species);
+                        name == null ? "Angler" : name,
+                        type == null ? ContactType.FOLLOW.toString() : type,
+                        longitude, latitude,
+                        bait == null ? "NA" : bait,
+                        lake,
+                        species == null ? "NA" : species);
             }
         }
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.refreshLayout);
@@ -380,7 +408,48 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 pullToRefresh.setRefreshing(false);
             }
         });
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        databaseRef = FirebaseDatabase.getInstance().getReference("locations");
+        usersRef = FirebaseDatabase.getInstance().getReference("user_profiles");
+        if (currentUser != null) {
+            userId = currentUser.getUid();
+        } else {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+           if (prefs.getString("Username", null) != null)
+                signInAnonymously(prefs.getString("Username",null ));
+        }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        startLocationUpdates();
+        listenForOtherUsers();
         initView();
+    }
+
+    public static class UserProfile {
+        public String username;
+
+        public UserProfile() {
+        } // Required for Firebase
+
+        public UserProfile(String username) {
+            this.username = username;
+        }
+    }
+
+    private void signInAnonymously(String username) {
+        auth = FirebaseAuth.getInstance();
+        auth.signInAnonymously()
+                .addOnSuccessListener(result -> {
+                    String uid = result.getUser().getUid();
+                    usersRef.child(uid).setValue(new UserProfile(username));
+
+                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                    userId = currentUser.getUid();
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Anonymous sign-in failed", Toast.LENGTH_SHORT).show()
+                );
     }
 
     private void refreshData() {
@@ -441,7 +510,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         refreshCounts();
 
         if (mMap != null) {
-            mMap.clear();
+            refreshMapMarkers();
             markers.clear();
             List<Point> points = filterPoints();
             for (Point p : points) {
@@ -512,21 +581,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (prefs.getBoolean("ViewLabels", true)) {
             if (prefs.getBoolean("ViewFF", true))
                 query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
-                                               .or(Point_.name.equal(label))
-                                               .or(Point_.name.equal(ff)));
+                        .or(Point_.name.equal(label))
+                        .or(Point_.name.equal(ff)));
             else
                 query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
-                                               .or(Point_.name.equal(label))
-                                               .and(Point_.name.notEqual(ff)));
+                        .or(Point_.name.equal(label))
+                        .and(Point_.name.notEqual(ff)));
         } else {
             if (prefs.getBoolean("ViewFF", true))
                 query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
-                                               .or(Point_.name.equal(ff))
-                                               .and(Point_.name.notEqual(label)));
+                        .or(Point_.name.equal(ff))
+                        .and(Point_.name.notEqual(label)));
             else
                 query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
-                                               .and(Point_.name.notEqual(label))
-                                               .and(Point_.name.notEqual(ff)));
+                        .and(Point_.name.notEqual(label))
+                        .and(Point_.name.notEqual(ff)));
         }
         return query.build().find();
     }
@@ -585,14 +654,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                                              .position(new LatLng(point.getLat(), point.getLon()))
-                                              .title("Hold to Edit")
-                                              .draggable(true)
-                                              .anchor(0.5f, 0.5f)
-                                              .visible(false)
-                                              .flat(true)
-                                              .zIndex(0)
-                                              .icon(getMarker(point)));
+                    .position(new LatLng(point.getLat(), point.getLon()))
+                    .title("Hold to Edit")
+                    .draggable(true)
+                    .anchor(0.5f, 0.5f)
+                    .visible(false)
+                    .flat(true)
+                    .zIndex(0)
+                    .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
                 m.setVisible(true);
@@ -833,6 +902,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         dialog.setItems(items, (dialogInterface, mapType) -> mMap.setMapType(mapType));
         dialog.show();
     }
+
     public void showWeather(View view) {
         WeatherMapFragment fragment = new WeatherMapFragment();
 
@@ -842,6 +912,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addToBackStack(null)
                 .commit();
     }
+
     @SuppressLint("MissingPermission")
     public void refreshCounts() {
 
@@ -871,5 +942,122 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addAction(R.mipmap.ic_launcher, "Stop", stopPendingIntent)
                 .setContentText(String.format("Catches: %s, Contacts: %s, Follows: %s", pointsHelper.getDailyCatch(username), pointsHelper.getDailyContact(username), pointsHelper.getDailyFollow(username)));
         NotificationManagerCompat.from(this).notify(SERVICE_NOTIFICATION_ID, notification.build());
+    }
+    private final Map<String, UserLocation> cachedLocations = new HashMap<>();
+    private final Map<String, String> cachedUsernames = new HashMap<>();
+    @SuppressLint("MissingPermission")
+    private void startLocationUpdates() {
+        LocationRequest locationRequest = LocationRequest.create()
+                .setInterval(5000)
+                .setFastestInterval(3000)
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY);
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) return;
+                Location location = locationResult.getLastLocation();
+                updateLocationInFirebase(location);
+            }
+        }, Looper.getMainLooper());
+    }
+
+    private void updateLocationInFirebase(Location location) {
+        if (location == null || userId == null) return;
+        databaseRef.child(userId).setValue(new UserLocation(
+                location.getLatitude(),
+                location.getLongitude(),
+                System.currentTimeMillis()
+        ));
+    }private void fetchUsernameAndUpdateMarker(String uid, LatLng position) {
+        DatabaseReference profileRef = FirebaseDatabase.getInstance().getReference("user_profiles").child(uid);
+
+        profileRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String username = snapshot.child("username").getValue(String.class);
+                if (username == null) username = "Unknown";
+
+                cachedUsernames.put(uid, username);
+                cachedLocations.put(uid, new UserLocation(position.latitude, position.longitude, System.currentTimeMillis()));
+
+                // Add marker after clear (or update existing)
+                addMarker(uid, position, username);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {}
+        });
+    }
+    private void addMarker(String uid, LatLng position, String username) {
+        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.boat);
+
+        Marker marker = mMap.addMarker(new MarkerOptions()
+                .position(position)
+                .title(username)
+                .icon(icon)); // Set custom icon here
+
+        userMarkers.put(uid, marker);
+    }
+    private void refreshMapMarkers() {
+        mMap.clear();
+        userMarkers.clear();
+
+        for (String uid : cachedLocations.keySet()) {
+            UserLocation loc = cachedLocations.get(uid);
+            String username = cachedUsernames.get(uid);
+            LatLng position = new LatLng(loc.latitude, loc.longitude);
+            addMarker(uid, position, username);
+        }
+    }
+    private void listenForOtherUsers() {
+        databaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Set<String> activeUserIds = new HashSet<>();
+
+                for (DataSnapshot userSnap : snapshot.getChildren()) {
+                    String uid = userSnap.getKey();
+                    if (uid.equals(FirebaseAuth.getInstance().getUid())) continue;
+
+                    UserLocation loc = userSnap.getValue(UserLocation.class);
+                    if (loc == null) continue;
+
+                    LatLng position = new LatLng(loc.latitude, loc.longitude);
+                    activeUserIds.add(uid);
+
+                    fetchUsernameAndUpdateMarker(uid, position);
+                }
+
+                // Remove markers for users who disappeared
+                for (String uid : new HashSet<>(userMarkers.keySet())) {
+                    if (!activeUserIds.contains(uid)) {
+                        Marker marker = userMarkers.remove(uid);
+                        if (marker != null) marker.remove();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.w("MapsActivity", "Location DB read failed", error.toException());
+            }
+        });
+    }
+
+
+    public static class UserLocation {
+        public double latitude;
+        public double longitude;
+        public long timestamp;
+
+        public UserLocation() {
+        }  // Required for Firebase
+
+        public UserLocation(double lat, double lng, long time) {
+            this.latitude = lat;
+            this.longitude = lng;
+            this.timestamp = time;
+        }
     }
 }

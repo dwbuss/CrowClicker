@@ -43,6 +43,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -69,12 +70,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
+import com.google.android.gms.maps.model.UrlTileProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONArray;
+
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -86,8 +93,15 @@ import java.util.Map;
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
 import io.objectbox.query.QueryBuilder;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private SeekBar  radarSeekBar;
+    private List<String> radarTimes = new ArrayList<>();
     private static final String TAG = "MainActivity";
     private static final String KWS_SEARCH = "wakeup";
     private static final String LOST = "lost";
@@ -106,8 +120,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
                 result.entrySet().stream()
                         .forEach(stringBooleanEntry -> Log.i(TAG, String.format("Permission request %s was %s.",
-                                                                                stringBooleanEntry.getKey(),
-                                                                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
+                                stringBooleanEntry.getKey(),
+                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
             });
     View mapView;
     OvershootInterpolator interpolator = new OvershootInterpolator();
@@ -363,12 +377,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String species = data.getQueryParameter("species");
 
                 gotoPoint = new Point(-1,
-                                      name == null ? "Angler" : name,
-                                      type == null ? ContactType.FOLLOW.toString() : type,
-                                      longitude, latitude,
-                                      bait == null ? "NA" : bait,
-                                      lake,
-                                      species == null ? "NA" : species);
+                        name == null ? "Angler" : name,
+                        type == null ? ContactType.FOLLOW.toString() : type,
+                        longitude, latitude,
+                        bait == null ? "NA" : bait,
+                        lake,
+                        species == null ? "NA" : species);
             }
         }
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.refreshLayout);
@@ -424,6 +438,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 satelliteOptions.setTransparency(value);
             }
         });
+          radarSeekBar = findViewById(R.id.seekBarTime);
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        radarSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && !radarTimes.isEmpty()) {
+                    String time = radarTimes.get(progress);
+                    updateRadarOverlay(time);
+                }
+            }
+            @Override public void onStartTrackingTouch(SeekBar seekBar) { }
+            @Override public void onStopTrackingTouch(SeekBar seekBar) { }
+        });
         Solunar solunar = new Solunar();
         solunar.populate(getLocation(), Calendar.getInstance(Locale.US));
         TextView majorText = findViewById(R.id.majorLbl);
@@ -450,6 +480,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             addCrowLayer();
         }
         initFabMenu();
+    }
+
+    private TileOverlay radarOverlay;
+    private void updateRadarOverlay(String time) {
+        if (mMap == null) return;
+
+        TileProvider tileProvider = new UrlTileProvider(256, 256) {
+            @Override
+            public URL getTileUrl(int x, int y, int zoom) {
+                try {
+                    String url = String.format(Locale.US,
+                            "https://tilecache.rainviewer.com/v2/radar/%s/256/%d/%d/%d/2/1_1.png",
+                            time, zoom, x, y);
+                    return new URL(url);
+                } catch (MalformedURLException e) {
+                    return null;
+                }
+            }
+        };
+
+        runOnUiThread(() -> {
+            if (radarOverlay != null) {
+                radarOverlay.remove();
+            }
+            radarOverlay = mMap.addTileOverlay(new TileOverlayOptions()
+                    .tileProvider(tileProvider)
+                    .transparency(0f)
+                    .zIndex(10));
+        });
     }
 
     private void initFabMenu() {
@@ -512,21 +571,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (prefs.getBoolean("ViewLabels", true)) {
             if (prefs.getBoolean("ViewFF", true))
                 query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
-                                               .or(Point_.name.equal(label))
-                                               .or(Point_.name.equal(ff)));
+                        .or(Point_.name.equal(label))
+                        .or(Point_.name.equal(ff)));
             else
                 query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
-                                               .or(Point_.name.equal(label))
-                                               .and(Point_.name.notEqual(ff)));
+                        .or(Point_.name.equal(label))
+                        .and(Point_.name.notEqual(ff)));
         } else {
             if (prefs.getBoolean("ViewFF", true))
                 query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
-                                               .or(Point_.name.equal(ff))
-                                               .and(Point_.name.notEqual(label)));
+                        .or(Point_.name.equal(ff))
+                        .and(Point_.name.notEqual(label)));
             else
                 query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
-                                               .and(Point_.name.notEqual(label))
-                                               .and(Point_.name.notEqual(ff)));
+                        .and(Point_.name.notEqual(label))
+                        .and(Point_.name.notEqual(ff)));
         }
         return query.build().find();
     }
@@ -585,14 +644,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                                              .position(new LatLng(point.getLat(), point.getLon()))
-                                              .title("Hold to Edit")
-                                              .draggable(true)
-                                              .anchor(0.5f, 0.5f)
-                                              .visible(false)
-                                              .flat(true)
-                                              .zIndex(0)
-                                              .icon(getMarker(point)));
+                    .position(new LatLng(point.getLat(), point.getLon()))
+                    .title("Hold to Edit")
+                    .draggable(true)
+                    .anchor(0.5f, 0.5f)
+                    .visible(false)
+                    .flat(true)
+                    .zIndex(0)
+                    .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
                 m.setVisible(true);
@@ -729,8 +788,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
             layoutParams.setMargins(0, 0, 30, 300);
         }
-
         addCrowLayer();
+        fetchRadarTimes();
         List<Point> points = filterPoints();
         for (Point p : points) {
             addPointMarker(p);
@@ -748,7 +807,69 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(crow, 16.0f));
+
     }
+
+    private String latestRadarTime;
+
+    private void fetchRadarTimes() {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://tilecache.rainviewer.com/api/maps.json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("RainViewer", "Failed to fetch radar times", e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (!response.isSuccessful()) return;
+                String body = response.body().string();
+                try {
+                    JSONArray frames = new JSONArray(body);
+                    radarTimes.clear();
+                    for (int i = 0; i < frames.length(); i++) {
+                        radarTimes.add(frames.getString(i));
+                    }
+                    if (!radarTimes.isEmpty()) {
+                        runOnUiThread(() -> {
+                            radarSeekBar.setMax(radarTimes.size() - 1);
+                            radarSeekBar.setProgress(radarTimes.size() - 1);
+                            updateRadarOverlay(radarTimes.get(radarTimes.size() - 1));
+                        });
+                    }
+                } catch (Exception e) {
+                    Log.e("RainViewer", "JSON parse error", e);
+                }
+            }
+        });
+    }
+
+    private void addRadarOverlay(String time) {
+        TileProvider tileProvider = new UrlTileProvider(256, 256) {
+            @Override
+            public URL getTileUrl(int x, int y, int zoom) {
+                try {
+                    String url = String.format(Locale.US,
+                            "https://tilecache.rainviewer.com/v2/radar/%s/256/%d/%d/%d/2/1_1.png",
+                            time, zoom, x, y);
+                    return new URL(url);
+                } catch (MalformedURLException e) {
+                    return null;
+                }
+            }
+        };
+
+        mMap.addTileOverlay(new TileOverlayOptions()
+                .tileProvider(tileProvider)
+                .transparency(0f)
+                .zIndex(10));
+    }
+
 
     private void addCrowLayer() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);

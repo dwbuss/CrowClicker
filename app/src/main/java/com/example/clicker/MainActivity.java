@@ -89,8 +89,10 @@ import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -947,7 +949,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private final Map<String, UserLocation> cachedLocations = new HashMap<>();
     private final Map<String, String> cachedUsernames = new HashMap<>();
+    private static final float MIN_FEET_DIFFERENCE = 100f;
+    private static final float FEET_TO_METERS = 0.3048f;
+    private Location lastUploadedLocation = null;
 
+    private boolean hasMovedEnough(Location newLocation) {
+        if (lastUploadedLocation == null) return true; // first time
+        float distanceMeters = newLocation.distanceTo(lastUploadedLocation);
+        return distanceMeters >= (MIN_FEET_DIFFERENCE * FEET_TO_METERS);
+    }
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
         LocationRequest locationRequest = LocationRequest.create()
@@ -959,8 +969,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult == null) return;
-                Location location = locationResult.getLastLocation();
-                updateLocationInFirebase(location);
+
+                Location currentLocation = locationResult.getLastLocation();
+                if (currentLocation == null) return;
+
+                if (hasMovedEnough(currentLocation)) {
+                    updateLocationInFirebase(currentLocation);
+                    lastUploadedLocation = currentLocation;
+                }
             }
         }, Looper.getMainLooper());
     }
@@ -976,7 +992,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ));
     }
 
-    private void fetchUsernameAndUpdateMarker(String uid, LatLng position) {
+    private void fetchUsernameAndUpdateMarker(String uid, LatLng position, long timestamp) {
         DatabaseReference profileRef = FirebaseDatabase.getInstance().getReference("user_profiles").child(uid);
 
         profileRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -986,10 +1002,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (username == null) username = "Unknown";
 
                 cachedUsernames.put(uid, username);
-                cachedLocations.put(uid, new UserLocation(position.latitude, position.longitude, System.currentTimeMillis()));
-
-                // Add marker after clear (or update existing)
-                addMarker(uid, position, username);
+                cachedLocations.put(uid, new UserLocation(position.latitude, position.longitude, timestamp));
+                addMarker(uid, position, username, timestamp);
             }
 
             @Override
@@ -998,14 +1012,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void addMarker(String uid, LatLng position, String username) {
+    private void addMarker(String uid, LatLng position, String username, long timestamp) {
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.boat);
+        Date date = new Date(timestamp);
+        String formatted = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date);
 
-        Marker marker = mMap.addMarker(new MarkerOptions()
+        MarkerOptions markerOptions = new MarkerOptions()
                 .position(position)
                 .title(username)
-                .icon(icon)); // Set custom icon here
+                .snippet("Last updated: " + formatted)
+                .icon(icon);
 
+        Marker marker = mMap.addMarker(markerOptions);
         userMarkers.put(uid, marker);
     }
 
@@ -1017,7 +1035,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             UserLocation loc = cachedLocations.get(uid);
             String username = cachedUsernames.get(uid);
             LatLng position = new LatLng(loc.latitude, loc.longitude);
-            addMarker(uid, position, username);
+            addMarker(uid, position, username, loc.timestamp);
         }
     }
 
@@ -1038,7 +1056,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         LatLng position = new LatLng(loc.latitude, loc.longitude);
                         activeUserIds.add(uid);
 
-                        fetchUsernameAndUpdateMarker(uid, position);
+                        fetchUsernameAndUpdateMarker(uid, position, loc.timestamp);
                     }
 
                     // Remove markers for users who disappeared

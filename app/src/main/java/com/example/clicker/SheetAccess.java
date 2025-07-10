@@ -313,7 +313,7 @@ public class SheetAccess {
         return Integer.toString(sheetId.get());
     }
 
-    public void storePoint(Point point, List<Object> ffResult, ClickerCallback callback) {
+    public void storePoint(Point point, List<Object> ffResult, String ffYear, ClickerCallback callback) {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         executorService.execute(new Runnable() {
             @Override
@@ -349,7 +349,7 @@ public class SheetAccess {
                     if (!ffResult.isEmpty()) {
                         ValueRange body = new ValueRange().setValues(List.of(ffResult));
                         service.spreadsheets().values()
-                                .append(spreadsheetId, "2024FFResults!A2", body)
+                                .append(spreadsheetId, ffYear+"FFResults!A2", body)
                                 .setValueInputOption("USER_ENTERED")
                                 .setInsertDataOption("INSERT_ROWS")
                                 .execute();

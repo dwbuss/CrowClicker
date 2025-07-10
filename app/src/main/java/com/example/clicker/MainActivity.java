@@ -368,11 +368,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         registerReceiver(solunarReciever, new IntentFilter(Intent.ACTION_TIME_TICK));
         ff = new FantasyFishing();
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("ViewFF", true)) {
-            sheets.loadStandings("2024FFResults", ff);
-            sheets.loadAnglers("2024FF", ff);
+            String ffYear = PreferenceManager.getDefaultSharedPreferences(this).getString("FFYear", "");
+            sheets.loadStandings(ffYear + "FFResults", ff);
+            sheets.loadAnglers(ffYear + "FF", ff);
         }
         getLocation();
-
         //Check if we came from a maps url
         Intent intent = getIntent();
         Uri data = intent.getData();
@@ -415,8 +415,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             userId = currentUser.getUid();
         } else {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-           if (prefs.getString("Username", null) != null)
-                signInAnonymously(prefs.getString("Username",null ));
+            if (prefs.getString("Username", null) != null)
+                signInAnonymously(prefs.getString("Username", null));
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         startLocationUpdates();
@@ -454,8 +454,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void refreshData() {
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("ViewFF", true)) {
-            sheets.loadStandings("2024FFResults", ff);
-            sheets.loadAnglers("2024FF", ff);
+            String ffYear = PreferenceManager.getDefaultSharedPreferences(this).getString("FFYear", "");
+            sheets.loadStandings(ffYear + "FFResults", ff);
+            sheets.loadAnglers(ffYear + "FF", ff);
         }
         String lake = PreferenceManager.getDefaultSharedPreferences(this).getString("Lake", "");
         sheets.syncSheet(lake);
@@ -943,13 +944,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .setContentText(String.format("Catches: %s, Contacts: %s, Follows: %s", pointsHelper.getDailyCatch(username), pointsHelper.getDailyContact(username), pointsHelper.getDailyFollow(username)));
         NotificationManagerCompat.from(this).notify(SERVICE_NOTIFICATION_ID, notification.build());
     }
+
     private final Map<String, UserLocation> cachedLocations = new HashMap<>();
     private final Map<String, String> cachedUsernames = new HashMap<>();
+
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
         LocationRequest locationRequest = LocationRequest.create()
-                .setInterval(5000)
-                .setFastestInterval(3000)
+                .setInterval(300000)
+                .setFastestInterval(300000)
                 .setPriority(Priority.PRIORITY_HIGH_ACCURACY);
 
         fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
@@ -963,13 +966,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void updateLocationInFirebase(Location location) {
-        if (location == null || userId == null) return;
+        if (location == null || userId == null ||
+                !PreferenceManager.getDefaultSharedPreferences(this).getBoolean("ShareLocation", false))
+            return;
         databaseRef.child(userId).setValue(new UserLocation(
                 location.getLatitude(),
                 location.getLongitude(),
                 System.currentTimeMillis()
         ));
-    }private void fetchUsernameAndUpdateMarker(String uid, LatLng position) {
+    }
+
+    private void fetchUsernameAndUpdateMarker(String uid, LatLng position) {
         DatabaseReference profileRef = FirebaseDatabase.getInstance().getReference("user_profiles").child(uid);
 
         profileRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -986,9 +993,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {}
+            public void onCancelled(DatabaseError error) {
+            }
         });
     }
+
     private void addMarker(String uid, LatLng position, String username) {
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.boat);
 
@@ -999,6 +1008,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         userMarkers.put(uid, marker);
     }
+
     private void refreshMapMarkers() {
         mMap.clear();
         userMarkers.clear();
@@ -1010,30 +1020,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             addMarker(uid, position, username);
         }
     }
+
     private void listenForOtherUsers() {
         databaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                Set<String> activeUserIds = new HashSet<>();
+                if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("ShareLocation", false)) {
+                    Set<String> activeUserIds = new HashSet<>();
 
-                for (DataSnapshot userSnap : snapshot.getChildren()) {
-                    String uid = userSnap.getKey();
-                    if (uid.equals(FirebaseAuth.getInstance().getUid())) continue;
+                    for (DataSnapshot userSnap : snapshot.getChildren()) {
+                        String uid = userSnap.getKey();
+                        if (uid.equals(FirebaseAuth.getInstance().getUid())) continue;
 
-                    UserLocation loc = userSnap.getValue(UserLocation.class);
-                    if (loc == null) continue;
+                        UserLocation loc = userSnap.getValue(UserLocation.class);
+                        if (loc == null) continue;
 
-                    LatLng position = new LatLng(loc.latitude, loc.longitude);
-                    activeUserIds.add(uid);
+                        LatLng position = new LatLng(loc.latitude, loc.longitude);
+                        activeUserIds.add(uid);
 
-                    fetchUsernameAndUpdateMarker(uid, position);
-                }
+                        fetchUsernameAndUpdateMarker(uid, position);
+                    }
 
-                // Remove markers for users who disappeared
-                for (String uid : new HashSet<>(userMarkers.keySet())) {
-                    if (!activeUserIds.contains(uid)) {
-                        Marker marker = userMarkers.remove(uid);
-                        if (marker != null) marker.remove();
+                    // Remove markers for users who disappeared
+                    for (String uid : new HashSet<>(userMarkers.keySet())) {
+                        if (!activeUserIds.contains(uid)) {
+                            Marker marker = userMarkers.remove(uid);
+                            if (marker != null) marker.remove();
+                        }
                     }
                 }
             }

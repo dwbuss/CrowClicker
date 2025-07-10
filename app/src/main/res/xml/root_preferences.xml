@@ -58,6 +58,12 @@
             app:useSimpleSummaryProvider="true" />
         <CheckBoxPreference
             android:defaultValue="true"
+            android:key="ShareLocation"
+            android:persistent="true"
+            android:title="Share Location"
+            app:useSimpleSummaryProvider="true" />
+        <CheckBoxPreference
+            android:defaultValue="true"
             android:key="ViewLabels"
             android:persistent="true"
             android:title="View Labels"
@@ -67,6 +73,12 @@
             android:key="ViewFF"
             android:persistent="true"
             android:title="View FF"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="FFYear"
+            android:persistent="true"
+            android:title="FF Year"
             app:useSimpleSummaryProvider="true" />
         <CheckBoxPreference
             android:defaultValue="false"

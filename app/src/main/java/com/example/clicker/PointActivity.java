@@ -218,7 +218,9 @@ public class PointActivity extends AppCompatActivity {
             ffResult = ff.scoreCatch(point.getName(), location.substring(0, location.indexOf(":")).trim(), point.getFishSize(), binding.ffOwnerSpots.getSelectedItem().toString().trim(),
                                      point.timeStampAsString(), binding.video.isChecked(), binding.northern.isChecked(), binding.vest.isChecked());
         }
-        sheets.storePoint(point, ffResult, callback);
+
+        String ffYear = prefs.getString("FFYear", "");
+        sheets.storePoint(point, ffResult, ffYear, callback);
         lastAction = PUSH_ACTION;
     }
 

@@ -216,7 +216,7 @@ public class PointActivity extends AppCompatActivity {
                 !binding.ffSpots.getSelectedItem().toString().trim().isEmpty()) {
             String location = binding.ffSpots.getSelectedItem().toString().trim();
             ffResult = ff.scoreCatch(point.getName(), location.substring(0, location.indexOf(":")).trim(), point.getFishSize(), binding.ffOwnerSpots.getSelectedItem().toString().trim(),
-                                     point.timeStampAsString(), binding.video.isChecked(), binding.northern.isChecked(), binding.vest.isChecked());
+                                     point.timeStampAsString(), point.getSpecies(), binding.video.isChecked(), binding.vest.isChecked());
         }
 
         String ffYear = prefs.getString("FFYear", "");

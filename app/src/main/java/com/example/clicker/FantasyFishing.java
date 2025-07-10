@@ -87,9 +87,10 @@ public final class FantasyFishing {
         return owners.toArray(new String[owners.size()]);
     }
 
-    public List<Object> scoreCatch(String angler, String location, String size, String owner, String date, boolean videoCaptured, boolean isNorthern, boolean lifeVest) {
+    public List<Object> scoreCatch(String angler, String location, String size, String owner, String species, String date, boolean videoCaptured, boolean lifeVest) {
         // date, angler, size , location, owner , ... anglers
-        int columnOffset = 5;
+        boolean isMusky = species.equalsIgnoreCase("Muskellunge");
+        int columnOffset = 6;
         if (anglers == null || anglers.isEmpty()) return new ArrayList<>();
         int bonusColumn = columnOffset + anglers.size();
         String[] newRow = new String[bonusColumn + 1];
@@ -100,8 +101,8 @@ public final class FantasyFishing {
         newRow[2] = size;
         newRow[3] = location;
         newRow[4] = owner;
+        newRow[5] = species;
         if (videoCaptured) newRow[bonusColumn] = newRow[bonusColumn] + " Video";
-        if (isNorthern) newRow[bonusColumn] = newRow[bonusColumn] + " Northern";
         if (lifeVest) newRow[bonusColumn] = newRow[bonusColumn] + " LifeVest";
         boolean quarterBonus;
         quarterBonus = size.endsWith(".25") || size.endsWith(".75");
@@ -110,63 +111,66 @@ public final class FantasyFishing {
         // load weather on push and reload ff data on pull
 
         if (anglers.containsKey(angler)) {
-            // angler location
-            String spotOwner = anglers.entrySet().stream().filter(x -> x.getValue().stream().anyMatch(s -> s.name.equalsIgnoreCase(location))).findFirst().get().getKey();
-            if (spotOwner.equalsIgnoreCase(angler) || anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isCommunity) {
-                if (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isFranchise) {
-                    points = points * 2;
+            if (species.equalsIgnoreCase("Lake Trout")) {
+                newRow[columnOffset + anglerIndex.get(angler)] = points + "";
+            } else {// angler location
+                String spotOwner = anglers.entrySet().stream().filter(x -> x.getValue().stream().anyMatch(s -> s.name.equalsIgnoreCase(location))).findFirst().get().getKey();
+                if (spotOwner.equalsIgnoreCase(angler) || anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isCommunity) {
+                    if (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isFranchise) {
+                        points = points * 2;
+                        if (quarterBonus) points = points + .25;
+                        newRow[bonusColumn] = newRow[bonusColumn] + " Franchise";
+                    }
+                    boolean isVirgin = (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isVirgin && isMusky);
+                    if (isVirgin) {
+                        points = points + 10;
+                        newRow[bonusColumn] = newRow[bonusColumn] + " Virgin";
+                    }
+                    if (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isCommunity) {
+                        newRow[bonusColumn] = newRow[bonusColumn] + " Community";
+                    }
+                    if (videoCaptured) points = points + 10;
+                    if (lifeVest) points = points + 2;
                     if (quarterBonus) points = points + .25;
-                    newRow[bonusColumn] = newRow[bonusColumn] + " Franchise";
-                }
-                boolean isVirgin = (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isVirgin && !isNorthern);
-                if (isVirgin) {
-                    points = points + 10;
-                    newRow[bonusColumn] = newRow[bonusColumn] + " Virgin";
-                }
-                if (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isCommunity) {
-                    newRow[bonusColumn] = newRow[bonusColumn] + " Community";
-                }
-                if (videoCaptured) points = points + 10;
-                if (lifeVest) points = points + 2;
-                if (quarterBonus) points = points + .25;
-                Double finalPoints = points;
-                Arrays.stream(getOwners()).forEach(o -> {
-                    if (!o.isEmpty()) {
-                        if (o.equalsIgnoreCase(angler) && (Double.parseDouble(size) >= 40 || isVirgin)) {
-                            newRow[columnOffset + anglerIndex.get(o)] = finalPoints + "";
-                        }
-                    }
-                });
-            } else { // need to split
-                Double finalPoints = points / 2;
-                Arrays.stream(getOwners()).forEach(o -> {
-                    if (!o.isEmpty()) {
-                        if (o.equalsIgnoreCase(angler)) {
-
-                            Double newPoints = finalPoints;
-                            boolean isVirgin = (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isVirgin && !isNorthern);
-                            if (isVirgin) {
-                                newPoints = newPoints + 10;
-                                newRow[bonusColumn] = newRow[bonusColumn] + " Virgin";
+                    Double finalPoints = points;
+                    Arrays.stream(getOwners()).forEach(o -> {
+                        if (!o.isEmpty()) {
+                            if (o.equalsIgnoreCase(angler) && (Double.parseDouble(size) >= 40 || isVirgin)) {
+                                newRow[columnOffset + anglerIndex.get(o)] = finalPoints + "";
                             }
-                            if (videoCaptured) newPoints = newPoints + 10;
-                            if (lifeVest) newPoints = newPoints + 2;
-
-                            if (quarterBonus) newPoints = newPoints + .25;
-                            if (Double.parseDouble(size) >= 40 || isVirgin)
-                                newRow[columnOffset + anglerIndex.get(angler)] = newPoints + "";
-                        } else if (o.equalsIgnoreCase(owner) || o.equalsIgnoreCase(spotOwner)) {
-                            Double newPoints = finalPoints;
-                            if (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isFranchise) {
-                                newPoints = newPoints * 2;
-                                newRow[bonusColumn] = newRow[bonusColumn] + " Franchise";
-                            }
-                            boolean isVirgin = (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isVirgin && !isNorthern);
-                            if (Double.parseDouble(size) >= 40 || isVirgin)
-                                newRow[columnOffset + anglerIndex.get(o)] = newPoints + "";
                         }
-                    }
-                });
+                    });
+                } else { // need to split
+                    Double finalPoints = points / 2;
+                    Arrays.stream(getOwners()).forEach(o -> {
+                        if (!o.isEmpty()) {
+                            if (o.equalsIgnoreCase(angler)) {
+
+                                Double newPoints = finalPoints;
+                                boolean isVirgin = (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isVirgin && isMusky);
+                                if (isVirgin) {
+                                    newPoints = newPoints + 10;
+                                    newRow[bonusColumn] = newRow[bonusColumn] + " Virgin";
+                                }
+                                if (videoCaptured) newPoints = newPoints + 10;
+                                if (lifeVest) newPoints = newPoints + 2;
+
+                                if (quarterBonus) newPoints = newPoints + .25;
+                                if (Double.parseDouble(size) >= 40 || isVirgin)
+                                    newRow[columnOffset + anglerIndex.get(angler)] = newPoints + "";
+                            } else if (o.equalsIgnoreCase(owner) || o.equalsIgnoreCase(spotOwner)) {
+                                Double newPoints = finalPoints;
+                                if (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isFranchise) {
+                                    newPoints = newPoints * 2;
+                                    newRow[bonusColumn] = newRow[bonusColumn] + " Franchise";
+                                }
+                                boolean isVirgin = (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isVirgin && isMusky);
+                                if (Double.parseDouble(size) >= 40 || isVirgin)
+                                    newRow[columnOffset + anglerIndex.get(o)] = newPoints + "";
+                            }
+                        }
+                    });
+                }
             }
         } else if (anglers.get(owner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().isPresent()) {
             // owner location
@@ -174,7 +178,7 @@ public final class FantasyFishing {
                 points = points * 2;
                 newRow[bonusColumn] = newRow[bonusColumn] + " Franchise";
             }
-            boolean isVirgin = (anglers.get(owner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isVirgin && !isNorthern);
+            boolean isVirgin = (anglers.get(owner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isVirgin && isMusky);
             if (isVirgin) {
                 points = points + 10;
                 newRow[bonusColumn] = newRow[bonusColumn] + " Virgin";
@@ -198,7 +202,7 @@ public final class FantasyFishing {
                 if (quarterBonus) points = points + .25;
                 newRow[bonusColumn] = newRow[bonusColumn] + " Franchise";
             }
-            boolean isVirgin = (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isVirgin && !isNorthern);
+            boolean isVirgin = (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isVirgin && isMusky);
             if (isVirgin) {
                 points = points + 10;
                 newRow[bonusColumn] = newRow[bonusColumn] + " Virgin";
@@ -228,7 +232,7 @@ public final class FantasyFishing {
                             if (quarterBonus) newPoints = newPoints + .25;
                             newRow[bonusColumn] = newRow[bonusColumn] + " Franchise";
                         }
-                        boolean virgin = (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isVirgin && !isNorthern);
+                        boolean virgin = (anglers.get(spotOwner).stream().filter(x -> x.name.equalsIgnoreCase(location)).findFirst().get().isVirgin && isMusky);
                         if (virgin) {
                             newPoints = newPoints + 10;
                             newRow[bonusColumn] = newRow[bonusColumn] + " Virgin";

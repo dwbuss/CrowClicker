@@ -205,7 +205,7 @@ Result -    Dan          Tony        Jeff
         row1.add("");
         row1.add("");
         row1.add("54.0");
-        row1.add(" Video Northern LifeVest");
+        row1.add(" Video LifeVest");
         assertEquals(row1, ff.scoreCatch("Jeff", "New Spot(V)", "42", "Jeff", "June 6", true, true, true));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
@@ -229,7 +229,7 @@ Result -    Dan          Tony        Jeff
         row1.add("42.5");
         row1.add("33.5");
         row1.add("");
-        row1.add(" Video Northern LifeVest Franchise");
+        row1.add(" Video LifeVest Franchise");
         assertEquals(row1, ff.scoreCatch("Tony", "S. Gateway (F)", "42.75", "Dan", "June 6", true, true, true));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers

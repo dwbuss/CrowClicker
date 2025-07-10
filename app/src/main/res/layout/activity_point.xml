@@ -748,19 +748,6 @@
                         android:maxLines="1"
                         android:text="Life Vest" />
 
-                    <CheckBox
-                        android:id="@+id/northern"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="8dp"
-                        android:layout_weight="25"
-                        android:autoSizeMaxTextSize="18sp"
-                        android:autoSizeMinTextSize="12sp"
-                        android:autoSizeTextType="uniform"
-                        android:checked="false"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:text="40&quot;+ Northern" />
                 </LinearLayout>
 
                 <LinearLayout

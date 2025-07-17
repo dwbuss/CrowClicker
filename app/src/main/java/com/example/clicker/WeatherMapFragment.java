@@ -43,13 +43,12 @@ import okhttp3.Response;
 
 public class WeatherMapFragment extends Fragment implements OnMapReadyCallback {
     private static final String RAINVIEWER_URL = "https://api.rainviewer.com/public/weather-maps.json";
-
-    private List<Long> radarTimestamps = new ArrayList<>();
-    private GoogleMap map;
-    private Button playButton;
     private final int FRAME_COUNT = 10;
     private final int FRAME_INTERVAL_MS = 500;
     private final List<TileOverlay> overlays = new ArrayList<>();
+    private List<Long> radarTimestamps = new ArrayList<>();
+    private GoogleMap map;
+    private Button playButton;
     private int currentFrame = FRAME_COUNT - 1;
     private Handler handler = new Handler();
     private boolean isPlaying = false;
@@ -80,7 +79,7 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onFailure(Call call, IOException e) {
                 requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Failed to load radar data", Toast.LENGTH_SHORT).show()
+                                                        Toast.makeText(requireContext(), "Failed to load radar data", Toast.LENGTH_SHORT).show()
                 );
             }
 
@@ -110,6 +109,7 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
     }
+
     private void loadRadarOverlays() {
         overlays.clear();
 
@@ -120,8 +120,8 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback {
                 public URL getTileUrl(int x, int y, int zoom) {
                     try {
                         return new URL(String.format(Locale.US,
-                                "https://tilecache.rainviewer.com/v2/radar/%d/256/%d/%d/%d/2/1_1.png",
-                                frameTime, zoom, x, y));
+                                                     "https://tilecache.rainviewer.com/v2/radar/%d/256/%d/%d/%d/2/1_1.png",
+                                                     frameTime, zoom, x, y));
                     } catch (MalformedURLException e) {
                         return null;
                     }
@@ -129,11 +129,12 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback {
             };
 
             TileOverlay overlay = map.addTileOverlay(new TileOverlayOptions()
-                    .tileProvider(tileProvider)
-                    .visible(false));
+                                                             .tileProvider(tileProvider)
+                                                             .visible(false));
             overlays.add(overlay);
         }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_weather_map, container, false);
@@ -179,7 +180,7 @@ public class WeatherMapFragment extends Fragment implements OnMapReadyCallback {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                                              new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
 

@@ -107,12 +107,6 @@ import io.objectbox.query.QueryBuilder;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private DatabaseReference databaseRef;
-    private FusedLocationProviderClient fusedLocationClient;
-    private String userId;
-    private FirebaseAuth auth;
-    private DatabaseReference usersRef;
-    private final Map<String, Marker> userMarkers = new HashMap<>();
     private static final String TAG = "MainActivity";
     private static final String KWS_SEARCH = "wakeup";
     private static final String LOST = "lost";
@@ -124,34 +118,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int pic_id = 123;
     private static final int PERMISSION_REQUEST_CODE = 100;
     private final static int ALL_PERMISSIONS_RESULT = 101;
+    private static final float MIN_FEET_DIFFERENCE = 100f;
+    private static final float FEET_TO_METERS = 0.3048f;
+    private final Map<String, Marker> userMarkers = new HashMap<>();
     private final List<Point> pointList = new ArrayList<>();
     private final float zoomLevel = 10;
+    private final ActivityResultLauncher<String[]> permissionRequest =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                result.entrySet().stream()
+                        .forEach(stringBooleanEntry -> Log.i(TAG, String.format("Permission request %s was %s.",
+                                                                                stringBooleanEntry.getKey(),
+                                                                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
+            });
+    private final Map<String, UserLocation> cachedLocations = new HashMap<>();
+    private final Map<String, String> cachedUsernames = new HashMap<>();
     View mapView;
     OvershootInterpolator interpolator = new OvershootInterpolator();
     SupportMapFragment mapFragment;
     TileOverlay satelliteOptions;
     FantasyFishing ff = null;
-    private SheetAccess sheets;
-    private Point gotoPoint = null;
-    private boolean isMenuOpen = false;
-    private boolean visible = false;
-    private LocationManager locationManager;
-    private MyReceiver solunarReciever;
-    private List<Marker> markers;
-    private Map<String, Float> colors;
-    private boolean follow = false;
-    private boolean northUp = false;
-    private GoogleMap mMap;
-    private PointsHelper pointsHelper;
-
-    private final ActivityResultLauncher<String[]> permissionRequest =
-            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
-                result.entrySet().stream()
-                        .forEach(stringBooleanEntry -> Log.i(TAG, String.format("Permission request %s was %s.",
-                                stringBooleanEntry.getKey(),
-                                stringBooleanEntry.getValue() ? "granted" : "rejected by user")));
-            });
-
     private final GoogleMap.OnMapLongClickListener onMyMapLongClickListener = latLng -> {
         String[] contactTypes = ContactType.asStringArray();
         new AlertDialog.Builder(MainActivity.this)
@@ -163,37 +148,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     addPoint(ContactType.valueOf(contactTypes[which]), loc);
                 }).show();
     };
-
-    private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
-        @Override
-        public void onMarkerDragStart(Marker marker) {
-        }
-
-        @Override
-        public void onMarkerDrag(Marker marker) {
-        }
-
-        @Override
-        public void onMarkerDragEnd(Marker marker) {
-            Point point = (Point) marker.getTag();
-            point.setLat(marker.getPosition().latitude);
-            point.setLon(marker.getPosition().longitude);
-            pointsHelper.addOrUpdatePoint(point);
-        }
-    });
-    private final GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener = new GoogleMap.OnInfoWindowLongClickListener() {
-        @Override
-        public void onInfoWindowLongClick(final Marker marker) {
-            Point point = (Point) marker.getTag();
-            Intent editPoint = new Intent(MainActivity.this, PointActivity.class);
-            editPoint.putExtra("point", point);
-            editPoint.putExtra("ffdata", (Serializable) ff.getAnglerData());
-            editPoint.putExtra("ffstandings", (Serializable) ff.getStandings());
-            editPoint.putExtra("shouldNotify", false);
-            startActivity(editPoint);
-            refreshCounts();
-        }
-    };
+    private DatabaseReference databaseRef;
+    private FusedLocationProviderClient fusedLocationClient;
+    private String userId;
+    private FirebaseAuth auth;
+    private DatabaseReference usersRef;
+    private SheetAccess sheets;
+    private Point gotoPoint = null;
+    private boolean isMenuOpen = false;
+    private boolean visible = false;
+    private LocationManager locationManager;
+    private MyReceiver solunarReciever;
+    private List<Marker> markers;
+    private Map<String, Float> colors;
+    private boolean follow = false;
+    private boolean northUp = false;
+    private GoogleMap mMap;
     LocationListener locationListenerGPS = new LocationListener() {
         @Override
         public void onLocationChanged(android.location.Location location) {
@@ -225,7 +195,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         public void onProviderDisabled(String provider) {
         }
     };
-
     private final GoogleMap.OnMyLocationButtonClickListener onMyLocationButtonClickListener = new GoogleMap.OnMyLocationButtonClickListener() {
         @Override
         public boolean onMyLocationButtonClick() {
@@ -244,7 +213,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return false;
         }
     };
-
     private final GoogleMap.OnCameraMoveStartedListener onCameraMoveStartedListener = (new GoogleMap.OnCameraMoveStartedListener() {
         @Override
         public void onCameraMoveStarted(int reason) {
@@ -257,7 +225,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     });
-
     private final GoogleMap.OnCameraMoveListener onCameraMoverListener = new GoogleMap.OnCameraMoveListener() {
         @Override
         public void onCameraMove() {
@@ -272,6 +239,38 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
+    private PointsHelper pointsHelper;
+    private final GoogleMap.OnMarkerDragListener onMarkerDragListener = (new GoogleMap.OnMarkerDragListener() {
+        @Override
+        public void onMarkerDragStart(Marker marker) {
+        }
+
+        @Override
+        public void onMarkerDrag(Marker marker) {
+        }
+
+        @Override
+        public void onMarkerDragEnd(Marker marker) {
+            Point point = (Point) marker.getTag();
+            point.setLat(marker.getPosition().latitude);
+            point.setLon(marker.getPosition().longitude);
+            pointsHelper.addOrUpdatePoint(point);
+        }
+    });
+    private final GoogleMap.OnInfoWindowLongClickListener onInfoWindowLongClickListener = new GoogleMap.OnInfoWindowLongClickListener() {
+        @Override
+        public void onInfoWindowLongClick(final Marker marker) {
+            Point point = (Point) marker.getTag();
+            Intent editPoint = new Intent(MainActivity.this, PointActivity.class);
+            editPoint.putExtra("point", point);
+            editPoint.putExtra("ffdata", (Serializable) ff.getAnglerData());
+            editPoint.putExtra("ffstandings", (Serializable) ff.getStandings());
+            editPoint.putExtra("shouldNotify", false);
+            startActivity(editPoint);
+            refreshCounts();
+        }
+    };
+    private Location lastUploadedLocation = null;
 
     private static String getExternalStoragePath(Context mContext, boolean is_removable) {
         StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
@@ -393,12 +392,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String species = data.getQueryParameter("species");
 
                 gotoPoint = new Point(-1,
-                        name == null ? "Angler" : name,
-                        type == null ? ContactType.FOLLOW.toString() : type,
-                        longitude, latitude,
-                        bait == null ? "NA" : bait,
-                        lake,
-                        species == null ? "NA" : species);
+                                      name == null ? "Angler" : name,
+                                      type == null ? ContactType.FOLLOW.toString() : type,
+                                      longitude, latitude,
+                                      bait == null ? "NA" : bait,
+                                      lake,
+                                      species == null ? "NA" : species);
             }
         }
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.refreshLayout);
@@ -426,17 +425,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         initView();
     }
 
-    public static class UserProfile {
-        public String username;
-
-        public UserProfile() {
-        } // Required for Firebase
-
-        public UserProfile(String username) {
-            this.username = username;
-        }
-    }
-
     private void signInAnonymously(String username) {
         auth = FirebaseAuth.getInstance();
         auth.signInAnonymously()
@@ -450,7 +438,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     finish();
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Anonymous sign-in failed", Toast.LENGTH_SHORT).show()
+                                              Toast.makeText(this, "Anonymous sign-in failed", Toast.LENGTH_SHORT).show()
                 );
     }
 
@@ -584,21 +572,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (prefs.getBoolean("ViewLabels", true)) {
             if (prefs.getBoolean("ViewFF", true))
                 query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
-                        .or(Point_.name.equal(label))
-                        .or(Point_.name.equal(ff)));
+                                               .or(Point_.name.equal(label))
+                                               .or(Point_.name.equal(ff)));
             else
                 query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
-                        .or(Point_.name.equal(label))
-                        .and(Point_.name.notEqual(ff)));
+                                               .or(Point_.name.equal(label))
+                                               .and(Point_.name.notEqual(ff)));
         } else {
             if (prefs.getBoolean("ViewFF", true))
                 query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
-                        .or(Point_.name.equal(ff))
-                        .and(Point_.name.notEqual(label)));
+                                               .or(Point_.name.equal(ff))
+                                               .and(Point_.name.notEqual(label)));
             else
                 query = pointBox.query(Point_.timeStamp.between(trip_range[0].getTime(), trip_range[1].getTime())
-                        .and(Point_.name.notEqual(label))
-                        .and(Point_.name.notEqual(ff)));
+                                               .and(Point_.name.notEqual(label))
+                                               .and(Point_.name.notEqual(ff)));
         }
         return query.build().find();
     }
@@ -657,14 +645,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker addPointMarker(Point point) {
         if (mMap != null) {
             Marker m = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(point.getLat(), point.getLon()))
-                    .title("Hold to Edit")
-                    .draggable(true)
-                    .anchor(0.5f, 0.5f)
-                    .visible(false)
-                    .flat(true)
-                    .zIndex(0)
-                    .icon(getMarker(point)));
+                                              .position(new LatLng(point.getLat(), point.getLon()))
+                                              .title("Hold to Edit")
+                                              .draggable(true)
+                                              .anchor(0.5f, 0.5f)
+                                              .visible(false)
+                                              .flat(true)
+                                              .zIndex(0)
+                                              .icon(getMarker(point)));
             m.setTag(point);
             if (mMap.getCameraPosition().zoom > zoomLevel)
                 m.setVisible(true);
@@ -947,17 +935,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         NotificationManagerCompat.from(this).notify(SERVICE_NOTIFICATION_ID, notification.build());
     }
 
-    private final Map<String, UserLocation> cachedLocations = new HashMap<>();
-    private final Map<String, String> cachedUsernames = new HashMap<>();
-    private static final float MIN_FEET_DIFFERENCE = 100f;
-    private static final float FEET_TO_METERS = 0.3048f;
-    private Location lastUploadedLocation = null;
-
     private boolean hasMovedEnough(Location newLocation) {
         if (lastUploadedLocation == null) return true; // first time
         float distanceMeters = newLocation.distanceTo(lastUploadedLocation);
         return distanceMeters >= (MIN_FEET_DIFFERENCE * FEET_TO_METERS);
     }
+
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
         LocationRequest locationRequest = LocationRequest.create()
@@ -1076,6 +1059,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    public static class UserProfile {
+        public String username;
+
+        public UserProfile() {
+        } // Required for Firebase
+
+        public UserProfile(String username) {
+            this.username = username;
+        }
+    }
 
     public static class UserLocation {
         public double latitude;

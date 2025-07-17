@@ -349,7 +349,7 @@ public class SheetAccess {
                     if (!ffResult.isEmpty()) {
                         ValueRange body = new ValueRange().setValues(List.of(ffResult));
                         service.spreadsheets().values()
-                                .append(spreadsheetId, ffYear+"FFResults!A2", body)
+                                .append(spreadsheetId, ffYear + "FFResults!A2", body)
                                 .setValueInputOption("USER_ENTERED")
                                 .setInsertDataOption("INSERT_ROWS")
                                 .execute();

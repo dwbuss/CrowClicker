@@ -119,167 +119,177 @@ Result -    Dan          Tony        Jeff
         ff.loadAnglers(sheetData);
         List<String> row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Amy");
         row1.add("41.75");
         row1.add("New Spot(V)");
         row1.add("Tony");
+        row1.add("Muskellunge");
         row1.add("");
         row1.add("21.0");
         row1.add("20.75");
         row1.add("");
-        assertEquals(row1, ff.scoreCatch("Amy", "New Spot(V)", "41.75", "Tony", "June 6", false, false, false));
-
-
+        assertEquals(row1, ff.scoreCatch("Amy", "New Spot(V)", "41.75", "Tony", "Muskellunge", "8/9/2024 23:11:00", false, false));
     }
 
     @Test
     public void testScoreCatch() {
         List<String> row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Amy");
         row1.add("41.75");
         row1.add("Carey's");
         row1.add("Tony");
+        row1.add("Muskellunge");
         row1.add("");
         row1.add("41.75");
         row1.add("");
         row1.add("");
-        assertEquals(row1, ff.scoreCatch("Amy", "Carey's", "41.75", "Tony", "June 6", false, false, false));
+        assertEquals(row1, ff.scoreCatch("Amy", "Carey's", "41.75", "Tony", "Muskellunge", "8/9/2024 23:11:00", false, false));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Tony");
         row1.add("41.25");
         row1.add("Carey's");
         row1.add("Tony");
+        row1.add("Muskellunge");
         row1.add("");
         row1.add("51.25");
         row1.add("");
         row1.add(" Video");
-        assertEquals(row1, ff.scoreCatch("Tony", "Carey's", "41.25", "Tony", "June 6", true, false, false));
+        assertEquals(row1, ff.scoreCatch("Tony", "Carey's", "41.25", "Tony", "Muskellunge", "8/9/2024 23:11:00", true, false));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Dan");
         row1.add("41.75");
         row1.add("S. Gateway (F)");
         row1.add("Dan");
+        row1.add("Muskellunge");
         row1.add("83.5");
         row1.add("");
         row1.add("");
         row1.add(" Franchise");
-        assertEquals(row1, ff.scoreCatch("Dan", "S. Gateway (F)", "41.75", "Dan", "June 6", false, false, false));
+        assertEquals(row1, ff.scoreCatch("Dan", "S. Gateway (F)", "41.75", "Dan", "Muskellunge", "8/9/2024 23:11:00", false, false));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Dan");
         row1.add("41");
         row1.add("Adams (C)");
         row1.add("Dan");
+        row1.add("Muskellunge");
         row1.add("41.0");
         row1.add("");
         row1.add("");
         row1.add(" Community");
-        assertEquals(row1, ff.scoreCatch("Dan", "Adams (C)", "41", "Dan", "June 6", false, false, false));
+        assertEquals(row1, ff.scoreCatch("Dan", "Adams (C)", "41", "Dan", "Muskellunge", "8/9/2024 23:11:00", false, false));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Dan");
         row1.add("41.25");
         row1.add("Carey's");
         row1.add("Dan");
+        row1.add("Muskellunge");
         row1.add("32.75");
         row1.add("20.5");
         row1.add("");
         row1.add(" Video LifeVest");
-        assertEquals(row1, ff.scoreCatch("Dan", "Carey's", "41.25", "Dan", "June 6", true, false, true));
+        assertEquals(row1, ff.scoreCatch("Dan", "Carey's", "41.25", "Dan", "Muskellunge", "8/9/2024 23:11:00", true, true));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Jeff");
         row1.add("42");
         row1.add("New Spot(V)");
         row1.add("Jeff");
+        row1.add("Muskellunge");
         row1.add("");
         row1.add("");
-        row1.add("54.0");
-        row1.add(" Video LifeVest");
-        assertEquals(row1, ff.scoreCatch("Jeff", "New Spot(V)", "42", "Jeff", "June 6", true, true, true));
+        row1.add("64.0");
+        row1.add(" Video LifeVest Virgin");
+        assertEquals(row1, ff.scoreCatch("Jeff", "New Spot(V)", "42", "Jeff", "Muskellunge", "8/9/2024 23:11:00", true, true));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Calvin");
         row1.add("42");
         row1.add("Chase(C,V)");
         row1.add("Dan");
+        row1.add("Muskellunge");
         row1.add("52.0");
         row1.add("");
         row1.add("");
         row1.add(" Virgin Community");
-        assertEquals(row1, ff.scoreCatch("Calvin", "Chase(C,V)", "42", "Dan", "June 6", false, false, false));
+        assertEquals(row1, ff.scoreCatch("Calvin", "Chase(C,V)", "42", "Dan", "Muskellunge", "8/9/2024 23:11:00", false, false));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Tony");
         row1.add("42.75");
         row1.add("S. Gateway (F)");
         row1.add("Dan");
+        row1.add("Muskellunge");
         row1.add("42.5");
         row1.add("33.5");
         row1.add("");
         row1.add(" Video LifeVest Franchise");
-        assertEquals(row1, ff.scoreCatch("Tony", "S. Gateway (F)", "42.75", "Dan", "June 6", true, true, true));
+        assertEquals(row1, ff.scoreCatch("Tony", "S. Gateway (F)", "42.75", "Dan", "Muskellunge", "8/9/2024 23:11:00", true, true));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Tony");
         row1.add("30");
         row1.add("Chase(C,V)");
         row1.add("Tony");
+        row1.add("Muskellunge");
         row1.add("");
         row1.add("40.0");
         row1.add("");
         row1.add(" Virgin Community");
-        assertEquals(row1, ff.scoreCatch("Tony", "Chase(C,V)", "30", "Tony", "June 6", false, false, false));
+        assertEquals(row1, ff.scoreCatch("Tony", "Chase(C,V)", "30", "Tony", "Muskellunge", "8/9/2024 23:11:00", false, false));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Tony");
         row1.add("30.25");
         row1.add("New Spot(V)");
         row1.add("Tony");
+        row1.add("Muskellunge");
         row1.add("");
         row1.add("25.25");
         row1.add("15.0");
         row1.add(" Virgin");
-        assertEquals(row1, ff.scoreCatch("Tony", "New Spot(V)", "30.25", "Tony", "June 6", false, false, false));
+        assertEquals(row1, ff.scoreCatch("Tony", "New Spot(V)", "30.25", "Tony", "Muskellunge", "8/9/2024 23:11:00", false, false));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Calvin");
         row1.add("32");
         row1.add("S. Gateway (F)");
         row1.add("Dan");
+        row1.add("Muskellunge");
         row1.add("");
         row1.add("");
         row1.add("");
         row1.add(" Franchise");
-        assertEquals(row1, ff.scoreCatch("Calvin", "S. Gateway (F)", "32", "Dan", "June 6", false, false, false));
+        assertEquals(row1, ff.scoreCatch("Calvin", "S. Gateway (F)", "32", "Dan", "Muskellunge", "8/9/2024 23:11:00", false, false));
         row1 = new ArrayList<>();
         // date, angler, size , location, owner , ... anglers
-        row1.add("June 6");
+        row1.add("8/9/2024 23:11:00");
         row1.add("Dan");
         row1.add("41.25");
         row1.add("Carey's");
         row1.add("Dan");
-        row1.add("32.75");
-        row1.add("20.5");
+        row1.add("Lake Trout");
+        row1.add("41.0");
+        row1.add("");
         row1.add("");
         row1.add(" Video LifeVest");
-        assertEquals(row1, ff.scoreCatch("Dan", "Carey's", "41.25", "Dan", "June 6", true, false, true));
-
+        assertEquals(row1, ff.scoreCatch("Dan", "Carey's", "41.25", "Dan", "Lake Trout", "8/9/2024 23:11:00", true, true));
     }
 }
 

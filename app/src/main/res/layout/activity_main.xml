@@ -171,6 +171,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
         app:srcCompat="@drawable/moon15" />
+
     <ImageButton
         android:id="@+id/weatherButton"
         android:layout_width="100dp"
@@ -178,12 +179,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:backgroundTint="#00FFFFFF"
-        android:scaleType="fitCenter"
-        android:onClick="showWeather"
         android:contentDescription="Weather"
+        android:onClick="showWeather"
+        android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/forecastButton"
         app:srcCompat="@drawable/cloud_sun" />
+
     <SeekBar
         android:id="@+id/seekBar"
         android:layout_width="177dp"
@@ -292,6 +294,7 @@
             app:fabSize="mini"
             app:srcCompat="@android:drawable/ic_menu_compass" />
     </LinearLayout>
+
     <FrameLayout
         android:id="@+id/mainFragmentContainer"
         android:layout_width="match_parent"
